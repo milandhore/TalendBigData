@@ -24,6 +24,7 @@ import static org.apache.commons.codec.binary.Hex.encodeHex;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.talend.components.marketo.MarketoConstants.DATETIME_PATTERN_PARAM;
 import static org.talend.components.marketo.MarketoConstants.FIELD_ERROR_MSG;
+import static org.talend.components.marketo.MarketoConstants.FIELD_MARKETO_GUID;
 import static org.talend.components.marketo.MarketoConstants.FIELD_STATUS;
 import static org.talend.components.marketo.tmarketoinput.TMarketoInputProperties.LeadSelector.LastUpdateAtSelector;
 import static org.talend.components.marketo.tmarketoinput.TMarketoInputProperties.LeadSelector.LeadKeySelector;
@@ -216,15 +217,23 @@ public class MarketoSOAPClient extends MarketoClient {
                     LOG.warn("[converLeadRecord] Couldn't find mapping for column {}.", f.name());
                     continue;
                 }
-                if (col.equals(FIELD_ID)) {
-                    record.put(f.pos(), input.getId().getValue());
-                } else if (col.equals(FIELD_EMAIL)) {
-                    record.put(f.pos(), input.getEmail().getValue());
-                } else if (col.equals(FIELD_FOREIGN_SYS_PERSON_ID)) {
-                    record.put(f.pos(), input.getForeignSysPersonId().getValue());
-                } else if (col.equals(FIELD_FOREIGN_SYS_TYPE)) {
-                    record.put(f.pos(), input.getForeignSysType().getValue());
-                } else {
+                switch (col) {
+                case FIELD_ID:
+                    record.put(f.pos(), input.getId() != null ? input.getId().getValue() : null);
+                    break;
+                case FIELD_EMAIL:
+                    record.put(f.pos(), input.getEmail() != null ? input.getEmail().getValue() : null);
+                    break;
+                case FIELD_FOREIGN_SYS_PERSON_ID:
+                    record.put(f.pos(), input.getForeignSysPersonId() != null ? input.getForeignSysPersonId().getValue() : null);
+                    break;
+                case FIELD_FOREIGN_SYS_TYPE:
+                    record.put(f.pos(),
+                            input.getForeignSysType() != null && input.getForeignSysType().getValue() != null
+                                    ? input.getForeignSysType().getValue().value()
+                                    : null);
+                    break;
+                default:
                     for (Attribute attr : input.getLeadAttributeList().getValue().getAttributes()) {
                         if (attr.getAttrName().equals(col)) {
                             record.put(f.pos(), attr.getAttrValue());
@@ -249,28 +258,44 @@ public class MarketoSOAPClient extends MarketoClient {
                     LOG.warn("[convertLeadActivityRecords] Couldn't find mapping for column {}.", f.name());
                     continue;
                 }
-                if (col.equals(FIELD_ID)) {
-                    record.put(f.pos(), input.getId());
-                } else if (col.equals(FIELD_ACTIVITY_DATE_TIME)) {
-                    record.put(f.pos(), input.getActivityDateTime().toGregorianCalendar().getTime());
-                    //
-                } else if (col.equals(FIELD_ACTIVITY_TYPE)) {
+                switch (col) {
+                case FIELD_ID:
+                    record.put(f.pos(), input.getId() != null ? input.getId().getValue() : null);
+                    break;
+                case FIELD_MARKETO_GUID:
+                    record.put(f.pos(), input.getMarketoGUID());
+                    break;
+                case FIELD_ACTIVITY_DATE_TIME:
+                    record.put(f.pos(),
+                            input.getActivityDateTime() != null
+                                    ? input.getActivityDateTime().toGregorianCalendar().getTimeInMillis()
+                                    : null);
+                    break;
+                case FIELD_ACTIVITY_TYPE:
                     record.put(f.pos(), input.getActivityType());
-                } else if (col.equals(FIELD_MKTG_ASSET_NAME)) {
+                    break;
+                case FIELD_MKTG_ASSET_NAME:
                     record.put(f.pos(), input.getMktgAssetName());
-                } else if (col.equals(FIELD_MKT_PERSON_ID)) {
+                    break;
+                case FIELD_MKT_PERSON_ID:
                     record.put(f.pos(), input.getMktPersonId());
-                } else if (col.equals(FIELD_CAMPAIGN)) {
-                    record.put(f.pos(), input.getCampaign().getValue());
-                } else if (col.equals(FIELD_FOREIGN_SYS_ID)) {
-                    record.put(f.pos(), input.getForeignSysId().getValue());
-                } else if (col.equals(FIELD_PERSON_NAME)) {
-                    record.put(f.pos(), input.getPersonName().getValue());
-                } else if (col.equals(FIELD_ORG_NAME)) {
-                    record.put(f.pos(), input.getOrgName().getValue());
-                } else if (col.equals(FIELD_FOREIGN_SYS_ORG_ID)) {
-                    record.put(f.pos(), input.getForeignSysOrgId().getValue());
-                } else {
+                    break;
+                case FIELD_CAMPAIGN:
+                    record.put(f.pos(), input.getCampaign() != null ? input.getCampaign().getValue() : null);
+                    break;
+                case FIELD_FOREIGN_SYS_ID:
+                    record.put(f.pos(), input.getForeignSysId() != null ? input.getForeignSysId().getValue() : null);
+                    break;
+                case FIELD_PERSON_NAME:
+                    record.put(f.pos(), input.getPersonName() != null ? input.getPersonName().getValue() : null);
+                    break;
+                case FIELD_ORG_NAME:
+                    record.put(f.pos(), input.getOrgName() != null ? input.getOrgName().getValue() : null);
+                    break;
+                case FIELD_FOREIGN_SYS_ORG_ID:
+                    record.put(f.pos(), input.getForeignSysOrgId() != null ? input.getForeignSysOrgId().getValue() : null);
+                    break;
+                default:
                     for (Attribute attr : input.getActivityAttributes().getValue().getAttributes()) {
                         if (attr.getAttrName().equals(col)) {
                             record.put(f.pos(), attr.getAttrValue());
@@ -296,19 +321,32 @@ public class MarketoSOAPClient extends MarketoClient {
                     LOG.warn("[convertLeadChangeRecords] Couldn't find mapping for column {}.", f.name());
                     continue;
                 }
-                if (col.equals(FIELD_ID)) {
-                    record.put(f.pos(), input.getId());
-                } else if (col.equals(FIELD_ACTIVITY_DATE_TIME)) {
-                    record.put(f.pos(), input.getActivityDateTime().toGregorianCalendar().getTime());
-                } else if (col.equals(FIELD_ACTIVITY_TYPE)) {
+                switch (col) {
+                case FIELD_ID:
+                    record.put(f.pos(), input.getId().getValue());
+                    break;
+                case FIELD_MARKETO_GUID:
+                    record.put(f.pos(), input.getMarketoGUID());
+                    break;
+                case FIELD_ACTIVITY_DATE_TIME:
+                    record.put(f.pos(),
+                            input.getActivityDateTime() != null
+                                    ? input.getActivityDateTime().toGregorianCalendar().getTimeInMillis()
+                                    : null);
+                    break;
+                case FIELD_ACTIVITY_TYPE:
                     record.put(f.pos(), input.getActivityType());
-                } else if (col.equals(FIELD_MKTG_ASSET_NAME)) {
-                    record.put(f.pos(), input.getMktgAssetName().getValue());
-                } else if (col.equals(FIELD_MKT_PERSON_ID)) {
+                    break;
+                case FIELD_MKTG_ASSET_NAME:
+                    record.put(f.pos(), input.getMktgAssetName() != null ? input.getMktgAssetName().getValue() : null);
+                    break;
+                case FIELD_MKT_PERSON_ID:
                     record.put(f.pos(), input.getMktPersonId());
-                } else if (col.equals(FIELD_CAMPAIGN)) {
+                    break;
+                case FIELD_CAMPAIGN:
                     record.put(f.pos(), input.getCampaign());
-                } else {
+                    break;
+                default:
                     for (Attribute attr : input.getActivityAttributes().getValue().getAttributes()) {
                         if (attr.getAttrName().equals(col)) {
                             record.put(f.pos(), attr.getAttrValue());
@@ -367,8 +405,8 @@ public class MarketoSOAPClient extends MarketoClient {
     }
 
     /**
-     * In getMultipleLeadsJSON you have to add includeAttributes base fields like Email. Otherwise, they return null
-     * from API. WTF ?!? It's like that...
+     * In getMultipleLeadsJSON you have to add includeAttributes base fields like Email. Otherwise, they return null from
+     * API. WTF ?!? It's like that...
      */
     @Override
     public MarketoRecordResult getMultipleLeads(TMarketoInputProperties parameters, String offset) {
@@ -813,9 +851,9 @@ public class MarketoSOAPClient extends MarketoClient {
         return listOperation(ListOperationType.REMOVEFROMLIST, parameters);
     }
     /*
-     * 
+     *
      * SyncLeads operations
-     * 
+     *
      */
 
     public LeadRecord convertToLeadRecord(IndexedRecord record, Map<String, String> mappings) throws MarketoException {
@@ -878,7 +916,7 @@ public class MarketoSOAPClient extends MarketoClient {
 
     /**
      * Request<br/>
-     * 
+     *
      * Field Name <br/>
      * <code>leadRecord->Id</code> Required – Only when Email or foreignSysPersonId is not present The Marketo Id of the
      * lead record<br/>
@@ -888,8 +926,8 @@ public class MarketoSOAPClient extends MarketoClient {
      * associated with the lead record<br/>
      * <code>leadRecord->foreignSysType</code> Optional – Only required when foreignSysPersonId is present The type of
      * foreign system. Possible values: CUSTOM, SFDC, NETSUITE<br/>
-     * <code>leadRecord->leadAttributeList->attribute->attrName</code> Required The name of the lead attribute you want
-     * to update the value of.<br/>
+     * <code>leadRecord->leadAttributeList->attribute->attrName</code> Required The name of the lead attribute you want to
+     * update the value of.<br/>
      * <code>leadRecord->leadAttributeList->attribute->attrValue</code> Required The value you want to set to the lead
      * attribute specificed in attrName. returnLead Required When true will return the complete updated lead record upon
      * update.<br/>

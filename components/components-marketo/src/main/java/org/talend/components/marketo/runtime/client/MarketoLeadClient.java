@@ -14,6 +14,7 @@ package org.talend.components.marketo.runtime.client;
 
 import static java.util.Arrays.asList;
 import static org.talend.components.marketo.MarketoConstants.FIELD_ERROR_MSG;
+import static org.talend.components.marketo.MarketoConstants.FIELD_MARKETO_GUID;
 import static org.talend.components.marketo.MarketoConstants.FIELD_STATUS;
 import static org.talend.components.marketo.tmarketoinput.TMarketoInputProperties.LeadSelector.LeadKeySelector;
 
@@ -90,6 +91,8 @@ public class MarketoLeadClient extends MarketoBaseRESTClient implements MarketoC
     public static final String FIELD_PRIMARY_ATTRIBUTE_VALUE = "primaryAttributeValue";
 
     public static final String FIELD_PRIMARY_ATTRIBUTE_VALUE_ID = "primaryAttributeValueId";
+
+    public static final String FIELD_CAMPAIGN_ID = "campaignId";
 
     public static final String API_PATH_LIST = "/v1/list/";
 
@@ -202,6 +205,8 @@ public class MarketoLeadClient extends MarketoBaseRESTClient implements MarketoC
                 String col = mappings.get(f.name());
                 if (col.equals(FIELD_ID)) {
                     record.put(f.pos(), input.getId());
+                } else if (col.equals(FIELD_MARKETO_GUID)) {
+                    record.put(f.pos(), input.getMarketoGUID());
                 } else if (col.equals(FIELD_LEAD_ID)) {
                     record.put(f.pos(), input.getLeadId());
                 } else if (col.equals(FIELD_ACTIVITY_DATE)) {
@@ -214,6 +219,8 @@ public class MarketoLeadClient extends MarketoBaseRESTClient implements MarketoC
                     record.put(f.pos(), input.getPrimaryAttributeValueId());
                 } else if (col.equals(FIELD_PRIMARY_ATTRIBUTE_VALUE)) {
                     record.put(f.pos(), input.getPrimaryAttributeValue());
+                } else if (col.equals(FIELD_CAMPAIGN_ID)) {
+                    record.put(f.pos(), input.getCampaignId());
                 } else {
                     for (Map<String, String> attr : input.getAttributes()) {
                         if (attr.get(col) != null) {
@@ -238,6 +245,8 @@ public class MarketoLeadClient extends MarketoBaseRESTClient implements MarketoC
                 String col = mappings.get(f.name());
                 if (col.equals(FIELD_ID)) {
                     record.put(f.pos(), input.getId());
+                } else if (col.equals(FIELD_MARKETO_GUID)) {
+                    record.put(f.pos(), input.getMarketoGUID());
                 } else if (col.equals(FIELD_LEAD_ID)) {
                     record.put(f.pos(), input.getLeadId());
                 } else if (col.equals(FIELD_ACTIVITY_DATE)) {
@@ -248,6 +257,8 @@ public class MarketoLeadClient extends MarketoBaseRESTClient implements MarketoC
                     record.put(f.pos(), getActivityTypeNameById(input.getActivityTypeId()));
                 } else if (col.equals(FIELD_FIELDS)) {
                     record.put(f.pos(), gson.toJson(input.getFields()));
+                } else if (col.equals(FIELD_CAMPAIGN_ID)) {
+                    record.put(f.pos(), input.getCampaignId());
                 } else {
                     for (Map<String, String> attr : input.getAttributes()) {
                         if (attr.get(col) != null) {
