@@ -215,8 +215,8 @@ public class DBTestUtils {
     public static Schema createAllTypesSchema() {
         FieldAssembler<Schema> builder = SchemaBuilder.builder().record("ALL_TYPES").fields();
         
-        // sql (smallint)short -> avro int
-        Schema schema = AvroUtils._int();
+        // sql (smallint)short -> avro short
+        Schema schema = AvroUtils._short();
         schema = wrap(schema);
         builder = builder.name("SMALL_INT_COL").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "SMALL_INT_COL").type(schema).noDefault();
         
@@ -263,18 +263,18 @@ public class DBTestUtils {
         schema = wrap(schema);
         builder = builder.name("CLOB_COL").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "CLOB_COL").type(schema).noDefault();
         
-        // sql date -> avro logical date
-        schema = AvroUtils._logicalDate();
+        // sql date -> avro date
+        schema = AvroUtils._date();
         schema = wrap(schema);
         builder = builder.name("DATE_COL").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "DATE_COL").type(schema).noDefault();
         
-        // sql time -> avro logical time
-        schema = AvroUtils._logicalTime();
+        // sql time -> avro date
+        schema = AvroUtils._date();
         schema = wrap(schema);
         builder = builder.name("TIME_COL").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "TIME_COL").type(schema).noDefault();
         
-        // sql timestamp -> avro logical timestamp
-        schema = AvroUtils._logicalTimestamp();
+        // sql timestamp -> avro date
+        schema = AvroUtils._date();
         schema = wrap(schema);
         builder = builder.name("TIMESTAMP_COL").prop(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME, "TIMESTAMP_COL").type(schema).noDefault();
         
@@ -916,7 +916,7 @@ public class DBTestUtils {
         Schema.Field field = columns.get(0);
 
         assertEquals("ID", field.getObjectProp(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME));
-        assertEquals(Schema.Type.STRING, AvroUtils.unwrapIfNullable(field.schema()).getType());
+        assertEquals(Schema.Type.INT, AvroUtils.unwrapIfNullable(field.schema()).getType());
         assertEquals(java.sql.Types.INTEGER, field.getObjectProp(SchemaConstants.TALEND_COLUMN_DB_TYPE));
         assertEquals(null, field.getObjectProp(SchemaConstants.TALEND_COLUMN_DB_LENGTH));
         assertEquals(10, field.getObjectProp(SchemaConstants.TALEND_COLUMN_PRECISION));
