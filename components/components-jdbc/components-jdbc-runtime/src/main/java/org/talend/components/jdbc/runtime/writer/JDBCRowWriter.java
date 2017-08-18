@@ -72,10 +72,6 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
 
     private int rejectCount;
 
-    private int commitEvery;
-
-    private int commitCount;
-
     private boolean useExistedConnection;
 
     private boolean dieOnError;
@@ -98,6 +94,16 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
 
     private boolean propagateQueryResultSet;
 
+    private boolean useCommit;
+
+    private int commitCount;
+
+    private int commitEvery;
+
+    private Schema outSchema;
+
+    private Schema rejectSchema;
+
     public JDBCRowWriter(WriteOperation<Result> writeOperation, RuntimeContainer runtime) {
         this.writeOperation = writeOperation;
         this.runtime = runtime;
@@ -106,8 +112,11 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
         properties = sink.properties;
 
         useExistedConnection = setting.getReferencedComponentId() != null;
-        if (!useExistedConnection) {
-            commitEvery = setting.getCommitEvery();
+
+        Integer commitEveryNumber = setting.getCommitEvery();
+        useCommit = !useExistedConnection && commitEveryNumber != null && commitEveryNumber != 0;
+        if (useCommit) {
+            commitEvery = commitEveryNumber;
         }
 
         dieOnError = setting.getDieOnError();
@@ -115,6 +124,10 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
         propagateQueryResultSet = setting.getPropagateQueryResultSet();
 
         result = new Result();
+
+        outSchema = CommonUtils.getOutputSchema((ComponentProperties) properties);
+
+        rejectSchema = CommonUtils.getRejectSchema((ComponentProperties) properties);
     }
 
     public void open(String uId) throws IOException {
@@ -167,7 +180,7 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
             } else {
                 LOG.warn(e.getMessage());
                 // TODO should not print it when reject line, but we can't know the information at the runtime
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
 
             handleReject(input, e);
@@ -206,7 +219,7 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
         }
 
         try {
-            if (commitCount > 0) {
+            if (useCommit && commitCount > 0) {
                 commitCount = 0;
 
                 if (conn != null) {
@@ -216,7 +229,9 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
 
             if (conn != null) {
                 // need to call the commit before close for some database when do some read action like reading the resultset
-                conn.commit();
+                if (useCommit) {
+                    conn.commit();
+                }
 
                 conn.close();
                 conn = null;
@@ -255,7 +270,6 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
     private void handleSuccess(IndexedRecord input) {
         successCount++;
 
-        Schema outSchema = CommonUtils.getOutputSchema((ComponentProperties) properties);
         if (outSchema == null || outSchema.getFields().size() == 0) {
             return;
         }
@@ -281,8 +295,7 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
     private void handleReject(IndexedRecord input, SQLException e) throws IOException {
         rejectCount++;
 
-        Schema outSchema = CommonUtils.getRejectSchema((ComponentProperties) properties);
-        IndexedRecord reject = new GenericData.Record(outSchema);
+        IndexedRecord reject = new GenericData.Record(rejectSchema);
 
         for (Schema.Field outField : reject.getSchema().getFields()) {
             Object outValue = null;
@@ -303,15 +316,13 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
     }
 
     private void executeCommit() throws SQLException {
-        if (useExistedConnection) {
-            return;
-        }
-
-        if (commitCount < commitEvery) {
-            commitCount++;
-        } else {
-            commitCount = 0;
-            conn.commit();
+        if (useCommit) {
+            if (commitCount < commitEvery) {
+                commitCount++;
+            } else {
+                commitCount = 0;
+                conn.commit();
+            }
         }
     }
 
