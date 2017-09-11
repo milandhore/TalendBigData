@@ -35,7 +35,6 @@ import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.common.avro.JDBCAvroRegistry;
 import org.talend.components.jdbc.CommonUtils;
-import org.talend.components.jdbc.ComponentConstants;
 import org.talend.components.jdbc.JDBCTemplate;
 import org.talend.components.jdbc.RuntimeSettingProvider;
 import org.talend.components.jdbc.runtime.JDBCRowSink;
@@ -82,11 +81,11 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
 
     private ResultSet resultSet;
 
-    private int insertCount;
-
-    private int updateCount;
-
-    private int deleteCount;
+    // private int insertCount;
+    //
+    // private int updateCount;
+    //
+    // private int deleteCount;
 
     private boolean usePreparedStatement;
 
@@ -337,6 +336,7 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
     }
 
     private void constructResult() {
+        /*
         if (runtime != null) {
             runtime.setComponentData(runtime.getCurrentComponentId(),
                     CommonUtils.getStudioNameFromProperty(ComponentConstants.RETURN_DELETE_RECORD_COUNT), deleteCount);
@@ -345,6 +345,7 @@ public class JDBCRowWriter implements WriterWithFeedback<Result, IndexedRecord, 
             runtime.setComponentData(runtime.getCurrentComponentId(),
                     CommonUtils.getStudioNameFromProperty(ComponentConstants.RETURN_UPDATE_RECORD_COUNT), updateCount);
         }
+        */
 
         result.successCount = successCount;
         result.rejectCount = rejectCount;
