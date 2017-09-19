@@ -14,12 +14,17 @@ package org.talend.components.google.drive.put;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.talend.components.api.component.ConnectorTopology.INCOMING;
+import static org.talend.components.api.component.ConnectorTopology.INCOMING_AND_OUTGOING;
+import static org.talend.components.api.component.ConnectorTopology.NONE;
+import static org.talend.components.api.component.ConnectorTopology.OUTGOING;
+import static org.talend.components.google.drive.GoogleDriveComponentDefinition.PUT_RUNTIME_CLASS;
+import static org.talend.components.google.drive.GoogleDriveComponentDefinition.SOURCE_CLASS;
 
 import java.util.EnumSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 
 public class GoogleDrivePutDefinitionTest {
@@ -33,15 +38,16 @@ public class GoogleDrivePutDefinitionTest {
 
     @Test
     public void testGetRuntimeInfo() throws Exception {
-        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, ConnectorTopology.NONE));
-        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, ConnectorTopology.OUTGOING));
-        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, ConnectorTopology.INCOMING_AND_OUTGOING));
-        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, ConnectorTopology.INCOMING));
+        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, NONE));
+        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, OUTGOING));
+        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, INCOMING_AND_OUTGOING));
+        assertNotNull(def.getRuntimeInfo(ExecutionEngine.DI, null, INCOMING));
+        assertEquals(SOURCE_CLASS, def.getRuntimeInfo(ExecutionEngine.DI, null, OUTGOING).getRuntimeClassName());
+        assertEquals(PUT_RUNTIME_CLASS, def.getRuntimeInfo(ExecutionEngine.DI, null, NONE).getRuntimeClassName());
     }
 
     @Test
     public void testGetSupportedConnectorTopologies() throws Exception {
-        assertEquals(EnumSet.of(ConnectorTopology.INCOMING, ConnectorTopology.INCOMING_AND_OUTGOING, ConnectorTopology.NONE,
-                ConnectorTopology.OUTGOING), def.getSupportedConnectorTopologies());
+        assertEquals(EnumSet.of(INCOMING, INCOMING_AND_OUTGOING, NONE, OUTGOING), def.getSupportedConnectorTopologies());
     }
 }

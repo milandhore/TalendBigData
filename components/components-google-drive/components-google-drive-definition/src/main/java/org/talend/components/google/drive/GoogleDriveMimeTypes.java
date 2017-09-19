@@ -13,7 +13,9 @@
 package org.talend.components.google.drive;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GoogleDriveMimeTypes {
 
@@ -26,6 +28,16 @@ public class GoogleDriveMimeTypes {
     public static final String MIME_TYPE_GOOGLE_PRESENTATION = "application/vnd.google-apps.presentation";
 
     public static final String MIME_TYPE_GOOGLE_SPREADSHEET = "application/vnd.google-apps.spreadsheet";
+
+    public static final String MIME_TYPE_GOOGLE_FORMS = "application/vnd.google-apps.form";
+
+    public static final String MIME_TYPE_GOOGLE_FUSION_TABLE = "application/vnd.google-apps.fusiontable";
+
+    public static final String MIME_TYPE_GOOGLE_MY_MAPS = "application/vnd.google-apps.map";
+
+    public static final String MIME_TYPE_GOOGLE_APPS_SCRIPT = "application/vnd.google-apps.script";
+
+    public static final String MIME_TYPE_GOOGLE_SITE = "application/vnd.google-apps.sites";
 
     public static final List<String> GOOGLE_DRIVE_APPS = Arrays.asList(MIME_TYPE_GOOGLE_DOCUMENT, MIME_TYPE_GOOGLE_DRAWING,
             MIME_TYPE_GOOGLE_PRESENTATION, MIME_TYPE_GOOGLE_SPREADSHEET);
@@ -106,7 +118,11 @@ public class GoogleDriveMimeTypes {
 
     public static final String MIME_TYPE_ZIP_EXT = ".zip";
 
-    public enum MimeTypes {
+    public static final String MIME_TYPE_JSON = "application/json";
+
+    public static final String MIME_TYPE_JSON_EXT = ".json";
+
+    public enum MimeType {
 
         CSV(MIME_TYPE_CSV, MIME_TYPE_CSV_EXT),
         CSV_TAB(MIME_TYPE_CSV_TAB, MIME_TYPE_CSV_TAB_EXT),
@@ -124,13 +140,15 @@ public class GoogleDriveMimeTypes {
         RTF(MIME_TYPE_RTF, MIME_TYPE_RTF_EXT),
         SVG(MIME_TYPE_SVG, MIME_TYPE_SVG_EXT),
         TEXT(MIME_TYPE_TEXT, MIME_TYPE_TEXT_EXT),
-        WORD(MIME_TYPE_WORD, MIME_TYPE_WORD_EXT);
+        WORD(MIME_TYPE_WORD, MIME_TYPE_WORD_EXT),
+        // extra types non managed in UI
+        JSON(MIME_TYPE_JSON, MIME_TYPE_JSON_EXT);
 
         private String mimeType;
 
         private String extension;
 
-        MimeTypes(String mimeType, String extension) {
+        MimeType(String mimeType, String extension) {
             this.mimeType = mimeType;
             this.extension = extension;
         }
@@ -145,4 +163,19 @@ public class GoogleDriveMimeTypes {
 
     }
 
+    /**
+     * Pre-fill a Map with some default values for supported GAPPS export
+     * 
+     * @return brand new Map
+     */
+    public static Map<String, MimeType> newDefaultMimeTypesSupported() {
+        Map<String, MimeType> result = new HashMap<>();
+        result.put(MIME_TYPE_GOOGLE_DOCUMENT, MimeType.WORD);
+        result.put(MIME_TYPE_GOOGLE_DRAWING, MimeType.PNG);
+        result.put(MIME_TYPE_GOOGLE_PRESENTATION, MimeType.POWERPOINT);
+        result.put(MIME_TYPE_GOOGLE_SPREADSHEET, MimeType.EXCEL);
+        result.put(MIME_TYPE_GOOGLE_APPS_SCRIPT, MimeType.JSON);
+
+        return result;
+    }
 }

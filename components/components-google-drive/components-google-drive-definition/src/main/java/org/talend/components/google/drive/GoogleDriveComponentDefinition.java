@@ -20,7 +20,6 @@ import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.DependenciesReader;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.component.runtime.JarRuntimeInfo;
-import org.talend.components.api.component.runtime.SimpleRuntimeInfo;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionDefinition;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionProperties;
@@ -42,6 +41,16 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
     public static final String SOURCE_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveSource";
 
     public static final String SINK_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveSink";
+
+    public static final String COPY_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveCopyRuntime";
+
+    public static final String CREATE_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveCreateRuntime";
+
+    public static final String DELETE_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveDeleteRuntime";
+
+    public static final String GET_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDriveGetRuntime";
+
+    public static final String PUT_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDrivePutRuntime";
 
     private static SandboxedInstanceProvider sandboxedInstanceProvider = SandboxedInstanceProvider.INSTANCE;
 
@@ -70,10 +79,17 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
     }
 
     @Override
-    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties, ConnectorTopology connectorTopology) {
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
+            ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
         assertConnectorTopologyCompatibility(connectorTopology);
         return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
+    }
+
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ConnectorTopology connectorTopology, String clazz) {
+        assertEngineCompatibility(engine);
+        assertConnectorTopologyCompatibility(connectorTopology);
+        return getRuntimeInfo(clazz);
     }
 
     @Override
@@ -87,18 +103,13 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
     }
 
     protected RuntimeInfo getRuntimeInfo(String className) {
-        return new JarRuntimeInfo(MAVEN_RUNTIME_PATH, DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID,
-                MAVEN_ARTIFACT_ID), className);
-    }
-
-    public static RuntimeInfo getCommonRuntimeInfo(ClassLoader classLoader, String clazz) {
-        return new SimpleRuntimeInfo(classLoader, DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID,
-                MAVEN_ARTIFACT_ID), clazz);
+        return new JarRuntimeInfo(MAVEN_RUNTIME_PATH,
+                DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID, MAVEN_ARTIFACT_ID), className);
     }
 
     public static RuntimeInfo getCommonRuntimeInfo(String clazz) {
-        return new JarRuntimeInfo(MAVEN_RUNTIME_PATH, DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID,
-                MAVEN_ARTIFACT_ID), clazz);
+        return new JarRuntimeInfo(MAVEN_RUNTIME_PATH,
+                DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID, MAVEN_ARTIFACT_ID), clazz);
     }
 
     public static class SandboxedInstanceProvider {

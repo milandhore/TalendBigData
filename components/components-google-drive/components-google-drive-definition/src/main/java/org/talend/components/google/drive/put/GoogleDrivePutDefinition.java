@@ -36,10 +36,13 @@ public class GoogleDrivePutDefinition extends GoogleDriveComponentDefinition {
     }
 
     @Override
-    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties, ConnectorTopology connectorTopology) {
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
+            ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
         assertConnectorTopologyCompatibility(connectorTopology);
-        if (ConnectorTopology.OUTGOING.equals(connectorTopology) || ConnectorTopology.NONE.equals(connectorTopology)) {
+        if (ConnectorTopology.NONE.equals(connectorTopology)) {
+            return getRuntimeInfo(GoogleDriveConnectionDefinition.PUT_RUNTIME_CLASS);
+        } else if (ConnectorTopology.OUTGOING.equals(connectorTopology)) {
             return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
         } else {
             return getRuntimeInfo(GoogleDriveConnectionDefinition.SINK_CLASS);

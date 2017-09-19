@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.components.google.drive.copy;
 
+import org.talend.components.api.component.ConnectorTopology;
+import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.google.drive.GoogleDriveComponentDefinition;
+import org.talend.components.google.drive.connection.GoogleDriveConnectionDefinition;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.runtime.RuntimeInfo;
 
 public class GoogleDriveCopyDefinition extends GoogleDriveComponentDefinition {
 
@@ -37,6 +41,18 @@ public class GoogleDriveCopyDefinition extends GoogleDriveComponentDefinition {
     @Override
     public Property[] getReturnProperties() {
         return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_SOURCEID_PROP, RETURN_DESTINATIONID_PROP };
+    }
+
+    @Override
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
+            ConnectorTopology connectorTopology) {
+        assertEngineCompatibility(engine);
+        assertConnectorTopologyCompatibility(connectorTopology);
+        if (ConnectorTopology.NONE.equals(connectorTopology)) {
+            return getRuntimeInfo(GoogleDriveConnectionDefinition.COPY_RUNTIME_CLASS);
+        } else {
+            return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
+        }
     }
 
     @Override

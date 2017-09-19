@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -63,6 +64,11 @@ public class GoogleDrivePutPropertiesTest {
         properties.uploadMode.setValue(UploadMode.READ_CONTENT_FROM_INPUT);
         properties.afterUploadMode();
         assertFalse(properties.getForm(Form.MAIN).getWidget(properties.localFilePath.getName()).isVisible());
+    }
+
+    @Test
+    public void testGetEffectiveConnection() throws Exception {
+        assertNotNull(properties.getConnectionProperties().getEffectiveConnectionProperties());
     }
 
 }
