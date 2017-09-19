@@ -33,4 +33,5 @@ public class GoogleDriveDeletePropertiesTest {
         assertThat(properties.getAllSchemaPropertiesConnectors(false), hasSize(0));
         assertThat(properties.getAllSchemaPropertiesConnectors(true), contains(properties.MAIN_CONNECTOR));
     }
+
 }

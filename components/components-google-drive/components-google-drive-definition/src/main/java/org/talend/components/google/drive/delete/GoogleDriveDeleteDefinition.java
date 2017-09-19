@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.components.google.drive.delete;
 
+import org.talend.components.api.component.ConnectorTopology;
+import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.google.drive.GoogleDriveComponentDefinition;
+import org.talend.components.google.drive.connection.GoogleDriveConnectionDefinition;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
+import org.talend.daikon.runtime.RuntimeInfo;
 
 public class GoogleDriveDeleteDefinition extends GoogleDriveComponentDefinition {
 
@@ -28,6 +32,18 @@ public class GoogleDriveDeleteDefinition extends GoogleDriveComponentDefinition 
     public GoogleDriveDeleteDefinition() {
         super(COMPONENT_NAME);
         setupI18N(new Property<?>[] { RETURN_FILEID_PROP });
+    }
+
+    @Override
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
+            ConnectorTopology connectorTopology) {
+        assertEngineCompatibility(engine);
+        assertConnectorTopologyCompatibility(connectorTopology);
+        if (ConnectorTopology.NONE.equals(connectorTopology)) {
+            return getRuntimeInfo(GoogleDriveConnectionDefinition.DELETE_RUNTIME_CLASS);
+        } else {
+            return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
+        }
     }
 
     @Override

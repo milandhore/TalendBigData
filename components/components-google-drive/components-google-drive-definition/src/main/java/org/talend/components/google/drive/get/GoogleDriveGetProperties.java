@@ -12,23 +12,23 @@
 // ============================================================================
 package org.talend.components.google.drive.get;
 
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.CSV;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.CSV_TAB;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.EPUB;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.EXCEL;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.HTML;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.HTML_ZIPPED;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.JPG;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.OO_DOCUMENT;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.OO_PRESENTATION;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.OO_SPREADSHEET;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.PDF;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.PNG;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.POWERPOINT;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.RTF;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.SVG;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.TEXT;
-import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeTypes.WORD;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.CSV;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.CSV_TAB;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.EPUB;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.EXCEL;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.HTML;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.HTML_ZIPPED;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.JPG;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.OO_DOCUMENT;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.OO_PRESENTATION;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.OO_SPREADSHEET;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.PDF;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.PNG;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.POWERPOINT;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.RTF;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.SVG;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.TEXT;
+import static org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType.WORD;
 import static org.talend.daikon.properties.presentation.Widget.widget;
 import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
 import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
@@ -37,7 +37,7 @@ import static org.talend.daikon.properties.property.PropertyFactory.newString;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.talend.components.google.drive.GoogleDriveComponentProperties;
-import org.talend.components.google.drive.GoogleDriveMimeTypes;
+import org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.properties.presentation.Form;
@@ -54,16 +54,13 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
 
     // Advanced properties
 
-    public Property<GoogleDriveMimeTypes.MimeTypes> exportDocument = newEnum("exportDocument",
-            GoogleDriveMimeTypes.MimeTypes.class);
+    public Property<MimeType> exportDocument = newEnum("exportDocument", MimeType.class);
 
-    public Property<GoogleDriveMimeTypes.MimeTypes> exportDrawing = newEnum("exportDrawing", GoogleDriveMimeTypes.MimeTypes.class);
+    public Property<MimeType> exportDrawing = newEnum("exportDrawing", MimeType.class);
 
-    public Property<GoogleDriveMimeTypes.MimeTypes> exportPresentation = newEnum("exportPresentation",
-            GoogleDriveMimeTypes.MimeTypes.class);
+    public Property<MimeType> exportPresentation = newEnum("exportPresentation", MimeType.class);
 
-    public Property<GoogleDriveMimeTypes.MimeTypes> exportSpreadsheet = newEnum("exportSpreadsheet",
-            GoogleDriveMimeTypes.MimeTypes.class);
+    public Property<MimeType> exportSpreadsheet = newEnum("exportSpreadsheet", MimeType.class);
 
     public Property<Boolean> setOutputExt = newBoolean("setOutputExt");
 
