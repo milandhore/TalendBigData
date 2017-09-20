@@ -25,22 +25,22 @@ public class GoogleDriveCopyDefinition extends GoogleDriveComponentDefinition {
 
     public static final String COMPONENT_NAME = "tGoogleDriveCopy";//$NON-NLS-1$
 
-    public static final String RETURN_SOURCEID = "sourceID"; //$NON-NLS-1$
+    public static final String RETURN_SOURCE_ID = "sourceId"; //$NON-NLS-1$
 
-    public static final Property<String> RETURN_SOURCEID_PROP = PropertyFactory.newString(RETURN_SOURCEID);
+    public static final Property<String> RETURN_SOURCE_ID_PROP = PropertyFactory.newString(RETURN_SOURCE_ID);
 
-    public static final String RETURN_DESTINATIONID = "destinationID"; //$NON-NLS-1$
+    public static final String RETURN_DESTINATION_ID = "destinationId"; //$NON-NLS-1$
 
-    public static final Property<String> RETURN_DESTINATIONID_PROP = PropertyFactory.newString(RETURN_DESTINATIONID);
+    public static final Property<String> RETURN_DESTINATION_ID_PROP = PropertyFactory.newString(RETURN_DESTINATION_ID);
 
     public GoogleDriveCopyDefinition() {
         super(COMPONENT_NAME);
-        setupI18N(new Property<?>[] { RETURN_SOURCEID_PROP, RETURN_DESTINATIONID_PROP });
+        setupI18N(new Property<?>[] { RETURN_SOURCE_ID_PROP, RETURN_DESTINATION_ID_PROP });
     }
 
     @Override
     public Property[] getReturnProperties() {
-        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_SOURCEID_PROP, RETURN_DESTINATIONID_PROP };
+        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_SOURCE_ID_PROP, RETURN_DESTINATION_ID_PROP };
     }
 
     @Override

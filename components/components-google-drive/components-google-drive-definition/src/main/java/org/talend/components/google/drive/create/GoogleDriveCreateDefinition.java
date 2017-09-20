@@ -27,19 +27,19 @@ public class GoogleDriveCreateDefinition extends GoogleDriveComponentDefinition 
 
     public static final String COMPONENT_NAME = "tGoogleDriveCreate"; //$NON-NLS-1$
 
-    public static final String RETURN_PARENTFOLDERID = "parentFolderID"; //$NON-NLS-1$
+    public static final String RETURN_PARENT_FOLDER_ID = "parentFolderId"; //$NON-NLS-1$
 
-    public static final String RETURN_NEWFOLDERID = "newFolderID"; //$NON-NLS-1$
+    public static final String RETURN_NEW_FOLDER_ID = "newFolderId"; //$NON-NLS-1$
 
-    public static final Property<String> RETURN_PARENTFOLDERID_PROP = PropertyFactory.newString(RETURN_PARENTFOLDERID);
+    public static final Property<String> RETURN_PARENT_FOLDER_ID_PROP = PropertyFactory.newString(RETURN_PARENT_FOLDER_ID);
 
-    public static final Property<String> RETURN_NEWFOLDERID_PROP = PropertyFactory.newString(RETURN_NEWFOLDERID);
+    public static final Property<String> RETURN_NEW_FOLDER_ID_PROP = PropertyFactory.newString(RETURN_NEW_FOLDER_ID);
 
     private transient static final Logger LOG = LoggerFactory.getLogger(GoogleDriveCreateDefinition.class);
 
     public GoogleDriveCreateDefinition() {
         super(COMPONENT_NAME);
-        setupI18N(new Property<?>[] { RETURN_PARENTFOLDERID_PROP, RETURN_NEWFOLDERID_PROP });
+        setupI18N(new Property<?>[] { RETURN_PARENT_FOLDER_ID_PROP, RETURN_NEW_FOLDER_ID_PROP });
     }
 
     @Override
@@ -56,7 +56,7 @@ public class GoogleDriveCreateDefinition extends GoogleDriveComponentDefinition 
 
     @Override
     public Property[] getReturnProperties() {
-        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_PARENTFOLDERID_PROP, RETURN_NEWFOLDERID_PROP };
+        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_PARENT_FOLDER_ID_PROP, RETURN_NEW_FOLDER_ID_PROP };
     }
 
     @Override
