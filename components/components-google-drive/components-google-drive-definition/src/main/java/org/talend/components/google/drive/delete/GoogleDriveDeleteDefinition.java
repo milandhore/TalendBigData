@@ -25,13 +25,13 @@ public class GoogleDriveDeleteDefinition extends GoogleDriveComponentDefinition 
 
     public static final String COMPONENT_NAME = "tGoogleDriveDelete";
 
-    public static final String RETURN_FILEID = "fileID"; //$NON-NLS-1$
+    public static final String RETURN_FILE_ID = "fileId"; //$NON-NLS-1$
 
-    public static final Property<String> RETURN_FILEID_PROP = PropertyFactory.newString(RETURN_FILEID);
+    public static final Property<String> RETURN_FILE_ID_PROP = PropertyFactory.newString(RETURN_FILE_ID);
 
     public GoogleDriveDeleteDefinition() {
         super(COMPONENT_NAME);
-        setupI18N(new Property<?>[] { RETURN_FILEID_PROP });
+        setupI18N(new Property<?>[] { RETURN_FILE_ID_PROP });
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GoogleDriveDeleteDefinition extends GoogleDriveComponentDefinition 
 
     @Override
     public Property[] getReturnProperties() {
-        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_FILEID_PROP };
+        return new Property[] { RETURN_ERROR_MESSAGE_PROP, RETURN_FILE_ID_PROP };
     }
 
     @Override
