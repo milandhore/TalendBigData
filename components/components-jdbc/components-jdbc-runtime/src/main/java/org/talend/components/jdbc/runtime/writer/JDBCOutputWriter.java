@@ -173,6 +173,8 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
             }
         }
 
+        // the var is equals with the old "nb_line" var, but in the old jdbc components and old tujs, "nb_line" means the success
+        // rows, so strange, TODO move it to the right location to make the tujs work
         result.totalCount++;
 
         successfulWrites.clear();
@@ -268,8 +270,10 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
             return result;
         }
 
+        commitCount++;
+        
         if (commitCount < commitEvery) {
-            commitCount++;
+            
         } else {
             commitCount = 0;
 
@@ -291,8 +295,10 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
         if (useBatch) {
             statement.addBatch();
 
+            batchCount++;
+            
             if (batchCount < batchSize) {
-                batchCount++;
+                
             } else {
                 batchCount = 0;
                 count = executeBatchAndGetCount(statement);
@@ -356,12 +362,14 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
                     CommonUtils.getStudioNameFromProperty(ComponentConstants.RETURN_INSERT_RECORD_COUNT), insertCount);
             runtime.setComponentData(runtime.getCurrentComponentId(),
                     CommonUtils.getStudioNameFromProperty(ComponentConstants.RETURN_UPDATE_RECORD_COUNT), updateCount);
+            runtime.setComponentData(runtime.getCurrentComponentId(),
+                    CommonUtils.getStudioNameFromProperty(ComponentConstants.RETURN_REJECT_RECORD_COUNT), rejectCount);
         }
 
         result.successCount = successCount;
         result.rejectCount = rejectCount;
     }
-    
+
     protected int executeBatchAtLast() {
         if (useBatch && batchCount > 0) {
             try {
@@ -375,7 +383,7 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
                 }
             }
         }
-        
+
         return 0;
     }
 
