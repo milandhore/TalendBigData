@@ -71,4 +71,9 @@ public class GoogleDrivePutPropertiesTest {
         assertNotNull(properties.getConnectionProperties().getEffectiveConnectionProperties());
     }
 
+    @Test
+    public void testGetSchema() throws Exception {
+        assertEquals(properties.schemaMain.schema.getValue(), properties.getSchema());
+        assertEquals(properties.schemaMain.schema.getValue(), properties.getSchema(null, true));
+    }
 }

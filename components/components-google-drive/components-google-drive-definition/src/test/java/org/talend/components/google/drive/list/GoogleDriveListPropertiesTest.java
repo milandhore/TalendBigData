@@ -14,9 +14,12 @@ package org.talend.components.google.drive.list;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.avro.Schema;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.google.drive.list.GoogleDriveListProperties.ListMode;
+import org.talend.daikon.properties.ValidationResult.Result;
+import org.talend.daikon.properties.presentation.Form;
 
 public class GoogleDriveListPropertiesTest {
 
@@ -25,6 +28,13 @@ public class GoogleDriveListPropertiesTest {
     @Before
     public void setUp() throws Exception {
         properties = new GoogleDriveListProperties("test");
+        properties.connection.setupProperties();
+        properties.connection.setupLayout();
+        properties.schemaMain.setupProperties();
+        properties.schemaMain.setupLayout();
+        properties.setupProperties();
+        properties.setupLayout();
+        properties.refreshLayout(properties.getForm(Form.MAIN));
     }
 
     @Test
@@ -35,5 +45,28 @@ public class GoogleDriveListPropertiesTest {
         assertEquals(ListMode.Directories, ListMode.valueOf("Directories"));
         assertEquals("Both", ListMode.Both.name());
         assertEquals(ListMode.Both, ListMode.valueOf("Both"));
+    }
+
+    @Test
+    public void testUnNestedPath() throws Exception {
+        properties.folderName.setValue("ABC");
+        properties.includeTrashedFiles.setValue(false);
+        assertEquals(Result.OK, properties.validateFolderName().getStatus());
+        assertEquals(Result.OK, properties.validateIncludeTrashedFiles().getStatus());
+        properties.folderName.setValue("ABC");
+        properties.includeTrashedFiles.setValue(true);
+        assertEquals(Result.OK, properties.validateFolderName().getStatus());
+        assertEquals(Result.OK, properties.validateIncludeTrashedFiles().getStatus());
+        properties.folderName.setValue("A/B/C");
+        properties.includeTrashedFiles.setValue(true);
+        assertEquals(Result.ERROR, properties.validateFolderName().getStatus());
+        assertEquals(Result.ERROR, properties.validateIncludeTrashedFiles().getStatus());
+    }
+
+    @Test
+    public void testGetSchema() throws Exception {
+        Schema s = properties.schemaMain.schema.getValue();
+        assertEquals(s, properties.getSchema());
+        assertEquals(s, properties.getSchema(null, true));
     }
 }

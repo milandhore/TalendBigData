@@ -22,9 +22,11 @@ import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.google.drive.GoogleDriveComponentProperties;
 import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -58,15 +60,26 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
         return connectors;
     }
 
+    public Schema getSchema() {
+        Schema s = schemaMain.schema.getValue();
+        // return RootSchemaUtils.createRootSchema(s, s);
+        return s;
+    }
+
+    @Override
+    public Schema getSchema(Connector connector, boolean isOutputConnection) {
+        return getSchema();
+    }
+
     public void setupProperties() {
         super.setupProperties();
 
-        Schema schema = SchemaBuilder.builder().record("GoogleDrivePut").fields() //
-                .name("content").type(AvroUtils._bytes()).noDefault() //
-                .name("name").type().nullable().stringType().noDefault()//
-                .name("fileID").type().nullable().stringType().noDefault()//
+        Schema schema = SchemaBuilder.builder().record(GoogleDrivePutDefinition.COMPONENT_NAME).fields() //
+                .name(GoogleDrivePutDefinition.RETURN_CONTENT).type(AvroUtils._bytes()).noDefault() //
+                .name(GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID).type().nullable().stringType().noDefault()//
+                .name(GoogleDrivePutDefinition.RETURN_FILE_ID).type().nullable().stringType().noDefault()//
                 .endRecord();
-        // schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
+        schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);
 
         fileName.setValue("");
