@@ -58,9 +58,9 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
         rename.setValue(false);
         deleteSourceFile.setValue(false);
 
-        Schema s = SchemaBuilder.builder().record("GoogleDriveCopy").fields()//
-                .name("sourceID").type().nullable().stringType().noDefault()//
-                .name("destinationID").type().nullable().stringType().noDefault()//
+        Schema s = SchemaBuilder.builder().record(GoogleDriveCopyDefinition.COMPONENT_NAME).fields()//
+                .name(GoogleDriveCopyDefinition.RETURN_SOURCE_ID).type().nullable().stringType().noDefault()//
+                .name(GoogleDriveCopyDefinition.RETURN_DESTINATION_ID).type().nullable().stringType().noDefault()//
                 .endRecord();
         s.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(s);

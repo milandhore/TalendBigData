@@ -71,8 +71,8 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
     public void setupProperties() {
         super.setupProperties();
 
-        Schema schema = SchemaBuilder.builder().record("GoogleDriveGet").fields() //
-                .name("content").type(AvroUtils._bytes()).noDefault() //
+        Schema schema = SchemaBuilder.builder().record(GoogleDriveGetDefinition.COMPONENT_NAME).fields() //
+                .name(GoogleDriveGetDefinition.RETURN_CONTENT).type(AvroUtils._bytes()).noDefault() //
                 .endRecord();
         schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);

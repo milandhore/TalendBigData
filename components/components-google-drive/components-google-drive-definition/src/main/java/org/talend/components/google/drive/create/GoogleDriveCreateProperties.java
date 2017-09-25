@@ -35,11 +35,11 @@ public class GoogleDriveCreateProperties extends GoogleDriveComponentProperties 
     public void setupProperties() {
         super.setupProperties();
 
-        Schema schema = SchemaBuilder.builder().record("GoogleDriveCreate").fields() //
-                .name("parentfolderID")//
+        Schema schema = SchemaBuilder.builder().record(GoogleDriveCreateDefinition.COMPONENT_NAME).fields() //
+                .name(GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID)//
                 .prop(SchemaConstants.TALEND_IS_LOCKED, "true")//
                 .type().nullable().stringType().noDefault() //
-                .name("newFolderID")//
+                .name(GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID)//
                 .prop(SchemaConstants.TALEND_IS_LOCKED, "true")//
                 .type().nullable().stringType().noDefault() //
                 .endRecord();

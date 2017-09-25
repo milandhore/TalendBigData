@@ -20,9 +20,15 @@ import java.util.Date;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.talend.components.api.component.Connector;
 import org.talend.components.google.drive.GoogleDriveComponentProperties;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.i18n.GlobalI18N;
+import org.talend.daikon.i18n.I18nMessages;
+import org.talend.daikon.properties.ValidationResult;
+import org.talend.daikon.properties.ValidationResult.Result;
+import org.talend.daikon.properties.ValidationResultMutable;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -43,14 +49,17 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
 
     public Property<Boolean> includeTrashedFiles = newBoolean("includeTrashedFiles");
 
+    private static final I18nMessages messages = GlobalI18N.getI18nMessageProvider()
+            .getI18nMessages(GoogleDriveListProperties.class);
+
     /*
      * TODO new feature to add: orderBy [in main]
      * 
      * orderBy string A comma-separated list of sort keys. Valid keys are 'createdTime', 'folder', 'modifiedByMeTime',
-     * 'modifiedTime', 'name', 'quotaBytesUsed', 'recency', 'sharedWithMeTime', 'starred', and 'viewedByMeTime'. Each
-     * key sorts ascending by default, but may be reversed with the 'desc' modifier. Example usage:
-     * ?orderBy=folder,modifiedTime desc,name. Please note that there is a current limitation for users with
-     * approximately one million files in which the requested sort order is ignored.
+     * 'modifiedTime', 'name', 'quotaBytesUsed', 'recency', 'sharedWithMeTime', 'starred', and 'viewedByMeTime'. Each key
+     * sorts ascending by default, but may be reversed with the 'desc' modifier. Example usage: ?orderBy=folder,modifiedTime
+     * desc,name. Please note that there is a current limitation for users with approximately one million files in which the
+     * requested sort order is ignored.
      */
 
     /*
@@ -64,6 +73,17 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
         super(name);
     }
 
+    public Schema getSchema() {
+        Schema s = schemaMain.schema.getValue();
+        // return RootSchemaUtils.createRootSchema(s, s);
+        return s;
+    }
+
+    @Override
+    public Schema getSchema(Connector connector, boolean isOutputConnection) {
+        return getSchema();
+    }
+
     @Override
     public void setupProperties() {
         super.setupProperties();
@@ -72,20 +92,29 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
         listMode.setPossibleValues(ListMode.values());
         listMode.setValue(ListMode.Files);
 
-        Schema schema = SchemaBuilder.builder().record("GoogleDriveList").fields().name("id")
-                .prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault().name("name")
-                .prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault().name("mimeType")
-                .prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault().name("modifiedTime")
-                .prop(SchemaConstants.TALEND_IS_LOCKED, "true")
+        Schema schema = SchemaBuilder.builder().record(GoogleDriveListDefinition.COMPONENT_NAME).fields() //
+                .name(GoogleDriveListDefinition.RETURN_ID).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .stringType().noDefault()//
+                .name(GoogleDriveListDefinition.RETURN_NAME).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .stringType().noDefault()//
+                .name(GoogleDriveListDefinition.RETURN_MIME_TYPE).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .stringType().noDefault()//
+                .name(GoogleDriveListDefinition.RETURN_MODIFIED_TIME).prop(SchemaConstants.TALEND_IS_LOCKED, "true")
                 .prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'")//
                 .prop(SchemaConstants.JAVA_CLASS_FLAG, Date.class.getCanonicalName()) //
                 .prop(SchemaConstants.TALEND_COLUMN_DB_LENGTH, "255")//
                 .type(AvroUtils._logicalTimestamp()).noDefault() //
-                .name("size").prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().longType().noDefault() //
-                .name("kind").prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault() //
-                .name("trashed").prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().booleanType().noDefault() //
-                .name("parents").prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault() //
-                .name("webViewLink").prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable().stringType().noDefault() //
+                .name(GoogleDriveListDefinition.RETURN_SIZE).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .longType().noDefault() //
+                .name(GoogleDriveListDefinition.RETURN_KIND).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .stringType().noDefault() //
+                .name(GoogleDriveListDefinition.RETURN_TRASHED).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .booleanType().noDefault() //
+                // TODO This should be a List<String>
+                .name(GoogleDriveListDefinition.RETURN_PARENTS).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
+                .stringType().noDefault() //
+                .name(GoogleDriveListDefinition.RETURN_WEB_VIEW_LINK).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type()
+                .nullable().stringType().noDefault() //
                 .endRecord();
         schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);
@@ -103,6 +132,22 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
 
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(includeTrashedFiles);
+    }
+
+    private ValidationResult checkNestedPathAndTrash() {
+        ValidationResult vr = new ValidationResultMutable(Result.OK);
+        if (includeTrashedFiles.getValue() && folderName.getValue().contains("/")) {
+            vr = new ValidationResultMutable(Result.ERROR, messages.getMessage("error.validation.nestedpath.trash"));
+        }
+        return vr;
+    }
+
+    public ValidationResult validateFolderName() {
+        return checkNestedPathAndTrash();
+    }
+
+    public ValidationResult validateIncludeTrashedFiles() {
+        return checkNestedPathAndTrash();
     }
 
 }

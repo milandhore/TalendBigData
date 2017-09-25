@@ -45,8 +45,8 @@ public class GoogleDriveDeleteProperties extends GoogleDriveComponentProperties 
     public void setupProperties() {
         super.setupProperties();
 
-        Schema schema = SchemaBuilder.builder().record("GoogleDriveDelete").fields() //
-                .name("fileId")//
+        Schema schema = SchemaBuilder.builder().record(GoogleDriveDeleteDefinition.COMPONENT_NAME).fields() //
+                .name(GoogleDriveDeleteDefinition.RETURN_FILE_ID)//
                 .prop(SchemaConstants.TALEND_IS_LOCKED, "true")//
                 .type().nullable().stringType().noDefault() //
                 .endRecord();
