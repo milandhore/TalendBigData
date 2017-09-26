@@ -173,9 +173,15 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
             }
         }
 
-        // the var is equals with the old "nb_line" var, but in the old jdbc components and old tujs, "nb_line" means the success
-        // rows, so strange, TODO move it to the right location to make the tujs work
-        result.totalCount++;
+        // the var(result.totalCount) is equals with the old "nb_line" var, but the old one is a little strange in tjdbcoutput, i
+        // don't know why,
+        // maybe a bug, but
+        // now only keep the old action for the tujs :
+        // 1: insert action, update action : plus after addbatch or executeupdate
+        // 2: insert or update action, update or insert action, delete action : plus after addbatch(delete action) or
+        // executeupdate, also when not die on error and exception appear
+        
+        // result.totalCount++;
 
         successfulWrites.clear();
         rejectedWrites.clear();
@@ -271,9 +277,9 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
         }
 
         commitCount++;
-        
+
         if (commitCount < commitEvery) {
-            
+
         } else {
             commitCount = 0;
 
@@ -294,17 +300,21 @@ abstract public class JDBCOutputWriter implements WriterWithFeedback<Result, Ind
 
         if (useBatch) {
             statement.addBatch();
+            
+            result.totalCount++;
 
             batchCount++;
-            
+
             if (batchCount < batchSize) {
-                
+
             } else {
                 batchCount = 0;
                 count = executeBatchAndGetCount(statement);
             }
         } else {
             count = statement.executeUpdate();
+            
+            result.totalCount++;
         }
 
         handleSuccess(input);
