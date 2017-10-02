@@ -102,7 +102,7 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
         mainForm.addRow(widget(outputFileName).setWidgetType(Widget.FILE_WIDGET_TYPE));
         mainForm.addRow(schemaMain.getForm(Form.REFERENCE));
 
-        Form advancedForm = new Form(this, Form.ADVANCED);
+        Form advancedForm = getForm(Form.ADVANCED);
         advancedForm.addRow(exportDocument);
         advancedForm.addRow(exportDrawing);
         advancedForm.addRow(exportPresentation);

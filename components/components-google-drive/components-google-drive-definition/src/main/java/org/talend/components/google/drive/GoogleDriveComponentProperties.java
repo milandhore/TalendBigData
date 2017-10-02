@@ -22,8 +22,8 @@ import org.talend.components.common.SchemaProperties;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionProperties;
 import org.talend.daikon.properties.presentation.Form;
 
-public abstract class GoogleDriveComponentProperties extends FixedConnectorsComponentProperties implements
-        GoogleDriveProvideConnectionProperties {
+public abstract class GoogleDriveComponentProperties extends FixedConnectorsComponentProperties
+        implements GoogleDriveProvideConnectionProperties {
 
     public transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schemaMain");
 
@@ -50,6 +50,9 @@ public abstract class GoogleDriveComponentProperties extends FixedConnectorsComp
 
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(connection.getForm(Form.REFERENCE));
+
+        Form avancedForm = Form.create(this, Form.ADVANCED);
+        avancedForm.addRow(connection.getForm(Form.ADVANCED));
     }
 
     @Override

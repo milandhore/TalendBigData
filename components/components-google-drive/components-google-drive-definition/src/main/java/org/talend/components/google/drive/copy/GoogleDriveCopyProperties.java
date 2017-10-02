@@ -52,6 +52,10 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
     public void setupProperties() {
         super.setupProperties();
 
+        fileName.setValue("");
+        destinationFolder.setValue("");
+        folderName.setValue("");
+
         copyMode.setPossibleValues(CopyMode.values());
         copyMode.setValue(CopyMode.File);
 
@@ -85,16 +89,18 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
     public void refreshLayout(Form form) {
         super.refreshLayout(form);
 
-        if (CopyMode.File.equals(copyMode.getValue())) {
-            form.getWidget(fileName.getName()).setVisible(true);
-            form.getWidget(folderName.getName()).setVisible(false);
-            form.getWidget(deleteSourceFile.getName()).setVisible(true);
-        } else {
-            form.getWidget(fileName.getName()).setVisible(false);
-            form.getWidget(folderName.getName()).setVisible(true);
-            form.getWidget(deleteSourceFile.getName()).setVisible(false);
+        if (Form.MAIN.equals(form.getName())) {
+            if (CopyMode.File.equals(copyMode.getValue())) {
+                form.getWidget(fileName.getName()).setVisible(true);
+                form.getWidget(folderName.getName()).setVisible(false);
+                form.getWidget(deleteSourceFile.getName()).setVisible(true);
+            } else {
+                form.getWidget(fileName.getName()).setVisible(false);
+                form.getWidget(folderName.getName()).setVisible(true);
+                form.getWidget(deleteSourceFile.getName()).setVisible(false);
+            }
+            form.getWidget(newName.getName()).setVisible(rename.getValue());
         }
-        form.getWidget(newName.getName()).setVisible(rename.getValue());
     }
 
     public void afterCopyMode() {

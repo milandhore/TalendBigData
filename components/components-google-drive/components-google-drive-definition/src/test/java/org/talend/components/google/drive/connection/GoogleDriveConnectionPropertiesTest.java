@@ -12,16 +12,20 @@
 // ============================================================================
 package org.talend.components.google.drive.connection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.talend.components.google.drive.connection.GoogleDriveConnectionProperties.FORM_WIZARD;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.google.drive.GoogleDriveTestBase;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionProperties.OAuthMethod;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 
@@ -56,6 +60,7 @@ public class GoogleDriveConnectionPropertiesTest extends GoogleDriveTestBase {
         properties.afterReferencedComponent();
         assertTrue(properties.getForm(Form.MAIN).getWidget(properties.oAuthMethod.getName()).isHidden());
         assertTrue(properties.getForm(Form.MAIN).getWidget(properties.applicationName.getName()).isHidden());
+        assertTrue(properties.getForm(Form.ADVANCED).getWidget(properties.datastorePath.getName()).isHidden());
     }
 
     @Test
@@ -120,11 +125,15 @@ public class GoogleDriveConnectionPropertiesTest extends GoogleDriveTestBase {
         try (SandboxedInstanceTestFixture sandboxedInstanceTestFixture = new SandboxedInstanceTestFixture()) {
             sandboxedInstanceTestFixture.setUp();
             properties.validateTestConnection();
-            assertTrue(properties.getForm(GoogleDriveConnectionProperties.FORM_WIZARD).isAllowForward());
-            assertTrue(properties.getForm(GoogleDriveConnectionProperties.FORM_WIZARD).isAllowFinish());
+            assertTrue(properties.getForm(FORM_WIZARD).isAllowForward());
+            assertTrue(properties.getForm(FORM_WIZARD).isAllowFinish());
             sandboxedInstanceTestFixture.changeValidateConnectionResult(Result.ERROR);
             properties.validateTestConnection();
-            assertFalse(properties.getForm(GoogleDriveConnectionProperties.FORM_WIZARD).isAllowForward());
+            assertFalse(properties.getForm(FORM_WIZARD).isAllowForward());
+
+            sandboxedInstanceTestFixture.changeValidateConnectionToThrowException();
+            properties.validateTestConnection();
+
         }
     }
 
@@ -159,4 +168,48 @@ public class GoogleDriveConnectionPropertiesTest extends GoogleDriveTestBase {
         properties.referencedComponent.componentInstanceId.setValue("refcompid");
         assertNotNull(properties.getReferencedConnectionProperties());
     }
+
+    @Test
+    public void testSetRepositoryLocation() throws Exception {
+        final String repoLoc = "/fake/location";
+        assertThat(properties.setRepositoryLocation(repoLoc), is(properties));
+        assertThat(properties.getRepositoryLocation(), is(repoLoc));
+    }
+
+    @Test
+    public void testValidateName() throws Exception {
+        ValidationResult vr = properties.validateName();
+        assertThat(vr.getStatus(), is(Result.OK));
+        Form f = properties.getForm(FORM_WIZARD);
+        assertThat(f.isAllowFinish(), is(false));
+        properties.name.setValue("test");
+        vr = properties.validateName();
+        assertThat(vr.getStatus(), is(Result.OK));
+        assertThat(f.isAllowFinish(), is(true));
+    }
+
+    @Test
+    public void testValidateApplicationName() throws Exception {
+        ValidationResult vr = properties.validateApplicationName();
+        assertThat(vr.getStatus(), is(Result.ERROR));
+        Form f = properties.getForm(FORM_WIZARD);
+        assertThat(f.isAllowFinish(), is(false));
+        properties.applicationName.setValue("test");
+        vr = properties.validateApplicationName();
+        assertThat(vr.getStatus(), is(Result.OK));
+        assertThat(f.isAllowFinish(), is(true));
+    }
+
+    @Test
+    public void testAfterFormFinishWizard() throws Exception {
+        properties.name.setValue("test");
+        ValidationResult vr = properties.afterFormFinishWizard(repo);
+        assertThat(vr.getStatus(), is(Result.OK));
+        repo = mock(TestRepository.class);
+        doThrow(new RuntimeException("ERROR during storing connection")).when(repo).storeProperties(any(Properties.class),
+                anyString(), anyString(), anyString());
+        vr = properties.afterFormFinishWizard(repo);
+        assertThat(vr.getStatus(), is(Result.ERROR));
+    }
+
 }

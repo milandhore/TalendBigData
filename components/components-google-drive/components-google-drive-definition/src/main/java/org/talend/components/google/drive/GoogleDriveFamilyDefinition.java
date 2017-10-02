@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.components.google.drive;
 
-import aQute.bnd.annotation.component.Component;
-
 import org.talend.components.api.AbstractComponentFamilyDefinition;
 import org.talend.components.api.ComponentInstaller;
 import org.talend.components.api.Constants;
@@ -24,16 +22,24 @@ import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.get.GoogleDriveGetDefinition;
 import org.talend.components.google.drive.list.GoogleDriveListDefinition;
 import org.talend.components.google.drive.put.GoogleDrivePutDefinition;
+import org.talend.components.google.drive.wizard.GoogleDriveConnectionEditWizardDefinition;
+import org.talend.components.google.drive.wizard.GoogleDriveConnectionWizardDefinition;
+
+import aQute.bnd.annotation.component.Component;
 
 @Component(name = Constants.COMPONENT_INSTALLER_PREFIX + GoogleDriveFamilyDefinition.NAME, provide = ComponentInstaller.class)
 public class GoogleDriveFamilyDefinition extends AbstractComponentFamilyDefinition implements ComponentInstaller {
 
-    public static final String NAME = "Google Drive";
+    public static final String NAME = "GoogleDrive";
 
     public GoogleDriveFamilyDefinition() {
-        super(NAME, new GoogleDriveConnectionDefinition(), new GoogleDriveCreateDefinition(), new GoogleDriveDeleteDefinition(),
+        super(NAME,
+                // components
+                new GoogleDriveConnectionDefinition(), new GoogleDriveCreateDefinition(), new GoogleDriveDeleteDefinition(),
                 new GoogleDriveListDefinition(), new GoogleDriveGetDefinition(), new GoogleDrivePutDefinition(),
-                new GoogleDriveCopyDefinition());
+                new GoogleDriveCopyDefinition(),
+                // wizards
+                new GoogleDriveConnectionWizardDefinition(), new GoogleDriveConnectionEditWizardDefinition());
     }
 
     @Override
