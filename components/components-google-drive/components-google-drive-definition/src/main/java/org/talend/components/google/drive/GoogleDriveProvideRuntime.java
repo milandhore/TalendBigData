@@ -12,10 +12,12 @@
 // ============================================================================
 package org.talend.components.google.drive;
 
+import org.talend.components.api.component.runtime.RuntimableRuntime;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionProperties;
 import org.talend.daikon.properties.ValidationResult;
 
-public interface GoogleDriveRuntime {
+public interface GoogleDriveProvideRuntime extends RuntimableRuntime<ComponentProperties> {
 
     /**
      * Validate connection for given connection properties.

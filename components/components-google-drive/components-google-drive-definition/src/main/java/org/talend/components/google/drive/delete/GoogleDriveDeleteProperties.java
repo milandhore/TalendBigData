@@ -57,7 +57,7 @@ public class GoogleDriveDeleteProperties extends GoogleDriveComponentProperties 
         deleteMode.setValue(DeleteMode.Name);
         fileName.setValue("");
         fileId.setValue("");
-        useTrash.setValue(false);
+        useTrash.setValue(true);
     }
 
     @Override
@@ -76,8 +76,10 @@ public class GoogleDriveDeleteProperties extends GoogleDriveComponentProperties 
     public void refreshLayout(Form form) {
         super.refreshLayout(form);
 
-        form.getWidget(fileName.getName()).setVisible(DeleteMode.Name.equals(deleteMode.getValue()));
-        form.getWidget(fileId.getName()).setVisible(!DeleteMode.Name.equals(deleteMode.getValue()));
+        if (Form.MAIN.equals(form.getName())) {
+            form.getWidget(fileName.getName()).setVisible(DeleteMode.Name.equals(deleteMode.getValue()));
+            form.getWidget(fileId.getName()).setVisible(!DeleteMode.Name.equals(deleteMode.getValue()));
+        }
     }
 
     public void afterDeleteMode() {

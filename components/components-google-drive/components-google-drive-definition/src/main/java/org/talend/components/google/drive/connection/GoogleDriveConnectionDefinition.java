@@ -30,12 +30,18 @@ public class GoogleDriveConnectionDefinition extends GoogleDriveComponentDefinit
     }
 
     @Override
+    public Class<? extends ComponentProperties> getPropertyClass() {
+        return GoogleDriveConnectionProperties.class;
+    }
+
+    @Override
     public Set<ConnectorTopology> getSupportedConnectorTopologies() {
         return EnumSet.of(ConnectorTopology.NONE);
     }
 
     @Override
-    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties, ConnectorTopology connectorTopology) {
+    public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
+            ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
         assertConnectorTopologyCompatibility(connectorTopology);
         return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_OR_SINK_CLASS);

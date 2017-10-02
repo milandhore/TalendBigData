@@ -63,11 +63,7 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
         return new String[] { "Cloud/Google Drive" };
     }
 
-    @Override
-    public Class<? extends ComponentProperties> getPropertyClass() {
-        return GoogleDriveConnectionProperties.class;
-    }
-
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Class<? extends ComponentProperties>[] getNestedCompatibleComponentPropertiesClass() {
         return new Class[] { GoogleDriveConnectionProperties.class };

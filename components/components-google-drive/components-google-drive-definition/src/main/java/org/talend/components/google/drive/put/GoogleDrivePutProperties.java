@@ -107,7 +107,9 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
     public void refreshLayout(Form form) {
         super.refreshLayout(form);
 
-        form.getWidget(localFilePath.getName()).setVisible(UploadMode.UPLOAD_LOCAL_FILE.equals(uploadMode.getValue()));
+        if (Form.MAIN.equals(form.getName())) {
+            form.getWidget(localFilePath.getName()).setVisible(UploadMode.UPLOAD_LOCAL_FILE.equals(uploadMode.getValue()));
+        }
     }
 
     public void afterUploadMode() {

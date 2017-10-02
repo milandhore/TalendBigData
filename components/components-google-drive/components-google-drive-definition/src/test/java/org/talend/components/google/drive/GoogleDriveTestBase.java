@@ -16,6 +16,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -51,7 +52,7 @@ public class GoogleDriveTestBase extends AbstractComponentTest2 {
     private ComponentService componentService;
 
     @Inject
-    DefinitionRegistry testComponentRegistry;
+    DefinitionRegistry definitionRegistry;
 
     protected RuntimeContainer adaptor;
 
@@ -66,33 +67,39 @@ public class GoogleDriveTestBase extends AbstractComponentTest2 {
 
     @Override
     public DefinitionRegistryService getDefinitionRegistry() {
-        if (testComponentRegistry == null) {
-            testComponentRegistry = new DefinitionRegistry();
-            testComponentRegistry.registerComponentFamilyDefinition(new GoogleDriveFamilyDefinition());
+        if (definitionRegistry == null) {
+            definitionRegistry = new DefinitionRegistry();
+            definitionRegistry.registerComponentFamilyDefinition(new GoogleDriveFamilyDefinition());
         }
-        return testComponentRegistry;
+        return definitionRegistry;
     }
 
     public class SandboxedInstanceTestFixture implements AutoCloseable {
 
         SandboxedInstance sandboxedInstance;
 
-        public GoogleDriveRuntime runtimeSourceOrSink;
+        public GoogleDriveProvideRuntime runtimeSourceOrSink;
 
         public void setUp() throws Exception {
-            GoogleDriveComponentDefinition.SandboxedInstanceProvider sandboxedInstanceProvider = mock(GoogleDriveComponentDefinition.SandboxedInstanceProvider.class);
+            GoogleDriveComponentDefinition.SandboxedInstanceProvider sandboxedInstanceProvider = mock(
+                    GoogleDriveComponentDefinition.SandboxedInstanceProvider.class);
             GoogleDriveComponentDefinition.setSandboxedInstanceProvider(sandboxedInstanceProvider);
             sandboxedInstance = mock(SandboxedInstance.class);
             when(sandboxedInstanceProvider.getSandboxedInstance(anyString(), anyBoolean())).thenReturn(sandboxedInstance);
-            runtimeSourceOrSink = mock(GoogleDriveRuntime.class, withSettings());
+            runtimeSourceOrSink = mock(GoogleDriveProvideRuntime.class, withSettings());
             doReturn(runtimeSourceOrSink).when(sandboxedInstance).getInstance();
-            when(runtimeSourceOrSink.validateConnection(any(GoogleDriveConnectionProperties.class))).thenReturn(
-                    new ValidationResult(Result.OK));
+            when(runtimeSourceOrSink.validateConnection(any(GoogleDriveConnectionProperties.class)))
+                    .thenReturn(new ValidationResult(Result.OK));
         }
 
         public void changeValidateConnectionResult(Result result) {
-            when(runtimeSourceOrSink.validateConnection(any(GoogleDriveConnectionProperties.class))).thenReturn(
-                    new ValidationResult(result));
+            when(runtimeSourceOrSink.validateConnection(any(GoogleDriveConnectionProperties.class)))
+                    .thenReturn(new ValidationResult(result));
+        }
+
+        public void changeValidateConnectionToThrowException() {
+            doThrow(new RuntimeException("ERROR during validation")).when(runtimeSourceOrSink)
+                    .validateConnection(any(GoogleDriveConnectionProperties.class));
         }
 
         public void tearDown() throws Exception {
@@ -129,7 +136,7 @@ public class GoogleDriveTestBase extends AbstractComponentTest2 {
         }
     }
 
-    class TestRepository implements Repository {
+    public class TestRepository implements Repository {
 
         private int locationNum;
 

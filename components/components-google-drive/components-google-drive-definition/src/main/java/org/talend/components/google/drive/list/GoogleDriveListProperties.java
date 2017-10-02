@@ -130,7 +130,7 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
         mainForm.addRow(includeSubDirectories);
         mainForm.addRow(schemaMain.getForm(Form.REFERENCE));
 
-        Form advancedForm = new Form(this, Form.ADVANCED);
+        Form advancedForm = getForm(Form.ADVANCED);
         advancedForm.addRow(includeTrashedFiles);
     }
 

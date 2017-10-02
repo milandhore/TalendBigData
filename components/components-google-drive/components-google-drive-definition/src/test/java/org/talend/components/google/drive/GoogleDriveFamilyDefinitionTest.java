@@ -12,20 +12,27 @@
 // ============================================================================
 package org.talend.components.google.drive;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.talend.components.api.ComponentFamilyDefinition;
 import org.talend.components.api.ComponentInstaller;
-import org.talend.components.api.wizard.ComponentWizardDefinition;
-import org.talend.daikon.definition.Definition;
 
 public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
 
+    public static final String GOOGLE_DRIVE = "GoogleDrive";
+
     GoogleDriveFamilyDefinition def;
+
+    ComponentInstaller.ComponentFrameworkContext ctx = Mockito.mock(ComponentInstaller.ComponentFrameworkContext.class);
 
     @Before
     public void setUp() throws Exception {
@@ -35,31 +42,54 @@ public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
     @Test
     public void testGoogleDriveFamilyDefinition() {
         assertNotNull(getDefinitionRegistry());
-        assertEquals("Google Drive", new GoogleDriveFamilyDefinition().getName());
-        assertEquals(7, testComponentRegistry.getDefinitions().size());
+        assertEquals(GOOGLE_DRIVE, new GoogleDriveFamilyDefinition().getName());
+        assertEquals(9, definitionRegistry.getDefinitions().size());
     }
 
     @Test
-    public void testInstall() throws Exception {
-        final GoogleDriveFamilyDefinition def = new GoogleDriveFamilyDefinition();
-        ComponentInstaller.ComponentFrameworkContext ctx = new ComponentInstaller.ComponentFrameworkContext() {
-
-            @Override
-            public void registerComponentFamilyDefinition(ComponentFamilyDefinition def) {
-                assertEquals("Google Drive", def.getName());
-            }
-
-            @Override
-            public void registerDefinition(Iterable<? extends Definition> defs) {
-                assertNull(defs);
-            }
-
-            @Override
-            public void registerComponentWizardDefinition(Iterable<? extends ComponentWizardDefinition> defs) {
-                assertNull(def);
-            }
-        };
-        def.install(ctx);
+    public void testBasic() {
+        assertThat(def.getName(), is(GOOGLE_DRIVE));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveConnection"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveCopy"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveCreate"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveDelete"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveGet"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDrivePut"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveList"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDrive"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDrive.edit"))));
     }
+
+    /**
+     * The component family for this component is also the {@link ComponentInstaller}.
+     */
+    @Test
+    public void testInstall() {
+        ((ComponentInstaller) def).install(ctx);
+        Mockito.verify(ctx, times(1)).registerComponentFamilyDefinition(any(ComponentFamilyDefinition.class));
+    }
+
+    // @Test
+    // public void testInstall() throws Exception {
+    // final GoogleDriveFamilyDefinition def = new GoogleDriveFamilyDefinition();
+    // ComponentInstaller.ComponentFrameworkContext ctx = new ComponentInstaller.ComponentFrameworkContext() {
+    //
+    // @Override
+    // public void registerComponentFamilyDefinition(ComponentFamilyDefinition def) {
+    // assertEquals("GoogleDrive", def.getName());
+    // }
+    //
+    // @Override
+    // public void registerDefinition(Iterable<? extends Definition> defs) {
+    // assertNull(defs);
+    // }
+    //
+    // @Override
+    // public void registerComponentWizardDefinition(Iterable<? extends ComponentWizardDefinition> defs) {
+    // assertNull(def);
+    // }
+    // };
+    // def.install(ctx);
+    // }
 
 }
