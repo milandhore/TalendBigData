@@ -13,7 +13,6 @@
     <modules>
         <module>components-google-drive-definition</module>
         <module>components-google-drive-runtime</module>
-        <module>components-google-drive-integration</module>
     </modules>
     <build>
         <plugins>
@@ -36,7 +35,6 @@
                                     <includes>
                                         <include>components-google-drive-definition/target/jacoco.exec</include>
                                         <include>components-google-drive-runtime/target/jacoco.exec</include>
-                                        <include>components-google-drive-integration/target/jacoco.exec</include>
                                     </includes>
                                 </fileSet>
                             </fileSets>
