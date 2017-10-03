@@ -14,6 +14,8 @@ package org.talend.components.google.drive.runtime;
 
 import static java.net.InetSocketAddress.createUnresolved;
 import static java.net.Proxy.Type.HTTP;
+import static org.talend.components.google.drive.connection.GoogleDriveConnectionProperties.OAuthMethod.InstalledApplicationWithIdAndSecret;
+import static org.talend.components.google.drive.connection.GoogleDriveConnectionProperties.OAuthMethod.InstalledApplicationWithJSON;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -166,12 +168,19 @@ public class GoogleDriveRuntime extends GoogleDriveValidator
         if (Result.ERROR.equals(vr.getStatus())) {
             return vr;
         }
+        // Skip check effective connection to GoogleDrive when using Installed Application OAuth methods
+        // TODO Find how to fix problem in studio - see my comment in TDI-39455.
+        if (InstalledApplicationWithIdAndSecret.equals(connectionProperties.oAuthMethod.getValue())
+                || InstalledApplicationWithJSON.equals(connectionProperties.oAuthMethod.getValue())) {
+            // should return Result.OK if we're here...
+            return vr;
+        }
         try {
             // make a dummy call to check drive's connection..
             User u = getDriveService().about().get().setFields("user").execute().getUser();
-            LOG.debug("[validateConnection] Testing User Properties: {}", u);
+            LOG.debug("[validateConnection] Testing User Properties: {}.", u);
         } catch (Exception ex) {
-            LOG.error("[validateConnection] " + ex);
+            LOG.error("[validateConnection] {}.", ex.getMessage());
             vr.setStatus(Result.ERROR);
             vr.setMessage(ex.getMessage());
             return vr;

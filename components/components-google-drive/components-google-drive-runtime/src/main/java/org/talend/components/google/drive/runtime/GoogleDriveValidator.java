@@ -60,7 +60,7 @@ public class GoogleDriveValidator {
     }
 
     public ValidationResult validateConnectionProperties(GoogleDriveConnectionProperties properties) {
-        ValidationResultMutable vr = new ValidationResultMutable(Result.OK);
+        ValidationResultMutable vr = new ValidationResultMutable(Result.OK, messages.getMessage("message.parameters.OK"));
         /* validate GoogleDriveConnection settings */
         if (properties.applicationName.getValue().isEmpty()) {
             vr = new ValidationResultMutable(Result.ERROR)
