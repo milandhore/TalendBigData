@@ -45,7 +45,6 @@ public class GoogleDriveConnectionWizardDefinitionTest {
         assertThat(wizard, isA(GoogleDriveConnectionWizard.class));
         assertEquals(definition, wizard.getDefinition());
         assertThat(wizard.getRepositoryLocation(), is(REPOSITORY_LOCATION));
-        assertTrue(wizard.supportsProperties(new GoogleDriveConnectionProperties("test")));
     }
 
     @Test

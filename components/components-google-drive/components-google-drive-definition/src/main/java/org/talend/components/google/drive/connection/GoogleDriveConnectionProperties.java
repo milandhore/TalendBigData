@@ -101,7 +101,7 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
     //
     // public PresentationItem testConnection = new PresentationItem("testConnection", "Test connection");
     @SuppressWarnings("unchecked")
-    public ComponentReferenceProperties<GoogleDriveConnectionProperties> referencedComponent = new ComponentReferenceProperties(
+    public ComponentReferenceProperties<GoogleDriveConnectionProperties> referencedComponent = new ComponentReferenceProperties<>(
             "referencedComponent", GoogleDriveConnectionDefinition.COMPONENT_NAME);
 
     public GoogleDriveConnectionProperties(String name) {
