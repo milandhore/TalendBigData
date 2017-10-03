@@ -1,7 +1,5 @@
 package org.talend.components.google.drive.wizard;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.wizard.AbstractComponentWizardDefintion;
 import org.talend.components.api.wizard.ComponentWizard;
@@ -30,29 +28,21 @@ public class GoogleDriveConnectionWizardDefinition extends AbstractComponentWiza
         return wizard;
     }
 
-    private transient static final Logger LOG = LoggerFactory.getLogger(GoogleDriveConnectionWizardDefinition.class);
-
     @Override
     public boolean supportsProperties(Class<? extends ComponentProperties> propertiesClass) {
-        LOG.warn("[supportsProperties] {}", propertiesClass);
         return propertiesClass.isAssignableFrom(GoogleDriveConnectionProperties.class);
-    }
-
-    @Override
-    public Class getPropertiesClass() {
-        return GoogleDriveConnectionProperties.class;
     }
 
     public String getPngImagePath(DefinitionImageType imageType) {
         switch (imageType) {
-            case TREE_ICON_16X16:
-                return CONNECTION_WIZARD_ICON_PNG;
-            case WIZARD_BANNER_75X66:
-                return WIZARD_BANNER_PNG;
-            case SVG_ICON:
-                break;
-            case PALETTE_ICON_32X32:
-                break;
+        case TREE_ICON_16X16:
+            return CONNECTION_WIZARD_ICON_PNG;
+        case WIZARD_BANNER_75X66:
+            return WIZARD_BANNER_PNG;
+        case SVG_ICON:
+            break;
+        case PALETTE_ICON_32X32:
+            break;
         }
         return null;
     }
