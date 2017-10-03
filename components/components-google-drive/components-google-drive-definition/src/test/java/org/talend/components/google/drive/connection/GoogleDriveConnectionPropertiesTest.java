@@ -125,15 +125,12 @@ public class GoogleDriveConnectionPropertiesTest extends GoogleDriveTestBase {
         try (SandboxedInstanceTestFixture sandboxedInstanceTestFixture = new SandboxedInstanceTestFixture()) {
             sandboxedInstanceTestFixture.setUp();
             properties.validateTestConnection();
-            assertTrue(properties.getForm(FORM_WIZARD).isAllowForward());
             assertTrue(properties.getForm(FORM_WIZARD).isAllowFinish());
             sandboxedInstanceTestFixture.changeValidateConnectionResult(Result.ERROR);
             properties.validateTestConnection();
-            assertFalse(properties.getForm(FORM_WIZARD).isAllowForward());
-
+            assertFalse(properties.getForm(FORM_WIZARD).isAllowFinish());
             sandboxedInstanceTestFixture.changeValidateConnectionToThrowException();
-            properties.validateTestConnection();
-
+            assertThat(properties.validateTestConnection().getMessage(), is("ERROR during validation"));
         }
     }
 
@@ -174,30 +171,6 @@ public class GoogleDriveConnectionPropertiesTest extends GoogleDriveTestBase {
         final String repoLoc = "/fake/location";
         assertThat(properties.setRepositoryLocation(repoLoc), is(properties));
         assertThat(properties.getRepositoryLocation(), is(repoLoc));
-    }
-
-    @Test
-    public void testValidateName() throws Exception {
-        ValidationResult vr = properties.validateName();
-        assertThat(vr.getStatus(), is(Result.OK));
-        Form f = properties.getForm(FORM_WIZARD);
-        assertThat(f.isAllowFinish(), is(false));
-        properties.name.setValue("test");
-        vr = properties.validateName();
-        assertThat(vr.getStatus(), is(Result.OK));
-        assertThat(f.isAllowFinish(), is(true));
-    }
-
-    @Test
-    public void testValidateApplicationName() throws Exception {
-        ValidationResult vr = properties.validateApplicationName();
-        assertThat(vr.getStatus(), is(Result.ERROR));
-        Form f = properties.getForm(FORM_WIZARD);
-        assertThat(f.isAllowFinish(), is(false));
-        properties.applicationName.setValue("test");
-        vr = properties.validateApplicationName();
-        assertThat(vr.getStatus(), is(Result.OK));
-        assertThat(f.isAllowFinish(), is(true));
     }
 
     @Test

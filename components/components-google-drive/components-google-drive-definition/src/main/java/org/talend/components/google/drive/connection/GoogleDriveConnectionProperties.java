@@ -33,6 +33,7 @@ import org.talend.components.google.drive.GoogleDriveProvideConnectionProperties
 import org.talend.components.google.drive.GoogleDriveProvideRuntime;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
+import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
@@ -99,7 +100,8 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
     public Property<String> datastorePath = newString("datastorePath");
 
     //
-    // public PresentationItem testConnection = new PresentationItem("testConnection", "Test connection");
+    public PresentationItem testConnection = new PresentationItem("testConnection", "Test connection");
+
     @SuppressWarnings("unchecked")
     public ComponentReferenceProperties<GoogleDriveConnectionProperties> referencedComponent = new ComponentReferenceProperties<>(
             "referencedComponent", GoogleDriveConnectionDefinition.COMPONENT_NAME);
@@ -190,7 +192,7 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
         wizardForm.addColumn(widget(sslTrustStore).setWidgetType(Widget.FILE_WIDGET_TYPE));
         wizardForm.addColumn(widget(sslTrustStorePassword).setWidgetType(Widget.HIDDEN_TEXT_WIDGET_TYPE));
         //
-        // wizardForm.addRow(widget(testConnection).setLongRunning(true).setWidgetType(Widget.BUTTON_WIDGET_TYPE));
+        wizardForm.addRow(widget(testConnection).setLongRunning(true).setWidgetType(Widget.BUTTON_WIDGET_TYPE));
     }
 
     @Override
@@ -289,14 +291,13 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
             sos.initialize(null, this);
             ValidationResultMutable vr = new ValidationResultMutable(sos.validateConnection(this));
             if (vr.getStatus() == ValidationResult.Result.OK) {
-                getForm(FORM_WIZARD).setAllowForward(true);
                 getForm(FORM_WIZARD).setAllowFinish(true);
             } else {
-                getForm(FORM_WIZARD).setAllowForward(false);
+                getForm(FORM_WIZARD).setAllowFinish(false);
             }
             return vr;
         } catch (Exception e) {
-            LOG.error("[validateTestConnection] " + e);
+            LOG.error("[validateTestConnection] {}.", e.getMessage());
             return new ValidationResultMutable(Result.ERROR, e.getMessage());
         }
     }
@@ -308,7 +309,7 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
 
     /**
      * Return connection properties object which is currently in effect.
-     * 
+     *
      * If this object references to another connection component then a referenced connection properties will be returned.
      * Otherwise, this connection properties object will be returned.
      *
@@ -356,26 +357,6 @@ public class GoogleDriveConnectionProperties extends ComponentPropertiesImpl imp
         this.repositoryLocation = repositoryLocation;
 
         return this;
-    }
-
-    public ValidationResult validateName() {
-        if (!name.getValue().isEmpty()) {
-            getForm(FORM_WIZARD).setAllowFinish(true);
-        } else {
-            getForm(FORM_WIZARD).setAllowFinish(false);
-        }
-        return ValidationResult.OK;
-    }
-
-    public ValidationResult validateApplicationName() {
-        ValidationResult vr = new ValidationResultMutable(Result.OK);
-        if (!applicationName.getValue().isEmpty()) {
-            getForm(FORM_WIZARD).setAllowFinish(true);
-        } else {
-            vr = new ValidationResultMutable(Result.ERROR, messages.getMessage("error.validation.applicationName"));
-            getForm(FORM_WIZARD).setAllowFinish(false);
-        }
-        return vr;
     }
 
     public ValidationResult afterFormFinishWizard(Repository<Properties> repository) {
