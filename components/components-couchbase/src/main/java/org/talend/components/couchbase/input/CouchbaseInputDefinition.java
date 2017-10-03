@@ -41,7 +41,7 @@ public class CouchbaseInputDefinition extends CouchbaseDefinition {
     }
 
     @Override
-    public Property[] getReturnProperties() {
+    public Property<?>[] getReturnProperties() {
         return new Property[]{RETURN_TOTAL_RECORD_COUNT_PROP, RETURN_ERROR_MESSAGE_PROP};
     }
 

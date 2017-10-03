@@ -135,7 +135,7 @@ public class CouchbaseEventGenericRecordConverter extends AbstractAvroConverter<
                 case EventSchemaField.CONTENT_IDX:
                     return content;
                 default:
-                    throw new IndexOutOfBoundsException("index argument should be > 0 and < 10");
+                    throw new IndexOutOfBoundsException("index argument should be >= 0 and < 10");
             }
         }
 
