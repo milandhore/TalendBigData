@@ -1,8 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -48,7 +46,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         properties.copyMode.setValue(CopyMode.File);
         properties.fileName.setValue(FILE_COPY_NAME);
         properties.destinationFolder.setValue("/A");
-        properties.folderName.setValue("folder");
+        properties.folderName.setValue("/folder");
         properties.newName.setValue("newName");
         // source file/folder
         File dest = new File();
@@ -57,9 +55,8 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         List<File> files = new ArrayList<>();
         files.add(dest);
         list.setFiles(files);
-        final String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
-        final String q2 = "name='file-copy-name' and 'root' in parents and mimeType!='application/vnd.google-apps.folder' "
-                + "and trashed=false";
+        final String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
+        final String q2 = "name='file-copy-name' and mimeType!='application/vnd.google-apps.folder'";
 
         when(drive.files().list().setQ(eq(q1)).execute()).thenReturn(list);
         when(drive.files().list().setQ(eq(q2)).execute()).thenReturn(list);
@@ -176,7 +173,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testStartCopyFolder() throws Exception {
-        final String q1 = "name='folder' and 'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
+        final String q1 = "name='folder' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
         final String q2 = "'source-id' in parents and trashed=false";
         final String q3 = "'folder-id2' in parents and trashed=false";
         //

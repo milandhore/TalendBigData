@@ -1,8 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -30,11 +28,11 @@ public class GoogleDriveCreateRuntimeTest extends GoogleDriveTestBaseRuntime {
 
     protected GoogleDriveCreateProperties properties;
 
-    String qA = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
+    String qA = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
 
-    String qB = "name='B' and 'A' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
+    String qB = "name='B' and 'A' in parents and mimeType='application/vnd.google-apps.folder'";
 
-    String qC = "name='C' and 'B' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
+    String qC = "name='C' and 'B' in parents and mimeType='application/vnd.google-apps.folder'";
 
     @Before
     public void setUp() throws Exception {
@@ -130,7 +128,7 @@ public class GoogleDriveCreateRuntimeTest extends GoogleDriveTestBaseRuntime {
         flA.setFiles(fs);
         when(drive.files().list().setQ(eq(qA)).execute()).thenReturn(flA);
 
-        properties.parentFolder.setValue("A");
+        properties.parentFolder.setValue("/A");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
         fail("Should not be here");
@@ -140,7 +138,7 @@ public class GoogleDriveCreateRuntimeTest extends GoogleDriveTestBaseRuntime {
     public void testNoResourcesMatching() throws Exception {
         when(drive.files().list().setQ(eq(qA)).execute()).thenReturn(emptyFileList);
 
-        properties.parentFolder.setValue("A");
+        properties.parentFolder.setValue("/A");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
         fail("Should not be here");
