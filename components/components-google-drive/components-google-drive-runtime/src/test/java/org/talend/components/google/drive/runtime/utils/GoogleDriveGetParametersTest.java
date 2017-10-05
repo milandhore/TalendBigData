@@ -1,7 +1,6 @@
 package org.talend.components.google.drive.runtime.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +18,7 @@ public class GoogleDriveGetParametersTest {
 
     @Test
     public void testGetResourceName() throws Exception {
-        assertEquals("resource", parameters.getResourceName());
+        assertEquals("resource", parameters.getResourceId());
     }
 
     @Test

@@ -58,7 +58,7 @@ public class GoogleDriveUtils {
 
     private Drive drive;
 
-    private static final String FILE_TYPE = "fileName";
+    private static final String FILE_TYPE = "file";
 
     private static final String FOLDER_TYPE = "folder";
 
@@ -363,12 +363,11 @@ public class GoogleDriveUtils {
     }
 
     public GoogleDriveGetResult getResource(GoogleDriveGetParameters parameters) throws IOException {
-        /* Search for the requested fileName */
-        String fileId = getFileId(parameters.getResourceName());
+        String fileId = parameters.getResourceId();
         File file = getMetadata(fileId, "id,mimeType,fileExtension");
         String fileMimeType = file.getMimeType();
         String outputFileExt = "." + file.getFileExtension();
-        LOG.debug("[getResource] Found fileName `{}` [id: {}, mime: {}, ext: {}]", parameters.getResourceName(), fileId,
+        LOG.debug("[getResource] Found fileName `{}` [id: {}, mime: {}, ext: {}]", parameters.getResourceId(), fileId,
                 fileMimeType, file.getFileExtension());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         /* Google Apps types */
@@ -385,7 +384,7 @@ public class GoogleDriveUtils {
             if (parameters.isAddExt()) {
                 localFile = localFile + ((localFile.endsWith(outputFileExt)) ? "" : outputFileExt);
             }
-            LOG.info(messages.getMessage("message.writing.resource", parameters.getResourceName(), localFile));
+            LOG.info(messages.getMessage("message.writing.resource", parameters.getResourceId(), localFile));
             try (FileOutputStream fout = new FileOutputStream(localFile)) {
                 fout.write(content);
                 fout.close();
@@ -396,13 +395,13 @@ public class GoogleDriveUtils {
     }
 
     public File putResource(GoogleDrivePutParameters parameters) throws IOException {
-        String folderId = getFolderId(parameters.getDestinationFolderName(), false);
+        String folderId = parameters.getDestinationFolderId();
         File putFile = new File();
         putFile.setParents(Collections.singletonList(folderId));
         Files.List fileRequest = drive.files().list()
                 .setQ(format(QUERY_NOTTRASHED_NAME_NOTMIME_INPARENTS, parameters.getResourceName(), MIME_TYPE_FOLDER, folderId));
         LOG.debug("[putResource] `{}` Exists in `{}` ? with `{}`.", parameters.getResourceName(),
-                parameters.getDestinationFolderName(), fileRequest.getQ());
+                parameters.getDestinationFolderId(), fileRequest.getQ());
         FileList existingFiles = fileRequest.execute();
         if (existingFiles.getFiles().size() > 1) {
             throw new IOException(messages.getMessage("error.file.more.than.one", parameters.getResourceName()));

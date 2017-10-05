@@ -61,9 +61,11 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
         list.setFiles(files);
         final String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
         final String q2 = "name='fileName-copy-name' and mimeType!='application/vnd.google-apps.folder'";
+        final String q3 = "name='A' and mimeType='application/vnd.google-apps.folder'";
 
         when(drive.files().list().setQ(eq(q1)).execute()).thenReturn(list);
         when(drive.files().list().setQ(eq(q2)).execute()).thenReturn(list);
+        when(drive.files().list().setQ(eq(q3)).execute()).thenReturn(list);
 
         // destination/copied
         File copiedFile = new File();
@@ -88,7 +90,8 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testExceptionThrown() throws Exception {
-        when(drive.files().list().setQ(anyString()).execute()).thenThrow(new IOException("error"));
+        when(drive.files().copy(anyString(), any(File.class)).setFields(anyString()).execute())
+                .thenThrow(new IOException("error"));
         testRuntime.initialize(container, properties);
         try {
             testRuntime.runAtDriver(container);
@@ -98,7 +101,16 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
     }
 
     @Test
-    public void testRunAtDriverCopyFile() throws Exception {
+    public void testRunAtDriverCopyFilePath() throws Exception {
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        assertEquals(SOURCE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_SOURCE_ID));
+        assertEquals(DESTINATION_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_DESTINATION_ID));
+    }
+
+    @Test
+    public void testRunAtDriverCopyFileGlobalSearch() throws Exception {
+        properties.destinationFolder.setValue("A");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
         assertEquals(SOURCE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_SOURCE_ID));

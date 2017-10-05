@@ -21,6 +21,7 @@ import org.talend.components.api.component.runtime.ComponentDriverInitialization
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.create.GoogleDriveCreateDefinition;
 import org.talend.components.google.drive.create.GoogleDriveCreateProperties;
 import org.talend.daikon.properties.ValidationResult;
@@ -54,8 +55,11 @@ public class GoogleDriveCreateRuntime extends GoogleDriveRuntime implements Comp
 
     public void createFolder(RuntimeContainer container) {
         try {
-            parentFolderId = getDriveUtils().getFolderId(properties.parentFolder.getValue(), false);
-            newFolderId = getDriveUtils().createFolder(parentFolderId, properties.newFolder.getValue());
+            final GoogleDriveUtils utils = getDriveUtils();
+            String parentFolder = properties.parentFolder.getValue();
+            parentFolderId = properties.parentFolderAccessMethod.getValue().equals(AccessMethod.Id) ? parentFolder
+                    : utils.getFolderId(parentFolder, false);
+            newFolderId = utils.createFolder(parentFolderId, properties.newFolder.getValue());
         } catch (IOException | GeneralSecurityException e) {
             LOG.error(e.getLocalizedMessage());
             throw new ComponentException(e);

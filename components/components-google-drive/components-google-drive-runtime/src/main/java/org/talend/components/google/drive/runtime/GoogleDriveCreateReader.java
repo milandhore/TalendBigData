@@ -19,6 +19,7 @@ import org.apache.avro.generic.GenericData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.create.GoogleDriveCreateDefinition;
 import org.talend.components.google.drive.create.GoogleDriveCreateProperties;
 import org.talend.daikon.i18n.GlobalI18N;
@@ -45,7 +46,10 @@ public class GoogleDriveCreateReader extends GoogleDriveReader {
     @Override
     public boolean start() throws IOException {
         super.start();
-        parentFolderId = utils.getFolderId(properties.parentFolder.getValue(), false);
+
+        String parentFolder = properties.parentFolder.getValue();
+        parentFolderId = properties.parentFolderAccessMethod.getValue().equals(AccessMethod.Id) ? parentFolder
+                : utils.getFolderId(parentFolder, false);
         newFolderId = utils.createFolder(parentFolderId, properties.newFolder.getValue());
         /* feeding record */
         record = new GenericData.Record(properties.schemaMain.schema.getValue());

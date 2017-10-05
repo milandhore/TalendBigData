@@ -20,6 +20,7 @@ import org.apache.avro.generic.GenericData.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.put.GoogleDrivePutDefinition;
 import org.talend.components.google.drive.put.GoogleDrivePutProperties;
 import org.talend.components.google.drive.runtime.utils.GoogleDrivePutParameters;
@@ -49,8 +50,12 @@ public class GoogleDrivePutReader extends GoogleDriveReader {
         super.start();
 
         String localFilePath = properties.localFilePath.getValue();
-        GoogleDrivePutParameters p = new GoogleDrivePutParameters(properties.destinationFolder.getValue(),
-                properties.fileName.getValue(), properties.overwrite.getValue(), localFilePath);
+        String destinationFolderId = properties.destinationFolderAccessMethod.getValue().equals(AccessMethod.Id)
+                ? properties.destinationFolder.getValue()
+                : utils.getFolderId(properties.destinationFolder.getValue(), false);
+
+        GoogleDrivePutParameters p = new GoogleDrivePutParameters(destinationFolderId, properties.fileName.getValue(),
+                properties.overwrite.getValue(), localFilePath);
         sentFile = utils.putResource(p);
         record = new Record(properties.schemaMain.schema.getValue());
         record.put(0, java.nio.file.Files.readAllBytes(Paths.get(localFilePath)));

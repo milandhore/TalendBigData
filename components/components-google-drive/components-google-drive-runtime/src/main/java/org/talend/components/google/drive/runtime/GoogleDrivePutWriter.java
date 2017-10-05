@@ -28,6 +28,7 @@ import org.talend.components.api.component.runtime.WriteOperation;
 import org.talend.components.api.component.runtime.WriterWithFeedback;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.create.GoogleDriveCreateDefinition;
 import org.talend.components.google.drive.put.GoogleDrivePutProperties;
 import org.talend.components.google.drive.runtime.utils.GoogleDrivePutParameters;
@@ -92,8 +93,11 @@ public class GoogleDrivePutWriter implements WriterWithFeedback {
             bytes = data.toString().getBytes();
         }
         //
-        GoogleDrivePutParameters p = new GoogleDrivePutParameters(properties.destinationFolder.getValue(),
-                properties.fileName.getValue(), properties.overwrite.getValue(), bytes);
+        String destinationFolderId = properties.destinationFolderAccessMethod.getValue().equals(AccessMethod.Id)
+                ? properties.destinationFolder.getValue()
+                : utils.getFolderId(properties.destinationFolder.getValue(), false);
+        GoogleDrivePutParameters p = new GoogleDrivePutParameters(destinationFolderId, properties.fileName.getValue(),
+                properties.overwrite.getValue(), bytes);
         sentFile = utils.putResource(p);
         //
         IndexedRecord record = new Record(properties.schemaMain.schema.getValue());

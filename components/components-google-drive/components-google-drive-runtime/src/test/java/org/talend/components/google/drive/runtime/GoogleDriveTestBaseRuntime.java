@@ -116,4 +116,21 @@ public class GoogleDriveTestBaseRuntime {
         return properties;
     }
 
+    protected FileList createFolderFileList(String folderId, boolean createDuplicate) {
+        FileList fileList = new FileList();
+        java.util.List<com.google.api.services.drive.model.File> files = new ArrayList<>();
+        com.google.api.services.drive.model.File file = new com.google.api.services.drive.model.File();
+        file.setId(folderId);
+        files.add(file);
+        //
+        if (createDuplicate) {
+            com.google.api.services.drive.model.File fileDup = new com.google.api.services.drive.model.File();
+            fileDup.setId(folderId);
+            files.add(fileDup);
+        }
+        fileList.setFiles(files);
+
+        return fileList;
+    }
+
 }

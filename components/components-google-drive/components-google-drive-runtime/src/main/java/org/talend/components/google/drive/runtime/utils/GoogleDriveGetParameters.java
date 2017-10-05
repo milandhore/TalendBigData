@@ -18,7 +18,7 @@ import org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType;
 
 public class GoogleDriveGetParameters {
 
-    private final String resourceName;
+    private final String resourceId;
 
     private final Map<String, MimeType> mimeTypeForExport;
 
@@ -28,17 +28,17 @@ public class GoogleDriveGetParameters {
 
     private final boolean addExt;
 
-    public GoogleDriveGetParameters(String resourceName, Map<String, MimeType> mimeType, boolean storeToLocal,
+    public GoogleDriveGetParameters(String resourceId, Map<String, MimeType> mimeType, boolean storeToLocal,
             String outputFileName, boolean addExt) {
-        this.resourceName = resourceName;
+        this.resourceId = resourceId;
         this.mimeTypeForExport = mimeType;
         this.storeToLocal = storeToLocal;
         this.outputFileName = outputFileName;
         this.addExt = addExt;
     }
 
-    public String getResourceName() {
-        return resourceName;
+    public String getResourceId() {
+        return resourceId;
     }
 
     public Map<String, MimeType> getMimeType() {

@@ -16,7 +16,7 @@ public class GoogleDrivePutParametersTest {
 
     @Test
     public void testGetDestinationFolderName() throws Exception {
-        assertEquals("destination", parameters.getDestinationFolderName());
+        assertEquals("destination", parameters.getDestinationFolderId());
     }
 
     @Test
