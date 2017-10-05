@@ -35,6 +35,9 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
 
     public Property<String> fileName = newString("fileName").setRequired();
 
+    public Property<AccessMethod> destinationFolderAccessMethod = newEnum("destinationFolderAccessMethod", AccessMethod.class)
+            .setRequired();
+
     public Property<String> destinationFolder = newString("destinationFolder").setRequired();
 
     public Property<Boolean> overwrite = newBoolean("overwrite");
@@ -83,6 +86,8 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
         schemaMain.schema.setValue(schema);
 
         fileName.setValue("");
+        destinationFolderAccessMethod.setPossibleValues(AccessMethod.values());
+        destinationFolderAccessMethod.setValue(AccessMethod.Name);
         destinationFolder.setValue("");
         uploadMode.setPossibleValues(UploadMode.values());
         uploadMode.setValue(UploadMode.READ_CONTENT_FROM_INPUT);
@@ -97,6 +102,7 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
         Form mainForm = getForm(Form.MAIN);
         mainForm.addRow(fileName);
         mainForm.addRow(destinationFolder);
+        mainForm.addColumn(destinationFolderAccessMethod);
         mainForm.addRow(overwrite);
         mainForm.addRow(uploadMode);
         mainForm.addRow(widget(localFilePath).setWidgetType(Widget.FILE_WIDGET_TYPE));
@@ -115,4 +121,5 @@ public class GoogleDrivePutProperties extends GoogleDriveComponentProperties {
     public void afterUploadMode() {
         refreshLayout(getForm(Form.MAIN));
     }
+
 }

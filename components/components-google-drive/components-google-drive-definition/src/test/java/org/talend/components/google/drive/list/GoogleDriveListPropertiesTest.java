@@ -12,13 +12,12 @@
 // ============================================================================
 package org.talend.components.google.drive.list;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.apache.avro.Schema;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.google.drive.list.GoogleDriveListProperties.ListMode;
-import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 
 public class GoogleDriveListPropertiesTest {
@@ -45,22 +44,6 @@ public class GoogleDriveListPropertiesTest {
         assertEquals(ListMode.Directories, ListMode.valueOf("Directories"));
         assertEquals("Both", ListMode.Both.name());
         assertEquals(ListMode.Both, ListMode.valueOf("Both"));
-    }
-
-    @Test
-    public void testUnNestedPath() throws Exception {
-        properties.folderName.setValue("ABC");
-        properties.includeTrashedFiles.setValue(false);
-        assertEquals(Result.OK, properties.validateFolderName().getStatus());
-        assertEquals(Result.OK, properties.validateIncludeTrashedFiles().getStatus());
-        properties.folderName.setValue("ABC");
-        properties.includeTrashedFiles.setValue(true);
-        assertEquals(Result.OK, properties.validateFolderName().getStatus());
-        assertEquals(Result.OK, properties.validateIncludeTrashedFiles().getStatus());
-        properties.folderName.setValue("A/B/C");
-        properties.includeTrashedFiles.setValue(true);
-        assertEquals(Result.ERROR, properties.validateFolderName().getStatus());
-        assertEquals(Result.ERROR, properties.validateIncludeTrashedFiles().getStatus());
     }
 
     @Test
