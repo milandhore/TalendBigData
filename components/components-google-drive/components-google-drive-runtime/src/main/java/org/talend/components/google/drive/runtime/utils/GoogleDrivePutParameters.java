@@ -14,7 +14,7 @@ package org.talend.components.google.drive.runtime.utils;
 
 public class GoogleDrivePutParameters {
 
-    private final String destinationFolderName;
+    private final String destinationFolderId;
 
     private final String resourceName;
 
@@ -26,7 +26,7 @@ public class GoogleDrivePutParameters {
 
     public GoogleDrivePutParameters(String destinationFolderName, String resourceName, boolean overwriteIfExist,
             String fromLocalFilePath) {
-        this.destinationFolderName = destinationFolderName;
+        this.destinationFolderId = destinationFolderName;
         this.resourceName = resourceName;
         this.overwriteIfExist = overwriteIfExist;
         this.fromLocalFilePath = fromLocalFilePath;
@@ -35,15 +35,15 @@ public class GoogleDrivePutParameters {
 
     public GoogleDrivePutParameters(String destinationFolderName, String resourceName, boolean overwriteIfExist,
             byte[] fromBytes) {
-        this.destinationFolderName = destinationFolderName;
+        this.destinationFolderId = destinationFolderName;
         this.resourceName = resourceName;
         this.overwriteIfExist = overwriteIfExist;
         this.fromBytes = fromBytes;
         this.fromLocalFilePath = null;
     }
 
-    public String getDestinationFolderName() {
-        return destinationFolderName;
+    public String getDestinationFolderId() {
+        return destinationFolderId;
     }
 
     public String getResourceName() {

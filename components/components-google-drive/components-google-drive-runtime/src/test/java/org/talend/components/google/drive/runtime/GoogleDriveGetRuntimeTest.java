@@ -2,6 +2,7 @@ package org.talend.components.google.drive.runtime;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.components.api.exception.ComponentException;
 import org.talend.components.google.drive.GoogleDriveMimeTypes;
 import org.talend.components.google.drive.get.GoogleDriveGetDefinition;
 import org.talend.components.google.drive.get.GoogleDriveGetProperties;
@@ -69,6 +71,27 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
     }
 
     @Test
+    public void testRunAtDriverWithPath() throws Exception {
+        String qA = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qB = "name='B' and 'A' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qC = "name='C' and 'B' in parents and mimeType='application/vnd.google-apps.folder'";
+        File file = new File();
+        file.setId("fileName-id");
+        file.setMimeType(GoogleDriveMimeTypes.MIME_TYPE_GOOGLE_DOCUMENT);
+
+        when(drive.files().list().setQ(eq(qA)).execute()).thenReturn(createFolderFileList("A", false));
+        when(drive.files().list().setQ(eq(qB)).execute()).thenReturn(createFolderFileList("B", false));
+        when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", false));
+        when(drive.files().get(anyString()).setFields(anyString()).execute()).thenReturn(file);
+        //
+        properties.file.setValue("/A/B/C");
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        assertEquals("C", container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_FILE_ID));
+        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
+    }
+
+    @Test
     public void testRunAtDriverForGoogleDoc() throws Exception {
         File file = new File();
         file.setId("fileName-id");
@@ -81,7 +104,7 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
     }
 
-    @Test // (expected = ComponentException.class)
+    @Test
     public void testRunAtDriverForDownloadFile() throws Exception {
         properties.storeToLocal.setValue(true);
         properties.outputFileName.setValue(getClass().getClassLoader().getResource(".").toURI().getPath() + FILE_GET_ID);
@@ -110,6 +133,37 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
             fail("Should not be here");
         } catch (Exception e) {
         }
+    }
+
+    @Test(expected = ComponentException.class)
+    public void testNonExistentFile() throws Exception {
+        String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
+        when(drive.files().list().setQ(q1).execute()).thenReturn(emptyFileList);
+        when(drive.files().list().setQ(anyString()).execute()).thenReturn(emptyFileList);
+        //
+        properties.file.setValue("/A");
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        fail("Should not be here");
+    }
+
+    @Test(expected = ComponentException.class)
+    public void testManyFiles() throws Exception {
+        FileList files = new FileList();
+        List<File> fl = new ArrayList<>();
+        File f1 = new File();
+        fl.add(f1);
+        File f2 = new File();
+        fl.add(f2);
+        files.setFiles(fl);
+        String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
+        when(drive.files().list().setQ(q1).execute()).thenReturn(files);
+        when(drive.files().list().setQ(anyString()).execute()).thenReturn(files);
+        //
+        properties.file.setValue("/A");
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        fail("Should not be herer");
     }
 
 }

@@ -27,6 +27,7 @@ import org.talend.components.api.component.runtime.ComponentDriverInitialization
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.GoogleDriveMimeTypes;
 import org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
@@ -62,18 +63,20 @@ public class GoogleDriveGetRuntime extends GoogleDriveRuntime implements Compone
 
     public void getFile(RuntimeContainer container) {
         try {
+            String resourceId = properties.fileAccessMethod.getValue().equals(AccessMethod.Id) ? properties.file.getValue()
+                    : getDriveUtils().getFileId(properties.file.getValue());
             Map<String, MimeType> mimes = GoogleDriveMimeTypes.newDefaultMimeTypesSupported();
             mimes.put(MIME_TYPE_GOOGLE_DOCUMENT, properties.exportDocument.getValue());
             mimes.put(MIME_TYPE_GOOGLE_DRAWING, properties.exportDrawing.getValue());
             mimes.put(MIME_TYPE_GOOGLE_PRESENTATION, properties.exportPresentation.getValue());
             mimes.put(MIME_TYPE_GOOGLE_SPREADSHEET, properties.exportSpreadsheet.getValue());
-            GoogleDriveGetParameters p = new GoogleDriveGetParameters(properties.file.getValue(), mimes,
-                    properties.storeToLocal.getValue(), properties.outputFileName.getValue(), properties.setOutputExt.getValue());
+            GoogleDriveGetParameters p = new GoogleDriveGetParameters(resourceId, mimes, properties.storeToLocal.getValue(),
+                    properties.outputFileName.getValue(), properties.setOutputExt.getValue());
             //
             GoogleDriveGetResult r = getDriveUtils().getResource(p);
             fileId = r.getId();
         } catch (IOException | GeneralSecurityException e) {
-            LOG.error(e.getLocalizedMessage());
+            LOG.error(e.getMessage());
             throw new ComponentException(e);
         }
     }

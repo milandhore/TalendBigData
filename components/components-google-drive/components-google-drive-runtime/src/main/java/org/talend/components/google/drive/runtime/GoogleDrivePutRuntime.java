@@ -21,6 +21,7 @@ import org.talend.components.api.component.runtime.ComponentDriverInitialization
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.put.GoogleDrivePutDefinition;
 import org.talend.components.google.drive.put.GoogleDrivePutProperties;
 import org.talend.components.google.drive.runtime.utils.GoogleDrivePutParameters;
@@ -54,9 +55,12 @@ public class GoogleDrivePutRuntime extends GoogleDriveRuntime implements Compone
     }
 
     private void putFile(RuntimeContainer container) {
-        GoogleDrivePutParameters p = new GoogleDrivePutParameters(properties.destinationFolder.getValue(),
-                properties.fileName.getValue(), properties.overwrite.getValue(), properties.localFilePath.getValue());
         try {
+            String destinationFolderId = properties.destinationFolderAccessMethod.getValue().equals(AccessMethod.Id)
+                    ? properties.destinationFolder.getValue()
+                    : getDriveUtils().getFolderId(properties.destinationFolder.getValue(), false);
+            GoogleDrivePutParameters p = new GoogleDrivePutParameters(destinationFolderId, properties.fileName.getValue(),
+                    properties.overwrite.getValue(), properties.localFilePath.getValue());
             sentFile = getDriveUtils().putResource(p);
         } catch (IOException | GeneralSecurityException e) {
             LOG.error(e.getLocalizedMessage());

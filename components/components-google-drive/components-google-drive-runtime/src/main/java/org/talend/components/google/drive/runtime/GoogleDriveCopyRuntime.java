@@ -22,6 +22,7 @@ import org.talend.components.api.component.runtime.ComponentDriverInitialization
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.copy.GoogleDriveCopyDefinition;
 import org.talend.components.google.drive.copy.GoogleDriveCopyProperties;
 import org.talend.components.google.drive.copy.GoogleDriveCopyProperties.CopyMode;
@@ -65,21 +66,26 @@ public class GoogleDriveCopyRuntime extends GoogleDriveRuntime implements Compon
         boolean deleteSourceFile = properties.deleteSourceFile.getValue();
         try {
             Drive drive = getDriveService();
+            final GoogleDriveUtils utils = getDriveUtils();
+
             /* check for destination folder */
-            String destinationFolderId = getDriveUtils().getFolderId(destinationFolder, false);
+            String destinationFolderId = properties.destinationFolderAccessMethod.getValue().equals(AccessMethod.Id)
+                    ? destinationFolder
+                    : utils.getFolderId(destinationFolder, false);
             /* work on a fileName */
             if (CopyMode.File.equals(copyMode)) {
                 /* check for managed resource */
-                sourceId = getDriveUtils().getFileId(source);
-                destinationId = getDriveUtils().copyFile(sourceId, destinationFolderId, newName, deleteSourceFile);
+                sourceId = properties.sourceAccessMethod.getValue().equals(AccessMethod.Id) ? source : utils.getFileId(source);
+                destinationId = utils.copyFile(sourceId, destinationFolderId, newName, deleteSourceFile);
             } else {/* work on a folder */
                 /* check for managed resource */
-                sourceId = getDriveUtils().getFolderId(source, false);
+                sourceId = properties.sourceAccessMethod.getValue().equals(AccessMethod.Id) ? source
+                        : utils.getFolderId(source, false);
                 if (newName.isEmpty()) {
-                    List<String> paths = getDriveUtils().getExplodedPath(source);
+                    List<String> paths = utils.getExplodedPath(source);
                     newName = paths.get(paths.size() - 1);
                 }
-                destinationId = getDriveUtils().copyFolder(sourceId, destinationFolderId, newName);
+                destinationId = utils.copyFolder(sourceId, destinationFolderId, newName);
             }
         } catch (IOException | GeneralSecurityException e) {
             LOG.error(e.getLocalizedMessage());

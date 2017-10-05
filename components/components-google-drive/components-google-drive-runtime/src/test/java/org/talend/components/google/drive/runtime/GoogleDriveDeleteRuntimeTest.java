@@ -3,6 +3,7 @@ package org.talend.components.google.drive.runtime;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
 
     GoogleDriveDeleteRuntime testRuntime;
 
+    FileList deleteFileList;
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -44,18 +47,41 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().update(anyString(), any(File.class)).execute()).thenReturn(null);
         when(drive.files().delete(anyString()).execute()).thenReturn(null);
 
-        FileList fileList = new FileList();
+        deleteFileList = new FileList();
         List<File> files = new ArrayList<>();
         File f = new File();
         f.setId(FOLDER_DELETE_ID);
         files.add(f);
-        fileList.setFiles(files);
-
-        when(drive.files().list().setQ(anyString()).execute()).thenReturn(fileList);
+        deleteFileList.setFiles(files);
     }
 
     @Test
     public void testDeleteByName() throws Exception {
+        when(drive.files().list().setQ(anyString()).execute()).thenReturn(deleteFileList);
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+    }
+
+    @Test
+    public void testDeleteByNamePath() throws Exception {
+        String qA = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qB = "name='B' and 'A' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qC = "name='C' and 'B' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qD = "name='delete-id' and 'C' in parents and mimeType='application/vnd.google-apps.folder'";
+        String qDn = "name='delete-id' and 'C' in parents and mimeType!='application/vnd.google-apps.folder'";
+        when(drive.files().list().setQ(eq(qA)).execute()).thenReturn(createFolderFileList("A", false));
+        when(drive.files().list().setQ(eq(qB)).execute()).thenReturn(createFolderFileList("B", false));
+        when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(deleteFileList);
+        properties.file.setValue("/A/B/C");
+        testRuntime.initialize(container, properties);
+        testRuntime.runAtDriver(container);
+        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+        //
+        when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", false));
+        when(drive.files().list().setQ(eq(qD)).execute()).thenReturn(emptyFileList);
+        when(drive.files().list().setQ(eq(qDn)).execute()).thenReturn(deleteFileList);
+        properties.file.setValue("/A/B/C/delete-id");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
         assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));

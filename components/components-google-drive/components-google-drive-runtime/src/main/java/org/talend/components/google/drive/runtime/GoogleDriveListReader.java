@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.list.GoogleDriveListProperties;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
@@ -93,7 +94,11 @@ public class GoogleDriveListReader extends GoogleDriveReader {
         request = drive.files().list();
         request.setFields(FIELDS_SELECTION);
         //
-        subFolders = utils.getFolderIds(folderName, includeTrashedFiles);
+        if (properties.folderAccessMethod.getValue().equals(AccessMethod.Id)) {
+            subFolders.add(folderName);
+        } else {
+            subFolders = utils.getFolderIds(folderName, includeTrashedFiles);
+        }
         LOG.debug("[start] subFolders = {}.", subFolders);
         if (subFolders.size() == 0) {
             LOG.warn(messages.getMessage("error.folder.inexistant", folderName));

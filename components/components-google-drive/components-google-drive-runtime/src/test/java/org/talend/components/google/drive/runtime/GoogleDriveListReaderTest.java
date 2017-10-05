@@ -6,7 +6,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -28,6 +27,8 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
 
     String qA = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
 
+    String qGSA = "name='A' and mimeType='application/vnd.google-apps.folder'";
+
     String qB = "name='B' and 'A' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
 
     String qC = "name='C' and 'B' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false";
@@ -39,6 +40,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         mockList = mock(List.class, RETURNS_DEEP_STUBS);
         when(drive.files().list()).thenReturn(mockList);
         when(drive.files().list().setQ(eq(qA)).execute()).thenReturn(createFolderFileList("A", false));
+        when(drive.files().list().setQ(eq(qGSA)).execute()).thenReturn(createFolderFileList("A", false));
         when(drive.files().list().setQ(eq(qB)).execute()).thenReturn(createFolderFileList("B", false));
         when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", false));
 
@@ -47,23 +49,6 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         properties.setupProperties();
         properties = (GoogleDriveListProperties) setupConnectionWithInstalledApplicationWithIdAndSecret(properties);
         properties.folder.setValue(FOLDER_ROOT);
-    }
-
-    protected FileList createFolderFileList(String folderId, boolean createDuplicate) {
-        FileList fileList = new FileList();
-        java.util.List<File> files = new ArrayList<>();
-        File file = new File();
-        file.setId(folderId);
-        files.add(file);
-        //
-        if (createDuplicate) {
-            File fileDup = new File();
-            fileDup.setId(folderId);
-            files.add(fileDup);
-        }
-        fileList.setFiles(files);
-
-        return fileList;
     }
 
     @Test

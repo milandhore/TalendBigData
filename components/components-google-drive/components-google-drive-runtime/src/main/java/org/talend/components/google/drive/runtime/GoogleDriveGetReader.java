@@ -24,6 +24,7 @@ import org.apache.avro.generic.GenericData.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.GoogleDriveMimeTypes;
 import org.talend.components.google.drive.GoogleDriveMimeTypes.MimeType;
 import org.talend.components.google.drive.get.GoogleDriveGetDefinition;
@@ -53,13 +54,15 @@ public class GoogleDriveGetReader extends GoogleDriveReader {
     public boolean start() throws IOException {
         super.start();
         //
+        String resourceId = properties.fileAccessMethod.getValue().equals(AccessMethod.Id) ? properties.file.getValue()
+                : utils.getFileId(properties.file.getValue());
         Map<String, MimeType> mimes = GoogleDriveMimeTypes.newDefaultMimeTypesSupported();
         mimes.put(MIME_TYPE_GOOGLE_DOCUMENT, properties.exportDocument.getValue());
         mimes.put(MIME_TYPE_GOOGLE_DRAWING, properties.exportDrawing.getValue());
         mimes.put(MIME_TYPE_GOOGLE_PRESENTATION, properties.exportPresentation.getValue());
         mimes.put(MIME_TYPE_GOOGLE_SPREADSHEET, properties.exportSpreadsheet.getValue());
-        GoogleDriveGetParameters p = new GoogleDriveGetParameters(properties.file.getValue(), mimes,
-                properties.storeToLocal.getValue(), properties.outputFileName.getValue(), properties.setOutputExt.getValue());
+        GoogleDriveGetParameters p = new GoogleDriveGetParameters(resourceId, mimes, properties.storeToLocal.getValue(),
+                properties.outputFileName.getValue(), properties.setOutputExt.getValue());
         //
         GoogleDriveGetResult r = utils.getResource(p);
         fileId = r.getId();
