@@ -21,9 +21,9 @@ import org.talend.components.api.component.runtime.ComponentDriverInitialization
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties;
-import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties.DeleteMode;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 
@@ -53,10 +53,10 @@ public class GoogleDriveDeleteRuntime extends GoogleDriveRuntime implements Comp
 
     public void delete(RuntimeContainer container) {
         try {
-            if (properties.deleteMode.getValue().equals(DeleteMode.Name)) {
-                fileId = getDriveUtils().deleteResourceByName(properties.fileName.getValue(), properties.useTrash.getValue());
+            if (properties.deleteMode.getValue().equals(AccessMethod.Name)) {
+                fileId = getDriveUtils().deleteResourceByName(properties.file.getValue(), properties.useTrash.getValue());
             } else {
-                fileId = getDriveUtils().deleteResourceById(properties.fileId.getValue(), properties.useTrash.getValue());
+                fileId = getDriveUtils().deleteResourceById(properties.file.getValue(), properties.useTrash.getValue());
             }
         } catch (IOException | GeneralSecurityException e) {
             LOG.error(e.getLocalizedMessage());

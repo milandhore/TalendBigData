@@ -48,24 +48,23 @@ public class GoogleDriveCopyReader extends GoogleDriveReader {
         super.start();
 
         CopyMode copyMode = properties.copyMode.getValue();
-        String fileName = properties.fileName.getValue();
-        String folderName = properties.folderName.getValue();
+        String source = properties.source.getValue();
         String destinationFolder = properties.destinationFolder.getValue();
         String newName = properties.rename.getValue() ? properties.newName.getValue() : "";
         boolean deleteSourceFile = properties.deleteSourceFile.getValue();
 
         /* check for destination folder */
         String destinationFolderId = utils.getFolderId(destinationFolder, false);
-        /* work on a file */
+        /* work on a fileName */
         if (CopyMode.File.equals(copyMode)) {
             /* check for managed resource */
-            sourceId = utils.getFileId(fileName);
+            sourceId = utils.getFileId(source);
             destinationId = utils.copyFile(sourceId, destinationFolderId, newName, deleteSourceFile);
         } else {/* work on a folder */
             /* check for managed resource */
-            sourceId = utils.getFolderId(folderName, false);
+            sourceId = utils.getFolderId(source, false);
             if (newName.isEmpty()) {
-                List<String> paths = utils.getExplodedPath(folderName);
+                List<String> paths = utils.getExplodedPath(source);
                 newName = paths.get(paths.size() - 1);
             }
             destinationId = utils.copyFolder(sourceId, destinationFolderId, newName);

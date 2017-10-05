@@ -78,7 +78,7 @@ public class GoogleDriveListReader extends GoogleDriveReader {
         includeSubDirectories = properties.includeSubDirectories.getValue();
         includeTrashedFiles = properties.includeTrashedFiles.getValue();
         listModeStr = properties.listMode.getValue().name().toUpperCase();
-        folderName = properties.folderName.getValue().trim();
+        folderName = properties.folder.getValue().trim();
         //
         String qTrash = includeTrashedFiles ? "" : Q_AND + Q_NOT_TRASHED;
         query = Q_IN_PARENTS + ("DIRECTORIES".equals(listModeStr) ? QUERY_MIME_FOLDER : "") + qTrash;
@@ -187,15 +187,15 @@ public class GoogleDriveListReader extends GoogleDriveReader {
         main.put(8, file.getWebViewLink());
         // OutOfBand record
         // IndexedRecord outOfBand = new GenericData.Record(s);
-        // outOfBand.put(0, file.getId());
-        // outOfBand.put(1, file.getName());
-        // outOfBand.put(2, file.getMimeType());
-        // outOfBand.put(3, file.getModifiedTime().getValue());
-        // outOfBand.put(4, file.getSize());
-        // outOfBand.put(5, file.getKind());
-        // outOfBand.put(6, file.getTrashed());
-        // outOfBand.put(7, file.getParents().toString());
-        // outOfBand.put(8, file.getWebViewLink());
+        // outOfBand.put(0, fileName.getId());
+        // outOfBand.put(1, fileName.getName());
+        // outOfBand.put(2, fileName.getMimeType());
+        // outOfBand.put(3, fileName.getModifiedTime().getValue());
+        // outOfBand.put(4, fileName.getSize());
+        // outOfBand.put(5, fileName.getKind());
+        // outOfBand.put(6, fileName.getTrashed());
+        // outOfBand.put(7, fileName.getParents().toString());
+        // outOfBand.put(8, fileName.getWebViewLink());
         // // Create Root record
         // IndexedRecord r = RootRecordUtils.createRootRecord(properties.getSchema(), main, outOfBand);
         // r.put(0, main);

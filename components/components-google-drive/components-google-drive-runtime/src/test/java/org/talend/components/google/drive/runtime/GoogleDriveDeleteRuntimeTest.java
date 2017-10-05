@@ -1,8 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -15,9 +13,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties;
-import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties.DeleteMode;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 
@@ -38,7 +36,7 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.setupProperties();
         properties = (GoogleDriveDeleteProperties) setupConnectionWithInstalledApplicationWithJson(properties);
         //
-        properties.fileName.setValue(FOLDER_DELETE);
+        properties.file.setValue(FOLDER_DELETE);
 
         testRuntime = spy(GoogleDriveDeleteRuntime.class);
         doReturn(drive).when(testRuntime).getDriveService();
@@ -65,8 +63,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testDeleteById() throws Exception {
-        properties.deleteMode.setValue(DeleteMode.Id);
-        properties.fileId.setValue(FOLDER_DELETE_ID);
+        properties.deleteMode.setValue(AccessMethod.Id);
+        properties.file.setValue(FOLDER_DELETE_ID);
         //
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);

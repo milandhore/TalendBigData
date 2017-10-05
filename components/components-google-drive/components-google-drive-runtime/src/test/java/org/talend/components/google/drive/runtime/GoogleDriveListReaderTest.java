@@ -1,9 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -49,7 +46,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         properties = new GoogleDriveListProperties("test");
         properties.setupProperties();
         properties = (GoogleDriveListProperties) setupConnectionWithInstalledApplicationWithIdAndSecret(properties);
-        properties.folderName.setValue(FOLDER_ROOT);
+        properties.folder.setValue(FOLDER_ROOT);
     }
 
     protected FileList createFolderFileList(String folderId, boolean createDuplicate) {
@@ -78,7 +75,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         f.setId("id-1");
         f.setModifiedTime(com.google.api.client.util.DateTime.parseRfc3339("2017-09-29T10:00:00"));
         f.setSize(100L);
-        f.setKind("drive#file");
+        f.setKind("drive#fileName");
         f.setTrashed(false);
         f.setParents(Collections.singletonList(FOLDER_ROOT));
         f.setWebViewLink("https://toto.com");
@@ -108,7 +105,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
             f.setId("id-" + i);
             f.setModifiedTime(com.google.api.client.util.DateTime.parseRfc3339("2017-09-29T10:00:00"));
             f.setSize(100L);
-            f.setKind("drive#file");
+            f.setKind("drive#fileName");
             f.setTrashed(false);
             f.setParents(Collections.singletonList(FOLDER_ROOT));
             f.setWebViewLink("https://toto.com");
@@ -116,7 +113,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         }
         when(mockList.execute()).thenReturn(fileList);
         //
-        properties.folderName.setValue("A");
+        properties.folder.setValue("A");
         source.initialize(container, properties);
         GoogleDriveListReader reader = ((GoogleDriveListReader) source.createReader(container));
         assertTrue(reader.start());
@@ -132,7 +129,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(eq(qB)).execute()).thenReturn(emptyFileList);
         when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(emptyFileList);
 
-        properties.folderName.setValue("/A/B/C");
+        properties.folder.setValue("/A/B/C");
         source.initialize(container, properties);
         GoogleDriveListReader reader = ((GoogleDriveListReader) source.createReader(container));
         assertFalse(reader.start());
@@ -145,7 +142,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", false));
         when(mockList.execute()).thenReturn(emptyFileList);
         //
-        properties.folderName.setValue("/A/B/C");
+        properties.folder.setValue("/A/B/C");
         source.initialize(container, properties);
         GoogleDriveListReader reader = ((GoogleDriveListReader) source.createReader(container));
         assertFalse(reader.start());
@@ -158,7 +155,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", true));
         when(mockList.execute()).thenReturn(emptyFileList);
         //
-        properties.folderName.setValue("/A/B/C");
+        properties.folder.setValue("/A/B/C");
         source.initialize(container, properties);
         GoogleDriveListReader reader = ((GoogleDriveListReader) source.createReader(container));
         assertFalse(reader.start());
@@ -172,7 +169,7 @@ public class GoogleDriveListReaderTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testValidationFolder() throws Exception {
-        properties.folderName.setValue("");
+        properties.folder.setValue("");
         source.initialize(container, properties);
         assertEquals(Result.ERROR, source.validate(container).getStatus());
     }

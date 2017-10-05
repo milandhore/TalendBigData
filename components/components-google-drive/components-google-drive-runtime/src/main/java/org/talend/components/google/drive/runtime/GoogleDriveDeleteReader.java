@@ -19,9 +19,9 @@ import org.apache.avro.generic.GenericData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties;
-import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties.DeleteMode;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 
@@ -45,10 +45,10 @@ public class GoogleDriveDeleteReader extends GoogleDriveReader {
     public boolean start() throws IOException {
         super.start();
         //
-        if (properties.deleteMode.getValue().equals(DeleteMode.Name)) {
-            fileId = utils.deleteResourceByName(properties.fileName.getValue(), properties.useTrash.getValue());
+        if (properties.deleteMode.getValue().equals(AccessMethod.Name)) {
+            fileId = utils.deleteResourceByName(properties.file.getValue(), properties.useTrash.getValue());
         } else {
-            fileId = utils.deleteResourceById(properties.fileId.getValue(), properties.useTrash.getValue());
+            fileId = utils.deleteResourceById(properties.file.getValue(), properties.useTrash.getValue());
         }
         /* feeding result and record */
         record = new GenericData.Record(properties.schemaMain.schema.getValue());

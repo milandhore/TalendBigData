@@ -1,8 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -24,9 +22,9 @@ import com.google.api.services.drive.model.File;
 
 public class GoogleDrivePutWriterTest extends GoogleDriveTestBaseRuntime {
 
-    public static final String PUT_FILE_ID = "put-file-id";
+    public static final String PUT_FILE_ID = "put-fileName-id";
 
-    public static final String PUT_FILE_PARENT_ID = "put-file-parent-id";
+    public static final String PUT_FILE_PARENT_ID = "put-fileName-parent-id";
 
     private GoogleDrivePutWriter writer;
 

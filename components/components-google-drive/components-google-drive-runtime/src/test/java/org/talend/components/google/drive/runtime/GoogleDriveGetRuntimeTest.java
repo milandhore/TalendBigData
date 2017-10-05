@@ -1,9 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -26,7 +23,7 @@ import com.google.api.services.drive.model.FileList;
 
 public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
 
-    public static final String FILE_GET_ID = "file-get-id";
+    public static final String FILE_GET_ID = "fileName-get-id";
 
     private GoogleDriveGetRuntime testRuntime;
 
@@ -40,7 +37,7 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.setupProperties();
         properties = (GoogleDriveGetProperties) setupConnectionWithInstalledApplicationWithJson(properties);
         //
-        properties.fileName.setValue("google-drive-get");
+        properties.file.setValue("google-drive-get");
 
         testRuntime = spy(GoogleDriveGetRuntime.class);
         doReturn(drive).when(testRuntime).getDriveService();
@@ -55,7 +52,7 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(anyString()).execute()).thenReturn(fileList);
 
         File file = new File();
-        file.setId("file-id");
+        file.setId("fileName-id");
         file.setMimeType(GoogleDriveMimeTypes.MIME_TYPE_JSON);
         file.setFileExtension("json");
         when(drive.files().get(anyString()).setFields(anyString()).execute()).thenReturn(file);
@@ -74,7 +71,7 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
     @Test
     public void testRunAtDriverForGoogleDoc() throws Exception {
         File file = new File();
-        file.setId("file-id");
+        file.setId("fileName-id");
         file.setMimeType(GoogleDriveMimeTypes.MIME_TYPE_GOOGLE_DOCUMENT);
         when(drive.files().get(anyString()).setFields(anyString()).execute()).thenReturn(file);
         //
@@ -98,7 +95,7 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testFailedValidation() throws Exception {
-        properties.fileName.setValue("");
+        properties.file.setValue("");
         ValidationResult vr = testRuntime.initialize(container, properties);
         assertNotNull(vr);
         assertEquals(Result.ERROR, vr.getStatus());

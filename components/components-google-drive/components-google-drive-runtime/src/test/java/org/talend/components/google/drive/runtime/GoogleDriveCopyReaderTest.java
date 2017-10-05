@@ -27,7 +27,7 @@ import com.google.api.services.drive.model.FileList;
 
 public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
 
-    public static final String FILE_COPY_NAME = "file-copy-name";
+    public static final String FILE_COPY_NAME = "fileName-copy-name";
 
     private GoogleDriveCopyProperties properties;
 
@@ -44,11 +44,10 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         properties = (GoogleDriveCopyProperties) setupConnectionWithInstalledApplicationWithIdAndSecret(properties);
         //
         properties.copyMode.setValue(CopyMode.File);
-        properties.fileName.setValue(FILE_COPY_NAME);
+        properties.source.setValue(FILE_COPY_NAME);
         properties.destinationFolder.setValue("/A");
-        properties.folderName.setValue("/folder");
         properties.newName.setValue("newName");
-        // source file/folder
+        // source fileName/folder
         File dest = new File();
         dest.setId(SOURCE_ID);
         FileList list = new FileList();
@@ -56,7 +55,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         files.add(dest);
         list.setFiles(files);
         final String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
-        final String q2 = "name='file-copy-name' and mimeType!='application/vnd.google-apps.folder'";
+        final String q2 = "name='fileName-copy-name' and mimeType!='application/vnd.google-apps.folder'";
 
         when(drive.files().list().setQ(eq(q1)).execute()).thenReturn(list);
         when(drive.files().list().setQ(eq(q2)).execute()).thenReturn(list);
@@ -89,7 +88,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testValidateFileName() throws Exception {
-        properties.fileName.setValue("");
+        properties.source.setValue("");
         assertValidationIsFalse();
     }
 
@@ -102,7 +101,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
     @Test
     public void testValidateFolderName() throws Exception {
         properties.copyMode.setValue(CopyMode.Folder);
-        properties.folderName.setValue("");
+        properties.source.setValue("");
         assertValidationIsFalse();
     }
 
@@ -191,8 +190,8 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         List<File> ffiles = new ArrayList<>();
         File ffile = new File();
         ffile.setMimeType(GoogleDriveMimeTypes.MIME_TYPE_CSV);
-        ffile.setName("file");
-        ffile.setId("file-id");
+        ffile.setName("fileName");
+        ffile.setId("fileName-id");
         ffiles.add(ffile);
         File ffolder = new File();
         ffolder.setMimeType(GoogleDriveMimeTypes.MIME_TYPE_FOLDER);
@@ -204,6 +203,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(eq(q3)).execute()).thenReturn(emptyFileList);
 
         properties.copyMode.setValue(CopyMode.Folder);
+        properties.source.setValue("/folder");
         source.initialize(container, properties);
         BoundedReader reader = source.createReader(container);
         assertTrue(reader.start());
