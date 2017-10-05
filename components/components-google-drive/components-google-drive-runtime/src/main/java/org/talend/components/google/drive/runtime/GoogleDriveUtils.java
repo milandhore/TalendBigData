@@ -52,19 +52,19 @@ import com.google.api.services.drive.model.FileList;
 
 public class GoogleDriveUtils {
 
-    private transient static final Logger LOG = LoggerFactory.getLogger(GoogleDriveUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleDriveUtils.class);
 
     private static final I18nMessages messages = GlobalI18N.getI18nMessageProvider().getI18nMessages(GoogleDriveUtils.class);
 
     private Drive drive;
 
-    public final String FILE_TYPE = "file";
+    private static final String FILE_TYPE = "file";
 
-    public final String FOLDER_TYPE = "folder";
+    private static final String FOLDER_TYPE = "folder";
 
-    public final String FILEFOLDER_TYPE = "filefolder";
+    private static final String FILEFOLDER_TYPE = "filefolder";
 
-    public final String PATH_SEPARATOR = "/";
+    private static final String PATH_SEPARATOR = "/";
 
     public GoogleDriveUtils(Drive drive) {
         this.drive = drive;
@@ -98,30 +98,6 @@ public class GoogleDriveUtils {
         LOG.debug("[getResourceId] Found `{}` [{}].", resourceName, files.getFiles().get(0).getId());
 
         return files.getFiles().get(0).getId();
-    }
-
-    /**
-     * @param folderName searched folder name
-     * @param searchInTrash include folders in trash
-     * @return the folder ID value
-     * @throws IOException when the folder doesn't exist or there are more than one folder named like {@code folderName}
-     */
-    public String getFolderId(String folderName, boolean searchInTrash) throws IOException {
-        if (DRIVE_ROOT_FOLDER.equals(folderName) || ROOT_FOLDER_SEPARATOR.equals(folderName) || folderName.isEmpty()) {
-            return DRIVE_ROOT_FOLDER;
-        }
-        List<String> path = getExplodedPath(folderName);
-        String query;
-        String parentId = DRIVE_ROOT_FOLDER;
-        for (String folder : path) {
-            query = format(Q_NAME, folder) + Q_AND + //
-                    format(Q_IN_PARENTS, parentId) + Q_AND + //
-                    Q_MIME_FOLDER + //
-                    (searchInTrash ? "" : Q_AND + Q_NOT_TRASHED);
-            parentId = getResourceId(query, folder, FOLDER_TYPE);
-        }
-
-        return parentId;
     }
 
     public List<String> checkPath(int pathLevel, List<String> path, String folderName, String parentId, boolean searchInTrash)
@@ -164,7 +140,7 @@ public class GoogleDriveUtils {
     }
 
     public List<String> getFolderIds(String folderName, boolean searchInTrash) throws IOException {
-        LOG.debug("[getFolderIds] (folderName = [{}], searchInTrash = [{}]).", new Object[] { folderName, searchInTrash });
+        LOG.debug("[getFolderIds] (folderName = [{}], searchInTrash = [{}]).", folderName, searchInTrash);
         List<String> result = new ArrayList<>();
         if (DRIVE_ROOT_FOLDER.equals(folderName) || ROOT_FOLDER_SEPARATOR.equals(folderName) || folderName.isEmpty()) {
             result.add(DRIVE_ROOT_FOLDER);
@@ -178,22 +154,105 @@ public class GoogleDriveUtils {
         return result;
     }
 
+    public String findResourceByName(String resource, String type) throws IOException {
+        if (resource.contains(PATH_SEPARATOR)) {
+            return findResourceByPath(resource, type);
+        } else {
+            return findResourceByGlobalSearch(resource, type);
+        }
+    }
+
+    private String findResourceByGlobalSearch(String resource, String type) throws IOException {
+        String query;
+        switch (type) {
+        case FILE_TYPE:
+            query = format(Q_NAME, resource) + Q_AND + Q_MIME_NOT_FOLDER;
+            break;
+        case FOLDER_TYPE:
+            query = format(Q_NAME, resource) + Q_AND + Q_MIME_FOLDER;
+            break;
+        case FILEFOLDER_TYPE:
+            query = format(Q_NAME, resource);
+            break;
+        default:
+            query = "";
+        }
+        LOG.debug("[findResourceByGlobalSearch] Searching for {} [{}] with `{}`.", resource, type, query);
+        return getResourceId(query, resource, type);
+    }
+
+    private String findResourceByPath(String resourceName, String type) throws IOException {
+        List<String> path = getExplodedPath(resourceName);
+        String fileName = path.get(path.size() - 1);
+        String parentId = DRIVE_ROOT_FOLDER;
+        String query;
+        LOG.debug("[findResourceByPath] Searching for {} [{}]. Path: {}; FileName:{}", resourceName, type.toUpperCase(), path,
+                fileName);
+        switch (type) {
+        case FILE_TYPE:
+            // We may have the case of "/FileA". So parentId is root and otherwise :
+            if (path.size() > 1) {
+                parentId = handleCheckPathResult(checkPath(0, path.subList(0, (path.size() - 1)), path.get(0), "root", true));
+            }
+            query = format(Q_NAME, fileName) + Q_AND + //
+                    format(Q_IN_PARENTS, parentId) + Q_AND + //
+                    Q_MIME_NOT_FOLDER;
+            return getResourceId(query, fileName, FILE_TYPE);
+        case FOLDER_TYPE:
+            return handleCheckPathResult(checkPath(0, path, path.get(0), "root", true));
+        case FILEFOLDER_TYPE:
+            // try a full path first...
+            LOG.debug("[findResourceByPath] Searching for a full path...");
+            List<String> searchPath = checkPath(0, path, path.get(0), "root", true);
+            if (searchPath.size() == 1) {
+                return searchPath.get(0);
+            }
+            // try path + file
+            LOG.debug("[findResourceByPath] Searching for file because did not find a full path");
+            parentId = handleCheckPathResult(checkPath(0, path.subList(0, (path.size() - 1)), path.get(0), "root", true));
+            query = format(Q_NAME, fileName) + Q_AND + //
+                    format(Q_IN_PARENTS, parentId) + Q_AND + //
+                    Q_MIME_NOT_FOLDER;
+            return getResourceId(query, fileName, FILE_TYPE);
+        default:
+        }
+        return null;
+    }
+
+    private String handleCheckPathResult(List<String> path) throws IOException {
+        if (path.size() == 1) {
+            return path.get(0);
+        }
+        String errorMsg = "";
+        if (path.size() > 1) {
+            errorMsg = messages.getMessage("error.folder.more.than.one", path);
+        } else {
+            errorMsg = messages.getMessage("error.folder.inexistant", path);
+        }
+        LOG.error(errorMsg);
+        throw new IOException(errorMsg);
+    }
+
+    /**
+     * @param folderName searched folder name
+     * @param searchInTrash include folders in trash
+     * @return the folder ID value
+     * @throws IOException when the folder doesn't exist or there are more than one folder named like {@code folderName}
+     */
+    public String getFolderId(String folderName, boolean searchInTrash) throws IOException {
+        if (DRIVE_ROOT_FOLDER.equals(folderName) || ROOT_FOLDER_SEPARATOR.equals(folderName) || folderName.isEmpty()) {
+            return DRIVE_ROOT_FOLDER;
+        }
+        return findResourceByName(folderName, FOLDER_TYPE);
+    }
+
     /**
      * @param fileName searched file name
      * @return the file ID value
      * @throws IOException when the file doesn't exist or there are more than one file named like {@code fileName}
      */
     public String getFileId(String fileName) throws IOException {
-        List<String> path = getExplodedPath(fileName);
-        String resourceName = path.get(path.size() - 1);
-        String parentId = getFolderId(fileName.replaceAll(resourceName + "$", ""), false);
-        String query = format(Q_NAME, resourceName) + Q_AND + //
-                format(Q_IN_PARENTS, parentId) + Q_AND + //
-                Q_MIME_NOT_FOLDER + Q_AND + //
-                Q_NOT_TRASHED;
-        LOG.debug("Searching for file `{}` in `{}`.", resourceName, parentId);
-
-        return getResourceId(query, fileName, FILE_TYPE);
+        return findResourceByName(fileName, FILE_TYPE);
     }
 
     /**
@@ -203,17 +262,7 @@ public class GoogleDriveUtils {
      * {@code fileOrFolderName}
      */
     public String getFileOrFolderId(String fileOrFolderName) throws IOException {
-        String query; // = format(QUERY_NOTTRASHED_NAME, fileOrFolderName);
-        List<String> path = getExplodedPath(fileOrFolderName);
-        String parentId = DRIVE_ROOT_FOLDER;
-        for (String name : path) {
-            query = format(Q_NAME, name) + Q_AND + //
-                    format(Q_IN_PARENTS, parentId) + Q_AND + //
-                    Q_NOT_TRASHED;
-            parentId = getResourceId(query, name, FILEFOLDER_TYPE);
-        }
-
-        return parentId;
+        return findResourceByName(fileOrFolderName, FILEFOLDER_TYPE);
     }
 
     /**
