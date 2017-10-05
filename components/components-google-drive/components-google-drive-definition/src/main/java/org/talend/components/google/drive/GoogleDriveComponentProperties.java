@@ -25,6 +25,11 @@ import org.talend.daikon.properties.presentation.Form;
 public abstract class GoogleDriveComponentProperties extends FixedConnectorsComponentProperties
         implements GoogleDriveProvideConnectionProperties {
 
+    public enum AccessMethod {
+        Name,
+        Id
+    }
+
     public transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schemaMain");
 
     public SchemaProperties schemaMain = new SchemaProperties("schemaMain");

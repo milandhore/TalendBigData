@@ -15,10 +15,7 @@ package org.talend.components.google.drive.put;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -76,4 +73,5 @@ public class GoogleDrivePutPropertiesTest {
         assertEquals(properties.schemaMain.schema.getValue(), properties.getSchema());
         assertEquals(properties.schemaMain.schema.getValue(), properties.getSchema(null, true));
     }
+
 }

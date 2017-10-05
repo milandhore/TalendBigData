@@ -32,9 +32,11 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
 
     public Property<CopyMode> copyMode = newEnum("copyMode", CopyMode.class);
 
-    public Property<String> fileName = newString("fileName");
+    public Property<AccessMethod> sourceAccessMethod = newEnum("sourceAccessMethod", AccessMethod.class);
 
-    public Property<String> folderName = newString("folderName");
+    public Property<String> source = newString("source");
+
+    public Property<AccessMethod> destinationFolderAccessMethod = newEnum("destinationFolderAccessMethod", AccessMethod.class);
 
     public Property<String> destinationFolder = newString("destinationFolder");
 
@@ -52,9 +54,12 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
     public void setupProperties() {
         super.setupProperties();
 
-        fileName.setValue("");
+        sourceAccessMethod.setPossibleValues(AccessMethod.values());
+        sourceAccessMethod.setValue(AccessMethod.Name);
+        source.setValue("");
+        destinationFolderAccessMethod.setPossibleValues(AccessMethod.values());
+        destinationFolderAccessMethod.setValue(AccessMethod.Name);
         destinationFolder.setValue("");
-        folderName.setValue("");
 
         copyMode.setPossibleValues(CopyMode.values());
         copyMode.setValue(CopyMode.File);
@@ -76,9 +81,10 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
 
         Form mainForm = getForm(Form.MAIN);
         mainForm.addRow(copyMode);
-        mainForm.addRow(fileName);
-        mainForm.addRow(folderName);
+        mainForm.addRow(source);
+        mainForm.addColumn(sourceAccessMethod);
         mainForm.addRow(destinationFolder);
+        mainForm.addColumn(destinationFolderAccessMethod);
         mainForm.addRow(rename);
         mainForm.addRow(newName);
         mainForm.addRow(deleteSourceFile);
@@ -91,12 +97,8 @@ public class GoogleDriveCopyProperties extends GoogleDriveComponentProperties {
 
         if (Form.MAIN.equals(form.getName())) {
             if (CopyMode.File.equals(copyMode.getValue())) {
-                form.getWidget(fileName.getName()).setVisible(true);
-                form.getWidget(folderName.getName()).setVisible(false);
                 form.getWidget(deleteSourceFile.getName()).setVisible(true);
             } else {
-                form.getWidget(fileName.getName()).setVisible(false);
-                form.getWidget(folderName.getName()).setVisible(true);
                 form.getWidget(deleteSourceFile.getName()).setVisible(false);
             }
             form.getWidget(newName.getName()).setVisible(rename.getValue());

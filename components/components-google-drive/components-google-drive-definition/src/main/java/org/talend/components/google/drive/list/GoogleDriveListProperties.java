@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.components.google.drive.list;
 
+import static org.talend.daikon.properties.presentation.Form.MAIN;
 import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
 import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
@@ -26,16 +27,15 @@ import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
-import org.talend.daikon.properties.ValidationResult;
-import org.talend.daikon.properties.ValidationResult.Result;
-import org.talend.daikon.properties.ValidationResultMutable;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 
 public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
 
-    public Property<String> folderName = newString("folderName").setRequired();
+    public Property<AccessMethod> folderAccessMethod = newEnum("folderAccessMethod", AccessMethod.class).setRequired();
+
+    public Property<String> folder = newString("folder").setRequired();
 
     public Property<Boolean> includeSubDirectories = newBoolean("includeSubDirectories");
 
@@ -88,10 +88,6 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
     public void setupProperties() {
         super.setupProperties();
 
-        folderName.setValue("root");
-        listMode.setPossibleValues(ListMode.values());
-        listMode.setValue(ListMode.Files);
-
         Schema schema = SchemaBuilder.builder().record(GoogleDriveListDefinition.COMPONENT_NAME).fields() //
                 .name(GoogleDriveListDefinition.RETURN_ID).prop(SchemaConstants.TALEND_IS_LOCKED, "true").type().nullable()
                 .stringType().noDefault()//
@@ -118,36 +114,27 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
                 .endRecord();
         schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);
+
+        folderAccessMethod.setPossibleValues(AccessMethod.values());
+        folderAccessMethod.setValue(AccessMethod.Name);
+        folder.setValue("root");
+        listMode.setPossibleValues(ListMode.values());
+        listMode.setValue(ListMode.Files);
     }
 
     @Override
     public void setupLayout() {
         super.setupLayout();
 
-        Form mainForm = getForm(Form.MAIN);
-        mainForm.addRow(folderName);
+        Form mainForm = getForm(MAIN);
+        mainForm.addRow(folder);
+        mainForm.addColumn(folderAccessMethod);
         mainForm.addRow(Widget.widget(listMode).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
         mainForm.addRow(includeSubDirectories);
         mainForm.addRow(schemaMain.getForm(Form.REFERENCE));
 
         Form advancedForm = getForm(Form.ADVANCED);
         advancedForm.addRow(includeTrashedFiles);
-    }
-
-    private ValidationResult checkNestedPathAndTrash() {
-        ValidationResult vr = new ValidationResultMutable(Result.OK);
-        if (includeTrashedFiles.getValue() && folderName.getValue().contains("/")) {
-            vr = new ValidationResultMutable(Result.ERROR, messages.getMessage("error.validation.nestedpath.trash"));
-        }
-        return vr;
-    }
-
-    public ValidationResult validateFolderName() {
-        return checkNestedPathAndTrash();
-    }
-
-    public ValidationResult validateIncludeTrashedFiles() {
-        return checkNestedPathAndTrash();
     }
 
 }

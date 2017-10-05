@@ -15,9 +15,7 @@ package org.talend.components.google.drive.copy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,13 +46,9 @@ public class GoogleDriveCopyPropertiesTest {
 
     @Test
     public void testAfterCopyMode() throws Exception {
-        assertFalse(properties.getForm(Form.MAIN).getWidget(properties.folderName.getName()).isVisible());
-        assertTrue(properties.getForm(Form.MAIN).getWidget(properties.fileName.getName()).isVisible());
         assertTrue(properties.getForm(Form.MAIN).getWidget(properties.deleteSourceFile.getName()).isVisible());
         properties.copyMode.setValue(CopyMode.Folder);
         properties.afterCopyMode();
-        assertTrue(properties.getForm(Form.MAIN).getWidget(properties.folderName.getName()).isVisible());
-        assertFalse(properties.getForm(Form.MAIN).getWidget(properties.fileName.getName()).isVisible());
         assertFalse(properties.getForm(Form.MAIN).getWidget(properties.deleteSourceFile.getName()).isVisible());
     }
 

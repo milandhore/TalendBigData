@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.components.google.drive.create;
 
+import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import org.apache.avro.Schema;
@@ -22,6 +23,8 @@ import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 
 public class GoogleDriveCreateProperties extends GoogleDriveComponentProperties {
+
+    public Property<AccessMethod> parentFolderAccessMethod = newEnum("parentFolderAccessMethod", AccessMethod.class);
 
     public Property<String> parentFolder = newString("parentFolder").setRequired();
 
@@ -46,6 +49,8 @@ public class GoogleDriveCreateProperties extends GoogleDriveComponentProperties 
         schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);
 
+        parentFolderAccessMethod.setPossibleValues(AccessMethod.values());
+        parentFolderAccessMethod.setValue(AccessMethod.Name);
         parentFolder.setValue("root");
         newFolder.setValue("");
     }
@@ -56,6 +61,7 @@ public class GoogleDriveCreateProperties extends GoogleDriveComponentProperties 
 
         Form mainForm = getForm(Form.MAIN);
         mainForm.addRow(parentFolder);
+        mainForm.addColumn(parentFolderAccessMethod);
         mainForm.addRow(newFolder);
         mainForm.addRow(schemaMain.getForm(Form.REFERENCE));
     }

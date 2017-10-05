@@ -46,7 +46,9 @@ import org.talend.daikon.properties.property.Property;
 
 public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
 
-    public Property<String> fileName = newString("fileName").setRequired();
+    public Property<AccessMethod> fileAccessMethod = newEnum("fileAccessMethod", AccessMethod.class).setRequired();
+
+    public Property<String> file = newString("file").setRequired();
 
     public Property<Boolean> storeToLocal = newBoolean("storeToLocal");
 
@@ -77,7 +79,9 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
         schema.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         schemaMain.schema.setValue(schema);
 
-        fileName.setValue("");
+        fileAccessMethod.setPossibleValues(AccessMethod.values());
+        fileAccessMethod.setValue(AccessMethod.Name);
+        file.setValue("");
         storeToLocal.setValue(false);
         outputFileName.setValue("");
         //
@@ -97,7 +101,8 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
         super.setupLayout();
 
         Form mainForm = getForm(Form.MAIN);
-        mainForm.addRow(fileName);
+        mainForm.addRow(file);
+        mainForm.addColumn(fileAccessMethod);
         mainForm.addRow(storeToLocal);
         mainForm.addRow(widget(outputFileName).setWidgetType(Widget.FILE_WIDGET_TYPE));
         mainForm.addRow(schemaMain.getForm(Form.REFERENCE));
@@ -114,11 +119,7 @@ public class GoogleDriveGetProperties extends GoogleDriveComponentProperties {
     public void refreshLayout(Form form) {
         super.refreshLayout(form);
         if (Form.MAIN.equals(form.getName())) {
-            if (storeToLocal.getValue()) {
-                form.getWidget(outputFileName.getName()).setVisible(true);
-            } else {
-                form.getWidget(outputFileName.getName()).setVisible(false);
-            }
+            form.getWidget(outputFileName.getName()).setVisible(storeToLocal.getValue());
         }
         if (Form.ADVANCED.equals(form.getName())) {
             form.getWidget(setOutputExt.getName()).setVisible(storeToLocal.getValue());

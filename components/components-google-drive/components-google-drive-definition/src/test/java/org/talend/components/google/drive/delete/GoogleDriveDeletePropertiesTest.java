@@ -15,13 +15,11 @@ package org.talend.components.google.drive.delete;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties.DeleteMode;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.daikon.properties.presentation.Form;
 
 public class GoogleDriveDeletePropertiesTest {
@@ -47,21 +45,10 @@ public class GoogleDriveDeletePropertiesTest {
     }
 
     @Test
-    public void testAfterDeleteMode() throws Exception {
-        assertTrue(properties.getForm(Form.MAIN).getWidget(properties.fileName.getName()).isVisible());
-        assertFalse(properties.getForm(Form.MAIN).getWidget(properties.fileId.getName()).isVisible());
-        properties.deleteMode.setValue(DeleteMode.Id);
-        properties.afterDeleteMode();
-        properties.refreshLayout(properties.getForm(Form.MAIN));
-        assertFalse(properties.getForm(Form.MAIN).getWidget(properties.fileName.getName()).isVisible());
-        assertTrue(properties.getForm(Form.MAIN).getWidget(properties.fileId.getName()).isVisible());
-    }
-
-    @Test
     public void testDeleteMode() throws Exception {
-        assertEquals("Name", DeleteMode.Name.name());
-        assertEquals(DeleteMode.Name, DeleteMode.valueOf("Name"));
-        assertEquals("Id", DeleteMode.Id.name());
-        assertEquals(DeleteMode.Id, DeleteMode.valueOf("Id"));
+        assertEquals("Name", AccessMethod.Name.name());
+        assertEquals(AccessMethod.Name, AccessMethod.valueOf("Name"));
+        assertEquals("Id", AccessMethod.Id.name());
+        assertEquals(AccessMethod.Id, AccessMethod.valueOf("Id"));
     }
 }
