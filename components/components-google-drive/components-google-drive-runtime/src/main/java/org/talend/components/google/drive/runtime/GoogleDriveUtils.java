@@ -58,7 +58,7 @@ public class GoogleDriveUtils {
 
     private Drive drive;
 
-    private static final String FILE_TYPE = "file";
+    private static final String FILE_TYPE = "fileName";
 
     private static final String FOLDER_TYPE = "folder";
 
@@ -207,8 +207,8 @@ public class GoogleDriveUtils {
             if (searchPath.size() == 1) {
                 return searchPath.get(0);
             }
-            // try path + file
-            LOG.debug("[findResourceByPath] Searching for file because did not find a full path");
+            // try path + fileName
+            LOG.debug("[findResourceByPath] Searching for fileName because did not find a full path");
             parentId = handleCheckPathResult(checkPath(0, path.subList(0, (path.size() - 1)), path.get(0), "root", true));
             query = format(Q_NAME, fileName) + Q_AND + //
                     format(Q_IN_PARENTS, parentId) + Q_AND + //
@@ -247,18 +247,18 @@ public class GoogleDriveUtils {
     }
 
     /**
-     * @param fileName searched file name
-     * @return the file ID value
-     * @throws IOException when the file doesn't exist or there are more than one file named like {@code fileName}
+     * @param fileName searched fileName name
+     * @return the fileName ID value
+     * @throws IOException when the fileName doesn't exist or there are more than one fileName named like {@code fileName}
      */
     public String getFileId(String fileName) throws IOException {
         return findResourceByName(fileName, FILE_TYPE);
     }
 
     /**
-     * @param fileOrFolderName searched file name or folder
-     * @return file ID value
-     * @throws IOException when the file/folder doesn't exist or there are more than one file/folder named like
+     * @param fileOrFolderName searched fileName name or folder
+     * @return fileName ID value
+     * @throws IOException when the fileName/folder doesn't exist or there are more than one fileName/folder named like
      * {@code fileOrFolderName}
      */
     public String getFileOrFolderId(String fileOrFolderName) throws IOException {
@@ -283,11 +283,11 @@ public class GoogleDriveUtils {
     }
 
     /**
-     * @param fileId ID of the file to copy
+     * @param fileId ID of the fileName to copy
      * @param destinationFolderId folder ID where to copy the fileId
      * @param newName if not empty rename copy to this name
-     * @param deleteOriginal remove original file (aka mv)
-     * @return copied file ID
+     * @param deleteOriginal remove original fileName (aka mv)
+     * @return copied fileName ID
      * @throws IOException when copy fails
      */
     public String copyFile(String fileId, String destinationFolderId, String newName, boolean deleteOriginal) throws IOException {
@@ -363,20 +363,20 @@ public class GoogleDriveUtils {
     }
 
     public GoogleDriveGetResult getResource(GoogleDriveGetParameters parameters) throws IOException {
-        /* Search for the requested file */
+        /* Search for the requested fileName */
         String fileId = getFileId(parameters.getResourceName());
         File file = getMetadata(fileId, "id,mimeType,fileExtension");
         String fileMimeType = file.getMimeType();
         String outputFileExt = "." + file.getFileExtension();
-        LOG.debug("[getResource] Found file `{}` [id: {}, mime: {}, ext: {}]", parameters.getResourceName(), fileId, fileMimeType,
-                file.getFileExtension());
+        LOG.debug("[getResource] Found fileName `{}` [id: {}, mime: {}, ext: {}]", parameters.getResourceName(), fileId,
+                fileMimeType, file.getFileExtension());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         /* Google Apps types */
         if (GoogleDriveMimeTypes.GOOGLE_DRIVE_APPS.contains(fileMimeType)) {
             String exportFormat = parameters.getMimeType().get(fileMimeType).getMimeType();
             outputFileExt = parameters.getMimeType().get(fileMimeType).getExtension();
             drive.files().export(fileId, exportFormat).executeMediaAndDownloadTo(outputStream);
-        } else { /* Standard file */
+        } else { /* Standard fileName */
             drive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
         }
         byte[] content = outputStream.toByteArray();
@@ -417,7 +417,7 @@ public class GoogleDriveUtils {
         putFile.setName(parameters.getResourceName());
         String metadata = "id,parents,name";
         if (!StringUtils.isEmpty(parameters.getFromLocalFilePath())) {
-            // Reading content from local file
+            // Reading content from local fileName
             FileContent fContent = new FileContent(null, new java.io.File(parameters.getFromLocalFilePath()));
             putFile = drive.files().create(putFile, fContent).setFields(metadata).execute();
             //

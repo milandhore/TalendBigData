@@ -1,8 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -15,9 +13,9 @@ import org.apache.avro.generic.IndexedRecord;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.api.component.runtime.BoundedReader;
+import org.talend.components.google.drive.GoogleDriveComponentProperties.AccessMethod;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties;
-import org.talend.components.google.drive.delete.GoogleDriveDeleteProperties.DeleteMode;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 
@@ -36,7 +34,7 @@ public class GoogleDriveDeleteReaderTest extends GoogleDriveTestBaseRuntime {
         properties.setupProperties();
         properties = (GoogleDriveDeleteProperties) setupConnectionWithInstalledApplicationWithJson(properties);
         //
-        properties.fileName.setValue(FOLDER_DELETE);
+        properties.file.setValue(FOLDER_DELETE);
 
         when(drive.files().update(anyString(), any(File.class)).execute()).thenReturn(null);
         when(drive.files().delete(anyString()).execute()).thenReturn(null);
@@ -78,8 +76,8 @@ public class GoogleDriveDeleteReaderTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testDeleteById() throws Exception {
-        properties.deleteMode.setValue(DeleteMode.Id);
-        properties.fileId.setValue(FOLDER_DELETE_ID);
+        properties.deleteMode.setValue(AccessMethod.Id);
+        properties.file.setValue(FOLDER_DELETE_ID);
         //
         delete();
     }
@@ -87,8 +85,8 @@ public class GoogleDriveDeleteReaderTest extends GoogleDriveTestBaseRuntime {
     @Test
     public void testDeleteByIdWithoutTrash() throws Exception {
         properties.useTrash.setValue(false);
-        properties.deleteMode.setValue(DeleteMode.Id);
-        properties.fileId.setValue(FOLDER_DELETE_ID);
+        properties.deleteMode.setValue(AccessMethod.Id);
+        properties.file.setValue(FOLDER_DELETE_ID);
         //
         delete();
     }
@@ -102,15 +100,15 @@ public class GoogleDriveDeleteReaderTest extends GoogleDriveTestBaseRuntime {
 
     @Test
     public void testValidationByName() throws Exception {
-        properties.fileName.setValue("");
+        properties.file.setValue("");
         source.initialize(container, properties);
         assertEquals(Result.ERROR, source.validate(container).getStatus());
     }
 
     @Test
     public void testValidationNewId() throws Exception {
-        properties.deleteMode.setValue(DeleteMode.Id);
-        properties.fileId.setValue("");
+        properties.deleteMode.setValue(AccessMethod.Id);
+        properties.file.setValue("");
         source.initialize(container, properties);
         assertEquals(Result.ERROR, source.validate(container).getStatus());
     }

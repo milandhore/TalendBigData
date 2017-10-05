@@ -59,8 +59,7 @@ public class GoogleDriveCopyRuntime extends GoogleDriveRuntime implements Compon
 
     private void copyProcess(RuntimeContainer container) {
         CopyMode copyMode = properties.copyMode.getValue();
-        String fileName = properties.fileName.getValue();
-        String folderName = properties.folderName.getValue();
+        String source = properties.source.getValue();
         String destinationFolder = properties.destinationFolder.getValue();
         String newName = properties.rename.getValue() ? properties.newName.getValue() : "";
         boolean deleteSourceFile = properties.deleteSourceFile.getValue();
@@ -68,16 +67,16 @@ public class GoogleDriveCopyRuntime extends GoogleDriveRuntime implements Compon
             Drive drive = getDriveService();
             /* check for destination folder */
             String destinationFolderId = getDriveUtils().getFolderId(destinationFolder, false);
-            /* work on a file */
+            /* work on a fileName */
             if (CopyMode.File.equals(copyMode)) {
                 /* check for managed resource */
-                sourceId = getDriveUtils().getFileId(fileName);
+                sourceId = getDriveUtils().getFileId(source);
                 destinationId = getDriveUtils().copyFile(sourceId, destinationFolderId, newName, deleteSourceFile);
             } else {/* work on a folder */
                 /* check for managed resource */
-                sourceId = getDriveUtils().getFolderId(folderName, false);
+                sourceId = getDriveUtils().getFolderId(source, false);
                 if (newName.isEmpty()) {
-                    List<String> paths = getDriveUtils().getExplodedPath(folderName);
+                    List<String> paths = getDriveUtils().getExplodedPath(source);
                     newName = paths.get(paths.size() - 1);
                 }
                 destinationId = getDriveUtils().copyFolder(sourceId, destinationFolderId, newName);

@@ -1,7 +1,6 @@
 package org.talend.components.google.drive.runtime.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,7 @@ public class GoogleDrivePutParametersTest {
 
     @Before
     public void setUp() throws Exception {
-        parameters = new GoogleDrivePutParameters("destination", "resource", true, "file");
+        parameters = new GoogleDrivePutParameters("destination", "resource", true, "fileName");
     }
 
     @Test
@@ -32,7 +31,7 @@ public class GoogleDrivePutParametersTest {
 
     @Test
     public void testGetFromLocalFilePath() throws Exception {
-        assertEquals("file", parameters.getFromLocalFilePath());
+        assertEquals("fileName", parameters.getFromLocalFilePath());
     }
 
     @Test

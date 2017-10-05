@@ -58,7 +58,7 @@ public class GoogleDriveGetReader extends GoogleDriveReader {
         mimes.put(MIME_TYPE_GOOGLE_DRAWING, properties.exportDrawing.getValue());
         mimes.put(MIME_TYPE_GOOGLE_PRESENTATION, properties.exportPresentation.getValue());
         mimes.put(MIME_TYPE_GOOGLE_SPREADSHEET, properties.exportSpreadsheet.getValue());
-        GoogleDriveGetParameters p = new GoogleDriveGetParameters(properties.fileName.getValue(), mimes,
+        GoogleDriveGetParameters p = new GoogleDriveGetParameters(properties.file.getValue(), mimes,
                 properties.storeToLocal.getValue(), properties.outputFileName.getValue(), properties.setOutputExt.getValue());
         //
         GoogleDriveGetResult r = utils.getResource(p);

@@ -1,10 +1,6 @@
 package org.talend.components.google.drive.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +23,7 @@ import com.google.api.services.drive.model.FileList;
 
 public class GoogleDriveGetReaderTest extends GoogleDriveTestBaseRuntime {
 
-    public static final String FILE_GET_ID = "file-get-id";
+    public static final String FILE_GET_ID = "fileName-get-id";
 
     private GoogleDriveGetProperties properties;
 
@@ -39,7 +35,7 @@ public class GoogleDriveGetReaderTest extends GoogleDriveTestBaseRuntime {
         properties.setupProperties();
         properties = (GoogleDriveGetProperties) setupConnectionWithInstalledApplicationWithJson(properties);
         //
-        properties.fileName.setValue("google-drive-get");
+        properties.file.setValue("google-drive-get");
 
         FileList fileList = new FileList();
         List<File> files = new ArrayList<>();
