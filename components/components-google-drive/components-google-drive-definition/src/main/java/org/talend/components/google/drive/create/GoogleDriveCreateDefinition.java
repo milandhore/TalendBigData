@@ -49,8 +49,10 @@ public class GoogleDriveCreateDefinition extends GoogleDriveComponentDefinition 
         assertConnectorTopologyCompatibility(connectorTopology);
         if (ConnectorTopology.NONE.equals(connectorTopology)) {
             return getRuntimeInfo(GoogleDriveConnectionDefinition.CREATE_RUNTIME_CLASS);
-        } else {
+        } else if (ConnectorTopology.OUTGOING.equals(connectorTopology)) {
             return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
+        } else {
+            return null;
         }
     }
 
