@@ -69,9 +69,9 @@ Examples:
 * `1Ky8fU1npVEweb20t_NYombRS0DiIngmDC4jKsrNI9B4`
 
 Implemented in
-* [ ] `tGoogleDriveList`
-* [ ] `tGoogleDriveCreate` 
+* [X] `tGoogleDriveList`
+* [X] `tGoogleDriveCreate` 
 * [X] `tGoogleDriveDelete`
-* [ ] `tGoogleDriveCopy` 
-* [ ] `tGoogleDriveGet`
-* [ ] `tGoogleDrivePut`
+* [X] `tGoogleDriveCopy` 
+* [X] `tGoogleDriveGet`
+* [X] `tGoogleDrivePut`
