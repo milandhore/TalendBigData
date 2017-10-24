@@ -56,8 +56,8 @@ import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.ValidationResult;
-import org.talend.daikon.properties.ValidationResultMutable;
 import org.talend.daikon.properties.ValidationResult.Result;
+import org.talend.daikon.properties.ValidationResultMutable;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -72,8 +72,8 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
 
     private static final Logger LOG = getLogger(TMarketoInputProperties.class);
 
-    private static final I18nMessages messages = GlobalI18N.getI18nMessageProvider().getI18nMessages(
-            TMarketoInputProperties.class);
+    private static final I18nMessages messages = GlobalI18N.getI18nMessageProvider()
+            .getI18nMessages(TMarketoInputProperties.class);
 
     public enum LeadSelector {
         LeadKeySelector,
@@ -430,6 +430,7 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
         //
         mainForm.addRow(batchSize);
         mainForm.addRow(dieOnError);
+
     }
 
     @Override
@@ -531,16 +532,25 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
             }
             // getLeadActivity
             if (inputOperation.getValue().equals(getLeadActivity)) {
+                // first set all in/exclude types visibles
+                form.getWidget(setIncludeTypes.getName()).setVisible(true);
+                form.getWidget(includeTypes.getName()).setVisible(setIncludeTypes.getValue());
+                form.getWidget(setExcludeTypes.getName()).setVisible(true);
+                form.getWidget(excludeTypes.getName()).setVisible(setExcludeTypes.getValue());
                 if (useSOAP) {
                     form.getWidget(leadKeyTypeSOAP.getName()).setVisible(true);
                     form.getWidget(leadKeyValue.getName()).setVisible(true);
                 } else {
                     form.getWidget(sinceDateTime.getName()).setVisible(true);
+                    if (setIncludeTypes.getValue()) {
+                        setExcludeTypes.setValue(false);
+                        form.getWidget(setExcludeTypes.getName()).setVisible(false);
+                        form.getWidget(excludeTypes.getName()).setVisible(false);
+                    } else if (setExcludeTypes.getValue()) {
+                        form.getWidget(setIncludeTypes.getName()).setVisible(false);
+                        form.getWidget(includeTypes.getName()).setVisible(false);
+                    }
                 }
-                form.getWidget(setIncludeTypes.getName()).setVisible(true);
-                form.getWidget(includeTypes.getName()).setVisible(setIncludeTypes.getValue());
-                form.getWidget(setExcludeTypes.getName()).setVisible(true);
-                form.getWidget(excludeTypes.getName()).setVisible(setExcludeTypes.getValue());
                 form.getWidget(batchSize.getName()).setVisible(true);
             }
             // getLeadChanges
@@ -604,29 +614,20 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
 
     public ValidationResult validateFetchCustomObjectSchema() {
         ValidationResultMutable vr = new ValidationResultMutable();
-        // try (SandboxedInstance sandboxedInstance = RuntimeUtil.createRuntimeClass(new
-        // JarRuntimeInfo(MAVEN_RUNTIME_PATH,
-        // DependenciesReader.computeDependenciesFilePath(MAVEN_GROUP_ID, MAVEN_RUNTIME_ARTIFACT_ID),
-        // RUNTIME_SOURCEORSINK_CLASS), connection.getClass().getClassLoader())) {
-        // MarketoSourceOrSinkSchemaProvider sos = (MarketoSourceOrSinkSchemaProvider) sandboxedInstance.getInstance();
-
-        ValidationResultMutable vrm = new ValidationResultMutable(vr);
         try {
             MarketoSourceOrSink sos = new MarketoSourceOrSink();
             sos.initialize(null, this);
             Schema schema = sos.getSchemaForCustomObject(customObjectName.getValue());
             if (schema == null) {
-                vrm.setStatus(ValidationResult.Result.ERROR).setMessage(
-                        messages.getMessage("error.validation.customobjects.fetchcustomobjectschema",
-                                customObjectName.getValue(), "NULL"));
-                return vrm;
+                vr.setStatus(ValidationResult.Result.ERROR).setMessage(messages.getMessage(
+                        "error.validation.customobjects.fetchcustomobjectschema", customObjectName.getValue(), "NULL"));
+                return vr;
             }
             schemaInput.schema.setValue(schema);
-            vrm.setStatus(ValidationResult.Result.OK);
+            vr.setStatus(ValidationResult.Result.OK);
         } catch (RuntimeException | IOException e) {
-            vrm.setStatus(ValidationResult.Result.ERROR).setMessage(
-                    messages.getMessage("error.validation.customobjects.fetchcustomobjectschema", customObjectName.getValue(),
-                            e.getMessage()));
+            vr.setStatus(ValidationResult.Result.ERROR).setMessage(messages.getMessage(
+                    "error.validation.customobjects.fetchcustomobjectschema", customObjectName.getValue(), e.getMessage()));
         }
         return vr;
     }
@@ -638,18 +639,16 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
             sos.initialize(null, this);
             List<String> keys = sos.getCompoundKeyFields(customObjectName.getValue());
             if (keys == null) {
-                vr.setStatus(ValidationResult.Result.ERROR).setMessage(
-                        messages.getMessage("error.validation.customobjects.fetchcompoundkey", customObjectName.getValue(),
-                                "NULL"));
+                vr.setStatus(ValidationResult.Result.ERROR).setMessage(messages
+                        .getMessage("error.validation.customobjects.fetchcompoundkey", customObjectName.getValue(), "NULL"));
                 return vr;
             }
             compoundKey.keyName.setValue(keys);
             compoundKey.keyValue.setValue(Arrays.asList(new String[keys.size()]));
             vr.setStatus(ValidationResult.Result.OK);
         } catch (RuntimeException | IOException e) {
-            vr.setStatus(ValidationResult.Result.ERROR).setMessage(
-                    messages.getMessage("error.validation.customobjects.fetchcompoundkey", customObjectName.getValue(),
-                            e.getMessage()));
+            vr.setStatus(ValidationResult.Result.ERROR).setMessage(messages
+                    .getMessage("error.validation.customobjects.fetchcompoundkey", customObjectName.getValue(), e.getMessage()));
         }
         return vr;
     }
@@ -729,7 +728,7 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
                 s = MarketoConstants.getSOAPSchemaForGetLeadOrGetMultipleLeads();
                 break;
             case getLeadActivity:
-                s = getSOAPSchemaForGetLeadActivity();
+                s = MarketoConstants.getSOAPSchemaForGetLeadActivity();
                 break;
             case getLeadChanges:
                 s = MarketoConstants.getSOAPSchemaForGetLeadChanges();
@@ -742,7 +741,7 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
                 s = MarketoConstants.getRESTSchemaForGetLeadOrGetMultipleLeads();
                 break;
             case getLeadActivity:
-                s = getRESTSchemaForGetLeadActivity();
+                s = MarketoConstants.getRESTSchemaForGetLeadActivity();
                 break;
             case getLeadChanges:
                 s = MarketoConstants.getRESTSchemaForGetLeadChanges();
@@ -767,7 +766,7 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
 
     @Override
     public int getVersionNumber() {
-        return 2;
+        return 3;
     }
 
     private Field getMigratedField(Field origin, Schema expectedSchema, String expectedDIType) {
@@ -800,10 +799,11 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
             customObjectAction.setPossibleValues(CustomObjectAction.values());
             customObjectAction.setValue(CustomObjectAction.valueOf(io));
         }
+        checkForInvalidStoredProperties();
         if (version < this.getVersionNumber()) {
             if (getMultipleLeads.equals(inputOperation.getValue())
-                    && ((LeadSelector.StaticListSelector.equals(leadSelectorREST.getValue()) && isApiREST()) || (LeadSelector.StaticListSelector
-                            .equals(leadSelectorSOAP.getValue()) && isApiSOAP()))
+                    && ((LeadSelector.StaticListSelector.equals(leadSelectorREST.getValue()) && isApiREST())
+                            || (LeadSelector.StaticListSelector.equals(leadSelectorSOAP.getValue()) && isApiSOAP()))
                     && ListParam.STATIC_LIST_ID.equals(listParam.getValue()) && listParamListId.getValue() == null) {
                 try {
                     String p = listParamListName.getValue();
@@ -861,7 +861,66 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
                 }
                 migrated = true;
             }
+            // manage include/exclude types in REST
+            if (isApiREST()) {
+                if (setIncludeTypes.getValue()) {
+                    includeTypes.type.setValue(getFixedIncludeExcludeList(includeTypes.type.getValue()));
+                }
+                if (setExcludeTypes.getValue()) {
+                    excludeTypes.type.setValue(getFixedIncludeExcludeList(excludeTypes.type.getValue()));
+                }
+                migrated = true;
+            }
         }
         return migrated;
+    }
+
+    /*
+     * translate int ids to include/exclude strings not translated be studio's migration
+     * 
+     */
+    private List<String> getFixedIncludeExcludeList(List<String> list) {
+        if (list == null) {
+            return Collections.emptyList();
+        }
+        for (int i = 0; i < list.size(); i++) {
+            String s = list.get(i);
+            if (s.matches("^\\d+$")) {
+                list.set(i, IncludeExcludeFieldsREST.valueOf(Integer.parseInt(s)).name());
+            }
+        }
+        return list;
+    }
+
+    /*
+     * Some jobs were corrupted between 6.4 and 6.5 (Class name changes). This fixes thoses jobs in error with a
+     * ClassCastException : LinkedHashMap cannot be cast to Enum.
+     */
+    private void checkForInvalidStoredProperties() {
+        Object o;
+        String ov;
+        LinkedHashMap value;
+        if (inputOperation.getStoredValue() instanceof LinkedHashMap) {
+            o = inputOperation.getStoredValue();
+            value = (LinkedHashMap) o;
+            ov = String.valueOf(value.get("name"));
+            try {
+                inputOperation.setValue(InputOperation.valueOf(ov));
+                inputOperation.setStoredValue(InputOperation.valueOf(ov));
+            } catch (Exception e) {
+                LOG.error("Error during inputOperation fix: {}.", e);
+            }
+        }
+        if (customObjectAction.getStoredValue() instanceof LinkedHashMap) {
+            o = customObjectAction.getStoredValue();
+            value = (LinkedHashMap) o;
+            ov = String.valueOf(value.get("name"));
+            try {
+                customObjectAction.setValue(CustomObjectAction.valueOf(ov));
+                customObjectAction.setStoredValue(CustomObjectAction.valueOf(ov));
+            } catch (Exception e) {
+                LOG.error("Error during customObjectAction fix: {}.", e);
+            }
+        }
     }
 }
