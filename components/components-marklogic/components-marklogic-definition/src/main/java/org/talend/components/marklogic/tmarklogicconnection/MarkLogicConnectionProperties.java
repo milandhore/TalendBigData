@@ -138,7 +138,7 @@ public class MarkLogicConnectionProperties extends ComponentPropertiesImpl imple
 
     @Override
     public MarkLogicConnectionProperties getConnectionProperties() {
-        return this;
+        return isReferencedConnectionUsed() ? referencedComponent.getReference() : this;
     }
 
     public void beforeFormPresentWizardForm() throws Exception {

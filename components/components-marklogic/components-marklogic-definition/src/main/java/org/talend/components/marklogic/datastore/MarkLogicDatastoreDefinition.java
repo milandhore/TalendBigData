@@ -1,8 +1,21 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.components.marklogic.datastore;
 
 import org.talend.components.common.dataset.DatasetProperties;
 import org.talend.components.common.datastore.DatastoreDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
+import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputDefinition;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputDefinition;
@@ -14,22 +27,24 @@ import org.talend.daikon.runtime.RuntimeInfo;
  *
  *
  */
-public class MarklogicDatastoreDefinition extends I18nDefinition implements DatastoreDefinition<MarkLogicConnectionProperties> {
+public class MarkLogicDatastoreDefinition extends I18nDefinition implements DatastoreDefinition<MarkLogicConnectionProperties> {
 
     public static final String COMPONENT_NAME = "tMarkLogicNEWConnection"; //$NON-NLS-1$
 
-    public MarklogicDatastoreDefinition() {
+    public MarkLogicDatastoreDefinition() {
         super(COMPONENT_NAME);
     }
 
     @Override
     public DatasetProperties<MarkLogicConnectionProperties> createDatasetProperties(MarkLogicConnectionProperties storeProp) {
-        return null;
+        MarkLogicDatasetProperties datasetProperties = new MarkLogicDatasetProperties("datasetProperties");
+        datasetProperties.setDatastoreProperties(storeProp);
+        return datasetProperties;
     }
 
     @Override
     public RuntimeInfo getRuntimeInfo(MarkLogicConnectionProperties properties) {
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.runtime.TMarkLogicConnectionStandalone");
+        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.datastore.MarkLogicDatastoreRuntime");
     }
 
     @Override

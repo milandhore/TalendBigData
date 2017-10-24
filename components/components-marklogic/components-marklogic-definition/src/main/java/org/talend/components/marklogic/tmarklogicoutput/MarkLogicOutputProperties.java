@@ -12,11 +12,23 @@
 // ============================================================================
 package org.talend.components.marklogic.tmarklogicoutput;
 
+import static org.talend.daikon.avro.SchemaConstants.TALEND_IS_LOCKED;
+import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
+import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
+import static org.talend.daikon.properties.property.PropertyFactory.newString;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.avro.Schema;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
+import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
@@ -24,19 +36,6 @@ import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
-
-import javax.print.Doc;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.talend.daikon.avro.SchemaConstants.TALEND_IS_LOCKED;
-import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
-import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
-import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 public class MarkLogicOutputProperties extends FixedConnectorsComponentProperties {
 
@@ -54,10 +53,9 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         BINARY
     }
 
-
     public MarkLogicConnectionProperties connection = new MarkLogicConnectionProperties("connection");
 
-    public SchemaProperties schema = new SchemaProperties("schema");
+    public MarkLogicDatasetProperties datasetProperties = new MarkLogicDatasetProperties("datasetProperties");
 
     public SchemaProperties schemaReject = new SchemaProperties("schemaReject"); //$NON-NLS-1$
 
@@ -81,7 +79,7 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(connection.getForm(Form.REFERENCE));
         mainForm.addRow(Widget.widget(action).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
-        mainForm.addRow(schema.getForm(Form.REFERENCE));
+        mainForm.addRow(datasetProperties.getForm(Form.REFERENCE));
 
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(Widget.widget(docType).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
@@ -92,8 +90,10 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
     @Override
     public void setupProperties() {
         super.setupProperties();
-        setupSchema();
         connection.setupProperties();
+        datasetProperties.setDatastoreProperties(connection);
+
+        setupSchema();
         action.setPossibleValues(Action.UPSERT, Action.PATCH, Action.DELETE);
         action.setValue(Action.UPSERT);
         docType.setPossibleValues(DocType.MIXED, DocType.PLAIN_TEXT, DocType.JSON, DocType.XML, DocType.BINARY);
@@ -127,7 +127,7 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         }
     }
 
-    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
+    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "datasetProperties.main");
 
     protected transient PropertyPathConnector REJECT_CONNECTOR = new PropertyPathConnector(Connector.REJECT_NAME, "schemaReject");
 
@@ -161,7 +161,8 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         Schema initialSchema = Schema.createRecord("marklogic", null, null, false, fields);
         initialSchema.addProp(TALEND_IS_LOCKED, "true");
         fields.clear();
-        schema.schema.setValue(initialSchema);
+
+        datasetProperties.main.schema.setValue(initialSchema);
 
         //TODO refactor it
         schemaFlow.schema.setValue(initialSchema);

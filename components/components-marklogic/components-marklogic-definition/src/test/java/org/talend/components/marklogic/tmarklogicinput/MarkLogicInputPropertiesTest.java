@@ -12,17 +12,6 @@
 // ============================================================================
 package org.talend.components.marklogic.tmarklogicinput;
 
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.talend.components.api.component.PropertyPathConnector;
-import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
-import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
-import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionPropertiesTest;
-import org.talend.daikon.properties.presentation.Form;
-
-import java.util.Set;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertEquals;
@@ -32,6 +21,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.talend.daikon.avro.SchemaConstants.TALEND_IS_LOCKED;
 
+import java.util.Set;
+
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
+import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
+import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionPropertiesTest;
+import org.talend.daikon.properties.presentation.Form;
+
 public class MarkLogicInputPropertiesTest {
 
     private MarkLogicInputProperties testInputProperties;
@@ -39,6 +39,7 @@ public class MarkLogicInputPropertiesTest {
     @Before
     public void setUp() {
         testInputProperties = new MarkLogicInputProperties("testInputProperties");
+
     }
 
     /**
@@ -46,8 +47,10 @@ public class MarkLogicInputPropertiesTest {
      */
     @Test
     public void testSetupLayout() {
+        testInputProperties.setupProperties();
         testInputProperties.connection.init();
-        testInputProperties.schema.init();
+        testInputProperties.datasetProperties.init();
+        testInputProperties.datasetProperties.main.init();
 
         testInputProperties.setupLayout();
         Form main = testInputProperties.getForm(Form.MAIN);
@@ -99,9 +102,9 @@ public class MarkLogicInputPropertiesTest {
     @Test
     public void testSchemaDocIdFieldIsLocked() {
         testInputProperties.setupSchema();
-        assertNull(testInputProperties.schema.schema.getValue().getProp(TALEND_IS_LOCKED));
-        assertEquals("true", testInputProperties.schema.schema.getValue().getField("docId").getProp(TALEND_IS_LOCKED));
-        assertNull(testInputProperties.schema.schema.getValue().getField("docContent").getProp(TALEND_IS_LOCKED));
+        assertNull(testInputProperties.datasetProperties.main.schema.getValue().getProp(TALEND_IS_LOCKED));
+        assertEquals("true", testInputProperties.datasetProperties.main.schema.getValue().getField("docId").getProp(TALEND_IS_LOCKED));
+        assertNull(testInputProperties.datasetProperties.main.schema.getValue().getField("docContent").getProp(TALEND_IS_LOCKED));
     }
 
     @Test
@@ -125,11 +128,14 @@ public class MarkLogicInputPropertiesTest {
      */
     @Test
     public void testRefreshLayout() {
-        testInputProperties.init();
+        testInputProperties.setupProperties();
+        testInputProperties.connection.init();
+        testInputProperties.datasetProperties.init();
+        testInputProperties.setupLayout();
+
         testInputProperties.refreshLayout(testInputProperties.getForm(Form.MAIN));
         testInputProperties.refreshLayout(testInputProperties.getForm(Form.ADVANCED));
 
-        boolean schemaHidden = testInputProperties.getForm(Form.MAIN).getWidget("schema").isHidden();
         boolean isConnectionPropertiesHidden = testInputProperties.getForm(Form.MAIN).getWidget("connection").isHidden();
         boolean isQueryCriteriaHidden = testInputProperties.getForm(Form.MAIN).getWidget("criteria").isHidden();
         boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("maxRetrieve").isHidden();
@@ -139,7 +145,6 @@ public class MarkLogicInputPropertiesTest {
         boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionName").isHidden();
         boolean isQueryOptionLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionLiterals").isHidden();
 
-        assertFalse(schemaHidden);
         assertFalse(isConnectionPropertiesHidden);
         assertFalse(isQueryCriteriaHidden);
         assertFalse(isMaxRetrieveHidden);
@@ -155,7 +160,11 @@ public class MarkLogicInputPropertiesTest {
     public void testUseExistedConnectionHideConnectionWidget() {
         MarkLogicConnectionProperties someConnection = new MarkLogicConnectionProperties("connection");
 
-        testInputProperties.init();
+        testInputProperties.setupProperties();
+        testInputProperties.connection.init();
+        testInputProperties.datasetProperties.init();
+        testInputProperties.setupLayout();
+
         someConnection.init();
         testInputProperties.connection.referencedComponent.setReference(someConnection);
         testInputProperties.connection.referencedComponent.componentInstanceId.setValue(MarkLogicConnectionDefinition.COMPONENT_NAME + "_1");
@@ -176,7 +185,10 @@ public class MarkLogicInputPropertiesTest {
 
     @Test
     public void testAfterUseQueryOption() {
-        testInputProperties.init();
+        testInputProperties.setupProperties();
+        testInputProperties.connection.init();
+        testInputProperties.datasetProperties.init();
+        testInputProperties.setupLayout();
 
         testInputProperties.useQueryOption.setValue(true);
         testInputProperties.afterUseQueryOption();

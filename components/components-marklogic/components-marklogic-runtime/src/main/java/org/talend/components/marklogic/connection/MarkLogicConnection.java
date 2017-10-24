@@ -13,21 +13,17 @@
 package org.talend.components.marklogic.connection;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
-import org.talend.components.common.datastore.runtime.DatastoreRuntime;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.exception.ExceptionContext.ExceptionContextBuilder;
 import org.talend.daikon.exception.error.DefaultErrorCode;
 import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
-import org.talend.daikon.properties.ValidationResult;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
@@ -38,9 +34,7 @@ import com.marklogic.client.FailedRequestException;
  * Common implementation for creating or getting connection to MarkLogic database.
  *
  */
-public abstract class MarkLogicConnection implements DatastoreRuntime<MarkLogicConnectionProperties> {
-
-    private static final long serialVersionUID = -7863143286325679135L;
+public abstract class MarkLogicConnection {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(MarkLogicConnection.class);
 
@@ -104,18 +98,6 @@ public abstract class MarkLogicConnection implements DatastoreRuntime<MarkLogicC
             }
             throw new ComponentException(errorCode, e, new ExceptionContextBuilder().put(ERROR_KEY, message).build());
         }
-    }
-
-    @Override
-    public Iterable<ValidationResult> doHealthChecks(RuntimeContainer container) {
-        List<ValidationResult> checks = new ArrayList<>(1);
-        try {
-            connect(container);
-            checks.add(ValidationResult.OK);
-        } catch(ComponentException ce) {
-            checks.add(new ValidationResult(ce));
-        }
-        return checks;
     }
 
     protected abstract MarkLogicConnectionProperties getMarkLogicConnectionProperties();

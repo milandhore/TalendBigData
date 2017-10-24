@@ -12,40 +12,37 @@
 // ============================================================================
 package org.talend.components.marklogic.tmarklogicinput;
 
-import org.apache.avro.Schema;
-import org.talend.components.api.component.Connector;
-import org.talend.components.api.component.PropertyPathConnector;
-import org.talend.components.common.FixedConnectorsComponentProperties;
-import org.talend.components.common.SchemaProperties;
-import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
-import org.talend.daikon.avro.AvroUtils;
-import org.talend.daikon.avro.SchemaConstants;
-import org.talend.daikon.properties.ReferenceProperties;
-import org.talend.daikon.properties.ValidationResult;
-import org.talend.daikon.properties.presentation.Form;
-import org.talend.daikon.properties.presentation.Widget;
-import org.talend.daikon.properties.property.Property;
-import org.talend.daikon.properties.property.PropertyFactory;
+import static org.talend.daikon.properties.presentation.Widget.widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.talend.daikon.avro.SchemaConstants.TALEND_IS_LOCKED;
-import static org.talend.daikon.properties.presentation.Widget.widget;
+import org.apache.avro.Schema;
+import org.talend.components.api.component.Connector;
+import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.common.FixedConnectorsComponentProperties;
+import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
+import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
+import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
 
 public class MarkLogicInputProperties extends FixedConnectorsComponentProperties {
 
     public MarkLogicConnectionProperties connection = new MarkLogicConnectionProperties("connection");
 
-    public SchemaProperties schema = new SchemaProperties("schema");
+    public MarkLogicDatasetProperties datasetProperties = new MarkLogicDatasetProperties("datasetProperties");
 
     public MarkLogicInputProperties(String name) {
         super(name);
     }
 
-    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
+    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "datasetProperties.main");
 
     public Property<String> criteria = PropertyFactory.newString("criteria");
 
@@ -60,6 +57,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     public void setupProperties() {
         super.setupProperties();
         connection.setupProperties();
+        datasetProperties.setDatastoreProperties(connection);
 
         criteria.setRequired();
 
@@ -94,8 +92,8 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     public void setupLayout() {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
-        mainForm.addRow(connection.getForm(Form.REFERENCE));
-        mainForm.addRow(schema.getForm(Form.REFERENCE));
+        mainForm.addRow(connection.getForm(Form.MAIN));
+        mainForm.addRow(datasetProperties.getForm(Form.REFERENCE));
         mainForm.addRow(criteria);
 
         Form advancedForm = new Form(this, Form.ADVANCED);
@@ -120,7 +118,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         fields.add(docContentField);
         Schema initialSchema = Schema.createRecord("jira", null, null, false, fields);
 
-        schema.schema.setValue(initialSchema);
+        datasetProperties.main.schema.setValue(initialSchema);
     }
 
     public void afterUseQueryOption() {
