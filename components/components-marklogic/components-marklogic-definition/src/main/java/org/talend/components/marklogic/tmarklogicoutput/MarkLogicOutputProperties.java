@@ -17,6 +17,7 @@ import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
+import org.talend.components.marklogic.MarkLogicProvideConnectionProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
@@ -25,10 +26,8 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,12 +37,15 @@ import static org.talend.daikon.properties.property.PropertyFactory.newBoolean;
 import static org.talend.daikon.properties.property.PropertyFactory.newEnum;
 import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
-public class MarkLogicOutputProperties extends FixedConnectorsComponentProperties {
+public class MarkLogicOutputProperties extends FixedConnectorsComponentProperties implements
+        MarkLogicProvideConnectionProperties {
+
 
     public enum Action {
         UPSERT,
         PATCH,
-        DELETE
+        DELETE;
+
     }
 
     public enum DocType {
@@ -51,9 +53,9 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         PLAIN_TEXT,
         JSON,
         XML,
-        BINARY
-    }
+        BINARY;
 
+    }
 
     public MarkLogicConnectionProperties connection = new MarkLogicConnectionProperties("connection");
 
@@ -62,6 +64,12 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
     public SchemaProperties schemaReject = new SchemaProperties("schemaReject"); //$NON-NLS-1$
 
     public SchemaProperties schemaFlow = new SchemaProperties("schemaFlow");
+
+    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
+
+    protected transient PropertyPathConnector REJECT_CONNECTOR = new PropertyPathConnector(Connector.REJECT_NAME, "schemaReject");
+
+    protected transient PropertyPathConnector FLOW_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schemaFlow");
 
     public EnumProperty<Action> action = newEnum("action", Action.class);
 
@@ -92,7 +100,7 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
     @Override
     public void setupProperties() {
         super.setupProperties();
-        setupSchema();
+        setupSchemas();
         connection.setupProperties();
         action.setPossibleValues(Action.UPSERT, Action.PATCH, Action.DELETE);
         action.setValue(Action.UPSERT);
@@ -127,12 +135,6 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         }
     }
 
-    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
-
-    protected transient PropertyPathConnector REJECT_CONNECTOR = new PropertyPathConnector(Connector.REJECT_NAME, "schemaReject");
-
-    protected transient PropertyPathConnector FLOW_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schemaFlow");
-
     @Override
     protected Set<PropertyPathConnector> getAllSchemaPropertiesConnectors(boolean isOutputConnection) {
         if (!isOutputConnection) {
@@ -145,12 +147,18 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         }
     }
 
-    void setupSchema() {
+    void setupSchemas() {
+        setupMainAndFlowSchemas();
+        setupRejectSchema();
+    }
+
+    private void setupMainAndFlowSchemas() {
         Schema stringSchema = AvroUtils._string();
         Schema objectSchema = AvroUtils._bytes();
 
-        // create Schema for MarkLogic
+        // Talend type should be Object (but avro type is bytes[])
         objectSchema.addProp(SchemaConstants.JAVA_CLASS_FLAG, "java.lang.Object");
+
         Schema.Field docIdField = new Schema.Field("docId", stringSchema, null, (Object) null, Schema.Field.Order.ASCENDING);
         docIdField.addProp(SchemaConstants.TALEND_COLUMN_IS_KEY, "true");
         Schema.Field docContentField = new Schema.Field("docContent", objectSchema, null, (Object) null,
@@ -160,20 +168,20 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
         fields.add(docContentField);
         Schema initialSchema = Schema.createRecord("marklogic", null, null, false, fields);
         initialSchema.addProp(TALEND_IS_LOCKED, "true");
-        fields.clear();
+
         schema.schema.setValue(initialSchema);
-
-        //TODO refactor it
         schemaFlow.schema.setValue(initialSchema);
+    }
 
-        Schema.Field errMessageField = new Schema.Field("errMesage", stringSchema, null, (Object) null,
+    private void setupRejectSchema() {
+        Schema.Field errMessageField = new Schema.Field("errMesage", AvroUtils._string(), null, (Object) null,
                 Schema.Field.Order.IGNORE);
+        List<Schema.Field> fields = new ArrayList<>();
         fields.add(errMessageField);
         Schema rejectSchema = Schema.createRecord("marklogicReject", null, null, false, fields);
         rejectSchema.addProp(TALEND_IS_LOCKED, "true");
         schemaReject.schema.setValue(rejectSchema);
     }
-
     public void afterAction() {
         refreshLayout(getForm(Form.ADVANCED));
     }
@@ -184,5 +192,10 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
 
     public void afterAutoGenerateDocId() {
         refreshLayout(getForm(Form.ADVANCED));
+    }
+
+    @Override
+    public MarkLogicConnectionProperties getConnectionProperties() {
+        return connection;
     }
 }

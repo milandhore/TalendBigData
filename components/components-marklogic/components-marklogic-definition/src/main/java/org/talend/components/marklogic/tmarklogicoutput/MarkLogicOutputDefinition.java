@@ -60,4 +60,8 @@ public class MarkLogicOutputDefinition extends AbstractMarkLogicComponentDefinit
         return EnumSet.of(ConnectorTopology.INCOMING, ConnectorTopology.INCOMING_AND_OUTGOING);
     }
 
+    @Override
+    public boolean isConditionalInputs() {
+        return true;
+    }
 }

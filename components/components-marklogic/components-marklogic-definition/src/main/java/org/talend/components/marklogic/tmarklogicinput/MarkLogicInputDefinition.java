@@ -70,11 +70,18 @@ public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefiniti
             ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
         assertConnectorTopologyCompatibility(connectorTopology);
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.runtime.MarkLogicSource");
+
+        String runtimeInputPackageName = "org.talend.components.marklogic.runtime.input";
+        String runtimeClassName = connectorTopology == ConnectorTopology.OUTGOING ?
+                "MarkLogicSource" : "MarkLogicInputSink";
+
+        return RuntimeInfoProvider.getCommonRuntimeInfo(runtimeInputPackageName + "." + runtimeClassName);
+
     }
 
     @Override
     public Set<ConnectorTopology> getSupportedConnectorTopologies() {
-        return EnumSet.of(ConnectorTopology.OUTGOING);
+        return EnumSet.of(ConnectorTopology.OUTGOING, ConnectorTopology.INCOMING_AND_OUTGOING,
+                ConnectorTopology.NONE); //NONE is workaround for jet_stub
     }
 }

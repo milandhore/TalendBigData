@@ -12,33 +12,38 @@
 // ============================================================================
 package org.talend.components.marklogic.runtime;
 
-import org.apache.avro.generic.IndexedRecord;
-import org.talend.components.api.component.runtime.Sink;
+import org.talend.components.api.component.runtime.Result;
 import org.talend.components.api.component.runtime.WriteOperation;
-import org.talend.components.api.component.runtime.Writer;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputProperties;
 
 import java.util.Map;
 
-public class MarkLogicWriteOperation implements WriteOperation<IndexedRecord> {
-
+public class MarkLogicWriteOperation implements  WriteOperation<Result> {
+    private MarkLogicSink markLogicSink;
+    private MarkLogicOutputProperties outputProperties;
     @Override
     public void initialize(RuntimeContainer adaptor) {
-
+        //nothing to do here
     }
 
     @Override
-    public Map<String, Object> finalize(Iterable<IndexedRecord> writerResults, RuntimeContainer adaptor) {
-        return null;
+    public Map<String, Object> finalize(Iterable<Result> writerResults, RuntimeContainer adaptor) {
+        return Result.accumulateAndReturnMap(writerResults);
     }
 
     @Override
-    public Writer<IndexedRecord> createWriter(RuntimeContainer adaptor) {
-        return null;
+    public MarkLogicWriter createWriter(RuntimeContainer adaptor) {
+        return new MarkLogicWriter(this, adaptor, outputProperties);
     }
 
     @Override
-    public Sink getSink() {
-        return null;
+    public MarkLogicSink getSink() {
+        return markLogicSink;
+    }
+
+    public MarkLogicWriteOperation(MarkLogicSink markLogicSink, MarkLogicOutputProperties outputProperties) {
+        this.markLogicSink = markLogicSink;
+        this.outputProperties = outputProperties;
     }
 }
