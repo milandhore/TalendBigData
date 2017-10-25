@@ -80,11 +80,24 @@ public class SalesforceRuntime {
         return errors;
     }
 
-    public static Calendar convertDateToCalendar(Date date) {
+    /**
+     * Convert date to calendar with timezone "GMT"
+     * 
+     * @param date
+     * @param ignoreTZ whether ignore timezone during format
+     *
+     * @return Calendar instance
+     */
+    public static Calendar convertDateToCalendar(Date date, boolean ignoreTZ) {
         if (date != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-            cal.setTime(date);
+            if (ignoreTZ) {
+                TimeZone tz = TimeZone.getDefault();
+                cal.setTimeInMillis(date.getTime() + tz.getRawOffset() + tz.getDSTSavings());
+            } else {
+                cal.setTime(date);
+            }
             return cal;
         } else {
             return null;
