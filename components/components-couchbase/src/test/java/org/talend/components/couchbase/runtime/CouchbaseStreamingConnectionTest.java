@@ -66,15 +66,6 @@ public class CouchbaseStreamingConnectionTest {
     }
 
     @Test
-    public void testAcknowldge() {
-        ByteBuf buffer = Mockito.mock(ByteBuf.class);
-
-        streamingConnection.acknowledge(buffer);
-
-        Mockito.verify(client).acknowledgeBuffer(buffer);
-    }
-
-    @Test
     public void testStartStreaming() throws InterruptedException {
         Mockito.when(client.initializeState(StreamFrom.BEGINNING, StreamTo.NOW)).thenReturn(Completable.complete());
         Mockito.when(client.startStreaming(Mockito.<Short[]>anyVararg())).thenReturn(Completable.complete());
@@ -101,7 +92,7 @@ public class CouchbaseStreamingConnectionTest {
         Mockito.when(sessionState.isAtEnd()).thenReturn(false, true);
         Mockito.when(client.sessionState()).thenReturn(sessionState);
 
-        Mockito.doNothing().when(client).acknowledgeBuffer(Mockito.any(ByteBuf.class));
+//        Mockito.doNothing().when(client).acknowledgeBuffer(Mockito.any(ByteBuf.class));
 
         BlockingQueue<ByteBuf> resultsQueue = new ArrayBlockingQueue<>(4);
         resultsQueue.put(Mockito.mock(ByteBuf.class));
@@ -116,7 +107,7 @@ public class CouchbaseStreamingConnectionTest {
 
         Thread.sleep(3 * 500);
         Mockito.verify(client, Mockito.times(2)).sessionState();
-        Mockito.verify(client, Mockito.times(4)).acknowledgeBuffer(Mockito.any(ByteBuf.class));
+//        Mockito.verify(client, Mockito.times(4)).acknowledgeBuffer(Mockito.any(ByteBuf.class));
         Mockito.verify(client, Mockito.times(1)).disconnect();
     }
 
