@@ -30,6 +30,7 @@ import com.couchbase.client.dcp.DataEventHandler;
 import com.couchbase.client.dcp.StreamFrom;
 import com.couchbase.client.dcp.StreamTo;
 import com.couchbase.client.dcp.config.DcpControl;
+import com.couchbase.client.dcp.transport.netty.ChannelFlowController;
 import com.couchbase.client.deps.io.netty.buffer.ByteBuf;
 
 public class CouchbaseStreamingConnection {
@@ -40,6 +41,7 @@ public class CouchbaseStreamingConnection {
     private volatile boolean connected;
     private volatile boolean streaming;
     private volatile BlockingQueue<ByteBuf> resultsQueue;
+    private EventHandler dataEventHandler;
 
     public CouchbaseStreamingConnection(String bootstrapNodes, String bucket, String password) {
         connected = false;
@@ -53,27 +55,17 @@ public class CouchbaseStreamingConnection {
                 .bufferAckWatermark(60)
                 .build();
         client.controlEventHandler(new ControlEventHandler() {
+
             @Override
-            public void onEvent(ByteBuf event) {
-                client.acknowledgeBuffer(event);
+            public void onEvent(ChannelFlowController controller, ByteBuf event) {
+                controller.ack(event);
                 event.release();
             }
         });
-        client.dataEventHandler(new DataEventHandler() {
-            @Override
-            public void onEvent(ByteBuf event) {
-                if (resultsQueue != null) {
-                    try {
-                        resultsQueue.put(event);
-                    } catch (InterruptedException e) {
-                        LOG.error("Unable to put DCP request into the results queue");
-                    }
-                } else {
-                    client.acknowledgeBuffer(event);
-                    event.release();
-                }
-            }
-        });
+
+        dataEventHandler = new EventHandler();
+
+        client.dataEventHandler(dataEventHandler);
     }
 
     public void connect() {
@@ -137,14 +129,14 @@ public class CouchbaseStreamingConnection {
             queue.drainTo(drained);
             for (ByteBuf byteBuf : drained) {
                 byteBuf.release();
-                client.acknowledgeBuffer(byteBuf);
+                //client.acknowledgeBuffer(byteBuf);
             }
             client.disconnect();
         }
     }
 
     public void acknowledge(ByteBuf event) {
-        client.acknowledgeBuffer(event);
+        dataEventHandler.getController().ack(event);
     }
 
     private Short[] partitionsToStream() {
@@ -154,4 +146,31 @@ public class CouchbaseStreamingConnection {
         }
         return partitions;
     }
+
+    private class EventHandler implements DataEventHandler {
+
+        private ChannelFlowController classController;
+
+        @Override
+        public void onEvent(ChannelFlowController controller, ByteBuf event) {
+            if (controller != null) {
+                this.classController = controller;
+            }
+            if (resultsQueue != null) {
+                try {
+                    resultsQueue.put(event);
+//                    controller.ack(event);
+                } catch (InterruptedException e) {
+                    LOG.error("Unable to put DCP request into the results queue");
+                }
+            } else {
+                controller.ack(event);
+                event.release();
+            }
+        }
+
+        public ChannelFlowController getController() {
+            return this.classController;
+        }
+    };
 }
