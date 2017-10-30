@@ -1,0 +1,9 @@
+phraseapp:
+  access_token: "b6162d4394e46d4850e7eb7496ca760d9450399b67181a8e74a3841a7297c83c"
+  project_id: "4542f35ed565be12b3157422636769f1"
+  file_format: properties
+  push:
+    sources:
+    - file: "./**/*.properties"
+      params:
+        locale_id: en
