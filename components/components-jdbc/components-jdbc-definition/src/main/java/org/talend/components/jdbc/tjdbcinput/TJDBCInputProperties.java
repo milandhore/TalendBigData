@@ -14,7 +14,9 @@ package org.talend.components.jdbc.tjdbcinput;
 
 import static org.talend.daikon.properties.presentation.Widget.widget;
 
+import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.avro.Schema;
@@ -25,6 +27,11 @@ import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
+import org.talend.components.common.config.jdbc.Dbms;
+import org.talend.components.common.config.jdbc.DbmsType;
+import org.talend.components.common.config.jdbc.MappingFileLoader;
+import org.talend.components.common.config.jdbc.MappingType;
+import org.talend.components.common.config.jdbc.TalendType;
 import org.talend.components.jdbc.CommonUtils;
 import org.talend.components.jdbc.JdbcRuntimeInfo;
 import org.talend.components.jdbc.RuntimeSettingProvider;
@@ -189,7 +196,15 @@ public class TJDBCInputProperties extends FixedConnectorsComponentProperties imp
         return ValidationResult.OK;
     }
 
-    public ValidationResult afterGuessQueryFromSchema() {
+    // TODO Studio should call {@link ComponentService#afterProperty(String, Properties, RuntimeContext) method and pass mapping files location inside RuntimeContext
+    public ValidationResult afterGuessQueryFromSchema(RuntimeContext context) {   
+        URL mappingFilesLocation = context.get("MAPPINGS_URL"); // key is not specified yet
+        String path = mappingFilesLocation.getPath() + "mapping_mysql.xml";  // "mapping_mysql.xml" value should be retrieved from user property
+        MappingFileLoader fileLoader = new MappingFileLoader();
+        List<Dbms> dbmsList = fileLoader.load(path);
+        Dbms dbms = dbmsList.get(0); // Seems, almost all mapping files describe only 1 DBMS. We may try to get rig of List<Dbms>
+        // Ideally, only Dbms instance should be used to obtain all required information about mapping. We may add more methods if we need
+        
         String tablename = tableSelection.tablename.getValue();
         Schema schema = main.schema.getValue();
         if (tablename == null || tablename.isEmpty()) {
@@ -198,6 +213,33 @@ public class TJDBCInputProperties extends FixedConnectorsComponentProperties imp
         if (schema == null || schema.getFields().isEmpty()) {
             return new ValidationResult(ValidationResult.Result.ERROR, "Please set the schema before it");
         }
+        
+        // import generateSQL4SelectTable(); don't do like this, this is just for example
+        String protectedChar = ""; // dummy value
+        
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append("SELECT ");
+        List<Schema.Field> fields = schema.getFields();
+        boolean firstOne = true;
+        for (Schema.Field field : fields) {
+            if (firstOne) {
+                firstOne = false;
+            } else {
+                sqlBuilder.append(", ");
+            }
+
+//            String dbColumnName = field.getProp(SchemaConstants.TALEND_COLUMN_DB_COLUMN_NAME); //It is just for example. In production better to use value from schema 
+            // I think we can add some method in Dbms class and wrap following code in the method.
+            TalendType talendType = TalendType.convertFromAvro(field.schema());
+            MappingType<TalendType, DbmsType> mappingType = dbms.getTalendMapping(talendType.getName());   // we may extend Dbms interface with convenient methods
+            DbmsType defaultType = mappingType.getDefaultType();
+            String dbColumnName = defaultType.getName();
+            
+            
+            sqlBuilder.append(tablename).append(".").append(dbColumnName);
+        }
+        sqlBuilder.append(" FROM ").append(protectedChar).append(tablename).append(protectedChar);
+        
         String query = JDBCSQLBuilder.getInstance().generateSQL4SelectTable(tablename, schema);
         sql.setValue("\"" + query + "\"");
 
