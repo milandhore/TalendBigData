@@ -19,7 +19,6 @@ package org.talend.components.couchbase.runtime;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.components.couchbase.EventSchemaField;
-import org.talend.daikon.avro.converter.AbstractAvroConverter;
 import org.talend.daikon.avro.converter.IndexedRecordConverter;
 
 import com.couchbase.client.dcp.message.DcpDeletionMessage;
@@ -28,10 +27,12 @@ import com.couchbase.client.dcp.message.DcpMutationMessage;
 import com.couchbase.client.deps.io.netty.buffer.ByteBuf;
 import com.couchbase.client.deps.io.netty.util.CharsetUtil;
 
-public class CouchbaseEventGenericRecordConverter extends AbstractAvroConverter<ByteBuf, IndexedRecord> {
+public class CouchbaseEventGenericRecordConverter implements IndexedRecordConverter<ByteBuf, IndexedRecord> {
+
+    private Schema schema;
 
     public CouchbaseEventGenericRecordConverter(Schema schema) {
-        super(ByteBuf.class, schema);
+        this.schema = schema;
     }
 
     private static byte[] bufToBytes(ByteBuf buf) {
@@ -46,13 +47,23 @@ public class CouchbaseEventGenericRecordConverter extends AbstractAvroConverter<
     }
 
     @Override
+    public Schema getSchema() {
+        return schema;
+    }
+
+    @Override
+    public void setSchema(Schema schema) {
+       this.schema = schema;
+    }
+
+    @Override
     public Class<ByteBuf> getDatumClass() {
         return ByteBuf.class;
     }
 
     @Override
     public ByteBuf convertToDatum(IndexedRecord value) {
-        throw new IndexedRecordConverter.UnmodifiableAdapterException();
+        throw new UnmodifiableAdapterException();
     }
 
     @Override
@@ -141,7 +152,7 @@ public class CouchbaseEventGenericRecordConverter extends AbstractAvroConverter<
 
         @Override
         public void put(int i, Object v) {
-            throw new IndexedRecordConverter.UnmodifiableAdapterException();
+            throw new UnmodifiableAdapterException();
         }
 
         @Override
