@@ -4,6 +4,9 @@ phraseapp:
   file_format: properties
   push:
     sources:
-    - file: "./**/*.properties"
+    - file: "services/components-api-service-rest/src/main/resources/application.properties"
       params:
-        locale_id: en
+        locale_id: 940813ef42eb858f14772420790d1777
+  pull:
+    targets:
+    - file: "services/components-api-service-rest/src/main/resources/application_<locale_code>.properties"
