@@ -16,17 +16,13 @@
 
 package org.talend.components.couchbase.runtime;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.avro.Schema;
 import org.talend.components.api.component.runtime.Sink;
 import org.talend.components.api.component.runtime.WriteOperation;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.couchbase.output.CouchbaseOutputProperties;
-import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.ValidationResult;
+import org.talend.daikon.properties.ValidationResult.Result;
 
 public class CouchbaseSink extends CouchbaseSourceOrSink implements Sink {
 
@@ -37,27 +33,20 @@ public class CouchbaseSink extends CouchbaseSourceOrSink implements Sink {
 
     @Override
     public ValidationResult initialize(RuntimeContainer container, ComponentProperties properties) {
-        CouchbaseOutputProperties outputProperties = (CouchbaseOutputProperties) properties;
-        this.bootstrapNodes = outputProperties.bootstrapNodes.getStringValue();
-        this.bucket = outputProperties.bucket.getStringValue();
-        this.password = outputProperties.password.getStringValue();
-        this.idFieldName = outputProperties.idFieldName.getStringValue();
-        return ValidationResult.OK;
+        if (properties instanceof CouchbaseOutputProperties) {
+            CouchbaseOutputProperties outputProperties = (CouchbaseOutputProperties) properties;
+            this.bootstrapNodes = outputProperties.bootstrapNodes.getStringValue();
+            this.bucket = outputProperties.bucket.getStringValue();
+            this.password = outputProperties.password.getStringValue();
+            this.idFieldName = outputProperties.idFieldName.getStringValue();
+            return ValidationResult.OK;
+        }
+        return new ValidationResult(Result.ERROR, "Wrong component properties, must be instanceof CouchbaseOutputProperties class");
     }
 
     @Override
     public WriteOperation<?> createWriteOperation() {
         return new CouchbaseWriteOperation(this);
-    }
-
-    @Override
-    public List<NamedThing> getSchemaNames(RuntimeContainer container) throws IOException {
-        return null;
-    }
-
-    @Override
-    public Schema getEndpointSchema(RuntimeContainer container, String schemaName) throws IOException {
-        return null;
     }
 
     @Override

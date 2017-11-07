@@ -16,7 +16,13 @@
 
 package org.talend.components.couchbase.runtime;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.avro.Schema;
 import org.talend.components.api.component.runtime.SourceOrSink;
+import org.talend.components.api.container.RuntimeContainer;
+import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.ValidationResult;
 
 /**
@@ -37,5 +43,16 @@ public abstract class CouchbaseSourceOrSink implements SourceOrSink {
         }
         return new ValidationResult(ValidationResult.Result.ERROR, message);
     }
+
+    @Override
+    public List<NamedThing> getSchemaNames(RuntimeContainer container) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Schema getEndpointSchema(RuntimeContainer container, String schemaName) throws IOException {
+        return null;
+    }
+
 
 }

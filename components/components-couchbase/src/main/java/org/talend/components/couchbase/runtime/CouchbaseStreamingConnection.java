@@ -129,7 +129,6 @@ public class CouchbaseStreamingConnection {
             queue.drainTo(drained);
             for (ByteBuf byteBuf : drained) {
                 byteBuf.release();
-                //client.acknowledgeBuffer(byteBuf);
             }
             client.disconnect();
         }
@@ -159,7 +158,6 @@ public class CouchbaseStreamingConnection {
             if (resultsQueue != null) {
                 try {
                     resultsQueue.put(event);
-//                    controller.ack(event);
                 } catch (InterruptedException e) {
                     LOG.error("Unable to put DCP request into the results queue");
                 }

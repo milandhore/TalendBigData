@@ -9,10 +9,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
 
+import com.couchbase.client.dcp.message.MessageUtil;
 import com.couchbase.client.deps.io.netty.buffer.ByteBuf;
 import com.couchbase.client.deps.io.netty.buffer.ByteBufUtil;
 
 public class CouchbaseEventGenericRecordConverterTest {
+
+    private static final byte OFFSET = (byte) 0x05;
+
+    private static final short LENGTH = (short) 10;
 
     private CouchbaseEventGenericRecordConverter converter;
     private Schema schema;
@@ -44,17 +49,17 @@ public class CouchbaseEventGenericRecordConverterTest {
         ByteBuf buffer = Mockito.mock(ByteBuf.class);
 
         // Mocking key object
-        Mockito.when(buffer.getByte(0)).thenReturn((byte)0x80);
-        Mockito.when(buffer.getByte(1)).thenReturn((byte)0x57);
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(0)).thenReturn(MessageUtil.MAGIC_REQ);
+        Mockito.when(buffer.getByte(1)).thenReturn(MessageUtil.DCP_MUTATION_OPCODE);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         ByteBuf key = Mockito.mock(ByteBuf.class);
         Mockito.when(key.readableBytes()).thenReturn(4);
         Mockito.when(buffer.slice(29, 10)).thenReturn(key);
 
         // Mocking content object.
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         Mockito.when(buffer.getInt(8)).thenReturn(100);
         ByteBuf content = Mockito.mock(ByteBuf.class);
         // Content byte array length.
@@ -74,10 +79,10 @@ public class CouchbaseEventGenericRecordConverterTest {
         ByteBuf buffer = Mockito.mock(ByteBuf.class);
 
         // Mocking key object
-        Mockito.when(buffer.getByte(0)).thenReturn((byte)0x80);
-        Mockito.when(buffer.getByte(1)).thenReturn((byte)0x58);
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(0)).thenReturn(MessageUtil.MAGIC_REQ);
+        Mockito.when(buffer.getByte(1)).thenReturn(MessageUtil.DCP_DELETION_OPCODE);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         ByteBuf key = Mockito.mock(ByteBuf.class);
         Mockito.when(key.readableBytes()).thenReturn(4);
         Mockito.when(buffer.slice(29, 10)).thenReturn(key);
@@ -93,10 +98,10 @@ public class CouchbaseEventGenericRecordConverterTest {
         ByteBuf buffer = Mockito.mock(ByteBuf.class);
 
         // Mocking key object
-        Mockito.when(buffer.getByte(0)).thenReturn((byte)0x80);
-        Mockito.when(buffer.getByte(1)).thenReturn((byte)0x59);
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(0)).thenReturn(MessageUtil.MAGIC_REQ);
+        Mockito.when(buffer.getByte(1)).thenReturn(MessageUtil.DCP_EXPIRATION_OPCODE);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         ByteBuf key = Mockito.mock(ByteBuf.class);
         Mockito.when(key.readableBytes()).thenReturn(4);
         Mockito.when(buffer.slice(29, 10)).thenReturn(key);
@@ -128,10 +133,10 @@ public class CouchbaseEventGenericRecordConverterTest {
         ByteBuf buffer = Mockito.mock(ByteBuf.class);
 
         // Mocking key object
-        Mockito.when(buffer.getByte(0)).thenReturn((byte)0x80);
-        Mockito.when(buffer.getByte(1)).thenReturn((byte)0x59);
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(0)).thenReturn(MessageUtil.MAGIC_REQ);
+        Mockito.when(buffer.getByte(1)).thenReturn(MessageUtil.DCP_EXPIRATION_OPCODE);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         ByteBuf key = Mockito.mock(ByteBuf.class);
         Mockito.when(key.readableBytes()).thenReturn(4);
         Mockito.when(buffer.slice(29, 10)).thenReturn(key);
@@ -146,10 +151,10 @@ public class CouchbaseEventGenericRecordConverterTest {
         ByteBuf buffer = Mockito.mock(ByteBuf.class);
 
         // Mocking key object
-        Mockito.when(buffer.getByte(0)).thenReturn((byte)0x80);
-        Mockito.when(buffer.getByte(1)).thenReturn((byte)0x59);
-        Mockito.when(buffer.getByte(4)).thenReturn((byte)0x05);
-        Mockito.when(buffer.getShort(2)).thenReturn((short)10);
+        Mockito.when(buffer.getByte(0)).thenReturn(MessageUtil.MAGIC_REQ);
+        Mockito.when(buffer.getByte(1)).thenReturn(MessageUtil.DCP_EXPIRATION_OPCODE);
+        Mockito.when(buffer.getByte(4)).thenReturn(OFFSET);
+        Mockito.when(buffer.getShort(2)).thenReturn(LENGTH);
         ByteBuf key = Mockito.mock(ByteBuf.class);
         Mockito.when(key.readableBytes()).thenReturn(4);
         Mockito.when(buffer.slice(29, 10)).thenReturn(key);

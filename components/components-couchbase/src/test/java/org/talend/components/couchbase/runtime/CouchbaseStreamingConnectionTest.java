@@ -79,7 +79,7 @@ public class CouchbaseStreamingConnectionTest {
 
         Assert.assertTrue(streamingConnection.isStreaming());
 
-        Thread.sleep(4 * 500);
+        Thread.sleep(2000);
         Mockito.verify(client, Mockito.times(3)).sessionState();
     }
 
@@ -92,8 +92,6 @@ public class CouchbaseStreamingConnectionTest {
         Mockito.when(sessionState.isAtEnd()).thenReturn(false, true);
         Mockito.when(client.sessionState()).thenReturn(sessionState);
 
-//        Mockito.doNothing().when(client).acknowledgeBuffer(Mockito.any(ByteBuf.class));
-
         BlockingQueue<ByteBuf> resultsQueue = new ArrayBlockingQueue<>(4);
         resultsQueue.put(Mockito.mock(ByteBuf.class));
         resultsQueue.put(Mockito.mock(ByteBuf.class));
@@ -105,9 +103,8 @@ public class CouchbaseStreamingConnectionTest {
         streamingConnection.startStreaming(resultsQueue);
         streamingConnection.stopStreaming();
 
-        Thread.sleep(3 * 500);
+        Thread.sleep(1500);
         Mockito.verify(client, Mockito.times(2)).sessionState();
-//        Mockito.verify(client, Mockito.times(4)).acknowledgeBuffer(Mockito.any(ByteBuf.class));
         Mockito.verify(client, Mockito.times(1)).disconnect();
     }
 

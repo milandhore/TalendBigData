@@ -16,9 +16,6 @@
 
 package org.talend.components.couchbase.runtime;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.avro.Schema;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.components.api.component.runtime.Reader;
@@ -27,23 +24,26 @@ import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.couchbase.ComponentConstants;
 import org.talend.components.couchbase.input.CouchbaseInputProperties;
-import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.ValidationResult;
+import org.talend.daikon.properties.ValidationResult.Result;
 
 public class CouchbaseSource extends CouchbaseSourceOrSink implements Source {
     private static final long serialVersionUID = 3602741914997413619L;
-    
+
     private Schema schema;
     private CouchbaseStreamingConnection connection;
 
     @Override
     public ValidationResult initialize(RuntimeContainer container, ComponentProperties properties) {
-        CouchbaseInputProperties inputProperties = (CouchbaseInputProperties) properties;
-        this.bootstrapNodes = inputProperties.bootstrapNodes.getStringValue();
-        this.bucket = inputProperties.bucket.getStringValue();
-        this.password = inputProperties.password.getStringValue();
-        this.schema = inputProperties.schema.schema.getValue();
-        return ValidationResult.OK;
+        if (properties instanceof CouchbaseInputProperties) {
+            CouchbaseInputProperties inputProperties = (CouchbaseInputProperties) properties;
+            this.bootstrapNodes = inputProperties.bootstrapNodes.getStringValue();
+            this.bucket = inputProperties.bucket.getStringValue();
+            this.password = inputProperties.password.getStringValue();
+            this.schema = inputProperties.schema.schema.getValue();
+            return ValidationResult.OK;
+        }
+        return new ValidationResult(Result.ERROR, "Wrong component properties, must be instanceof CouchbaseInputProperties class");
     }
 
     @Override
@@ -53,16 +53,6 @@ public class CouchbaseSource extends CouchbaseSourceOrSink implements Source {
 
     public Schema getSchema() {
         return schema;
-    }
-
-    @Override
-    public List<NamedThing> getSchemaNames(RuntimeContainer container) throws IOException {
-        return null;
-    }
-
-    @Override
-    public Schema getEndpointSchema(RuntimeContainer container, String schemaName) throws IOException {
-        return null;
     }
 
     @Override
