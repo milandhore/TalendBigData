@@ -17,7 +17,7 @@
         <couchbase-core.version>1.5.1</couchbase-core.version>
         <couchbase-client.version>2.5.1</couchbase-client.version>
         <couchbase-dcp.version>0.12.0</couchbase-dcp.version>
-        <rx.version>1.3.0</rx.version>
+        <rx.version>1.3.3</rx.version>
         <couchbase.docker.image.name>igis/couchbase-server-itest:4.6.2</couchbase.docker.image.name>
     </properties>
 
