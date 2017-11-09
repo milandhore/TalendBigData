@@ -72,8 +72,6 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
         copiedFile.setId(DESTINATION_ID);
         copiedFile.setParents(Collections.singletonList(SOURCE_ID));
         when(drive.files().copy(anyString(), any(File.class)).setFields(anyString()).execute()).thenReturn(copiedFile);
-        //
-        // when( drive.files().delete(anyString()).execute();
 
         File destFolder = new File();
         destFolder.setId(DESTINATION_ID);

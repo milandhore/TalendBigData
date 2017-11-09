@@ -69,27 +69,4 @@ public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
         Mockito.verify(ctx, times(1)).registerComponentFamilyDefinition(any(ComponentFamilyDefinition.class));
     }
 
-    // @Test
-    // public void testInstall() throws Exception {
-    // final GoogleDriveFamilyDefinition def = new GoogleDriveFamilyDefinition();
-    // ComponentInstaller.ComponentFrameworkContext ctx = new ComponentInstaller.ComponentFrameworkContext() {
-    //
-    // @Override
-    // public void registerComponentFamilyDefinition(ComponentFamilyDefinition def) {
-    // assertEquals("GoogleDrive", def.getName());
-    // }
-    //
-    // @Override
-    // public void registerDefinition(Iterable<? extends Definition> defs) {
-    // assertNull(defs);
-    // }
-    //
-    // @Override
-    // public void registerComponentWizardDefinition(Iterable<? extends ComponentWizardDefinition> defs) {
-    // assertNull(def);
-    // }
-    // };
-    // def.install(ctx);
-    // }
-
 }

@@ -55,7 +55,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         files.add(dest);
         list.setFiles(files);
         final String q1 = "name='A' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
-        final String q2 = "name='fileName-copy-name' and mimeType!='application/vnd.google-apps.folder'";
+        final String q2 = "name='" + FILE_COPY_NAME + "' and mimeType!='application/vnd.google-apps.folder'";
 
         when(drive.files().list().setQ(eq(q1)).execute()).thenReturn(list);
         when(drive.files().list().setQ(eq(q2)).execute()).thenReturn(list);
@@ -65,8 +65,6 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
         copiedFile.setId(DESTINATION_ID);
         copiedFile.setParents(Collections.singletonList(SOURCE_ID));
         when(drive.files().copy(anyString(), any(File.class)).setFields(anyString()).execute()).thenReturn(copiedFile);
-        //
-        // when( drive.files().delete(anyString()).execute();
 
         File destFolder = new File();
         destFolder.setId(DESTINATION_ID);
@@ -173,7 +171,7 @@ public class GoogleDriveCopyReaderTest extends GoogleDriveTestBaseRuntime {
     @Test
     public void testStartCopyFolder() throws Exception {
         final String q1 = "name='folder' and 'root' in parents and mimeType='application/vnd.google-apps.folder'";
-        final String q2 = "'source-id' in parents and trashed=false";
+        final String q2 = "'" + SOURCE_ID + "' in parents and trashed=false";
         final String q3 = "'folder-id2' in parents and trashed=false";
         //
         FileList fsource = new FileList();

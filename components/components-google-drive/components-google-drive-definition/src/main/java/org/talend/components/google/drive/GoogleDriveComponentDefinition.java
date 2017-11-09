@@ -77,9 +77,7 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
     @Override
     public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
             ConnectorTopology connectorTopology) {
-        assertEngineCompatibility(engine);
-        assertConnectorTopologyCompatibility(connectorTopology);
-        return getRuntimeInfo(GoogleDriveConnectionDefinition.SOURCE_CLASS);
+        return this.getRuntimeInfo(engine, connectorTopology, GoogleDriveConnectionDefinition.SOURCE_CLASS);
     }
 
     public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ConnectorTopology connectorTopology, String clazz) {

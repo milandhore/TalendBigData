@@ -187,26 +187,9 @@ public class GoogleDriveListReader extends GoogleDriveReader {
         main.put(4, file.getSize());
         main.put(5, file.getKind());
         main.put(6, file.getTrashed());
-        // TODO This should be a List<String>
-        main.put(7, file.getParents().toString());
+        main.put(7, file.getParents().toString()); // TODO This should be a List<String>
         main.put(8, file.getWebViewLink());
-        // OutOfBand record
-        // IndexedRecord outOfBand = new GenericData.Record(s);
-        // outOfBand.put(0, fileName.getId());
-        // outOfBand.put(1, fileName.getName());
-        // outOfBand.put(2, fileName.getMimeType());
-        // outOfBand.put(3, fileName.getModifiedTime().getValue());
-        // outOfBand.put(4, fileName.getSize());
-        // outOfBand.put(5, fileName.getKind());
-        // outOfBand.put(6, fileName.getTrashed());
-        // outOfBand.put(7, fileName.getParents().toString());
-        // outOfBand.put(8, fileName.getWebViewLink());
-        // // Create Root record
-        // IndexedRecord r = RootRecordUtils.createRootRecord(properties.getSchema(), main, outOfBand);
-        // r.put(0, main);
-        // r.put(1, outOfBand);
 
-        // return r;
         return main;
     }
 }

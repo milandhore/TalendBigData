@@ -68,7 +68,7 @@ public class GoogleDrivePutWriterTest extends GoogleDriveTestBaseRuntime {
         when(sink.getDriveUtils()).thenThrow(new GeneralSecurityException("ERROR"));
         try {
             writer.open("test");
-            fail("Should not be herer");
+            fail("Should not be here");
         } catch (Exception e) {
         }
     }

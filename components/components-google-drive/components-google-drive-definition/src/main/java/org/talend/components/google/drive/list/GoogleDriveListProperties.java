@@ -74,9 +74,7 @@ public class GoogleDriveListProperties extends GoogleDriveComponentProperties {
     }
 
     public Schema getSchema() {
-        Schema s = schemaMain.schema.getValue();
-        // return RootSchemaUtils.createRootSchema(s, s);
-        return s;
+        return schemaMain.schema.getValue();
     }
 
     @Override
