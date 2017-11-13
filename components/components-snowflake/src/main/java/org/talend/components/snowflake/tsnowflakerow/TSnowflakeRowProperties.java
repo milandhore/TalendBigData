@@ -73,7 +73,7 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
     public TSnowflakeRowProperties(String name) {
         super(name);
     }
-    
+
     @Override
     public void setupLayout() {
         super.setupLayout();
@@ -89,7 +89,7 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
         advancedForm.addRow(Widget.widget(preparedStatementTable).setWidgetType(Widget.TABLE_WIDGET_TYPE));
         advancedForm.addRow(commitCount);
     }
-    
+
     @Override
     public void setupProperties() {
       super.setupProperties();

@@ -82,6 +82,8 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
     private ResultSet rs;
 
+    private final String query;
+
     private transient JDBCResultSetIndexedRecordConverter resultSetFactory;
 
     // Shows if Result Set is compatible with component Schema
@@ -96,6 +98,7 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         this.writeOperation = writeOperation;
         this.sink = writeOperation.getSink();
         this.rowProperties = sink.getRowProperties();
+        this.query = sink.getQuery();
     }
 
     @Override
@@ -108,7 +111,7 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
         try {
             if (rowProperties.usePreparedStatement()) {
-                statement = connection.prepareStatement(sink.getQuery());
+                statement = connection.prepareStatement(query);
             } else {
                 statement = connection.createStatement();
             }
@@ -129,17 +132,16 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
                 PreparedStatement pstmt = (PreparedStatement) statement;
                 SnowflakePreparedStatementUtils.fillPreparedStatement(pstmt, rowProperties.preparedStatementTable);
                 if (rowProperties.propagateQueryResultSet()) {
-                    pstmt.execute();
-                    rs = pstmt.getResultSet();
+                    rs = pstmt.executeQuery();
                 } else {
-                    pstmt.addBatch();
+                    pstmt.execute();
                 }
                 pstmt.clearParameters();
             } else {
                 if (rowProperties.propagateQueryResultSet()) {
-                    rs = statement.executeQuery(sink.getQuery());
+                    rs = statement.executeQuery(query);
                 } else {
-                    statement.addBatch(sink.getQuery());
+                    statement.execute(query);
                 }
             }
 
@@ -156,9 +158,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         try {
             if (rowProperties.connection.getReferencedComponentId() == null
                     && commitCount == rowProperties.commitCount.getValue()) {
-                if (!rowProperties.propagateQueryResultSet()) {
-                    statement.executeBatch();
-                }
                 connection.commit();
                 commitCount = 0;
             }
@@ -179,6 +178,9 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
         if (rowProperties.propagateQueryResultSet()) {
             if (rs == null || (!resultSetValidation && !validateResultSet())) {
+                result.totalCount++;
+                result.successCount++;
+                successfulWrites.add(input);
                 return;
             }
 
@@ -202,11 +204,11 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
                             output.put(outField.pos(), resultSetIndexedRecord.get(inputField.pos()));
                         }
                     }
-                    result.totalCount++;
-                    result.successCount++;
 
                     successfulWrites.add(output);
                 }
+                result.totalCount++;
+                result.successCount++;
             }
         } else {
             IndexedRecord output = new GenericData.Record(outputSchema);
@@ -297,9 +299,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
             rejectedWrites.clear();
 
             if (commitCount > 0 && connection != null && statement != null) {
-                if (!rowProperties.propagateQueryResultSet()) {
-                    statement.executeBatch();
-                }
                 connection.commit();
                 commitCount = 0;
             }

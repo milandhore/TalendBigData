@@ -51,6 +51,8 @@ public class SnowflakeRowWriterTest {
 
     private SnowflakeRowWriteOperation operation;
 
+    private String query = "select id, name, age from employee where id = ?";
+
     @Before
     public void setup() throws IOException {
         connection = Mockito.mock(Connection.class);
@@ -60,6 +62,7 @@ public class SnowflakeRowWriterTest {
         sink = Mockito.mock(SnowflakeRowSink.class);
         Mockito.when(sink.getRowProperties()).thenReturn(rowProperties);
         Mockito.when(sink.createConnection(null)).thenReturn(connection);
+        Mockito.when(sink.getQuery()).thenReturn(query);
         operation = Mockito.mock(SnowflakeRowWriteOperation.class);
         Mockito.when(operation.getSink()).thenReturn(sink);
         writer = new SnowflakeRowWriter(null, operation);
@@ -71,12 +74,11 @@ public class SnowflakeRowWriterTest {
     public void testWriteWithoutPreparedStatement() throws IOException, SQLException {
 
         Result result = null;
-        String query = "select id, name, age from employee";
+
         Schema schema = SchemaBuilder.builder().record("record").fields().requiredInt("id").requiredString("name")
                 .requiredInt("age").endRecord();
         rowProperties.table.main.schema.setValue(schema);
         Mockito.when(sink.getRuntimeSchema(null)).thenReturn(schema);
-        Mockito.when(sink.getQuery()).thenReturn(query);
         IndexedRecord record = new GenericData.Record(schema);
         record.put(0, 1);
         record.put(1, "name");
@@ -100,14 +102,12 @@ public class SnowflakeRowWriterTest {
     public void testWriteWithPreparedStatement() throws IOException, SQLException {
 
         Result result = null;
-        String query = "select id, name, age from employee where id = ?";
         rowProperties.usePreparedStatement.setValue(true);
         rowProperties.propagateQueryResultSet.setValue(true);
         Schema schema = SchemaBuilder.builder().record("record").fields().requiredInt("id").requiredString("name")
                 .requiredInt("age").endRecord();
         rowProperties.table.main.schema.setValue(schema);
         rowProperties.afterMainSchema();
-        Mockito.when(sink.getQuery()).thenReturn(query);
         Mockito.when(sink.getRuntimeSchema(null)).thenReturn(schema);
         rowProperties.preparedStatementTable.indexes.setValue(new ArrayList<Integer>());
         IndexedRecord record = Mockito.mock(IndexedRecord.class);
@@ -115,7 +115,7 @@ public class SnowflakeRowWriterTest {
         Mockito.when(record.get(Mockito.anyInt())).thenReturn(1, "nameValue", 46);
         PreparedStatement preparedStatement = Mockito.mock(PreparedStatement.class);
         Mockito.when(connection.prepareStatement(query)).thenReturn(preparedStatement);
-        Mockito.when(preparedStatement.getResultSet()).thenReturn(rs).thenThrow(new SQLException("second query failed"));
+        Mockito.when(preparedStatement.executeQuery()).thenReturn(rs).thenThrow(new SQLException("second query failed"));
         ResultSetMetaData rsMetadata = Mockito.mock(ResultSetMetaData.class);
         Mockito.when(rs.getMetaData()).thenReturn(rsMetadata);
         Mockito.when(rsMetadata.getColumnCount()).thenReturn(schema.getFields().size());
@@ -134,11 +134,6 @@ public class SnowflakeRowWriterTest {
         Assert.assertEquals(3, result.totalCount);
         Assert.assertEquals(2, result.successCount);
         Assert.assertEquals(1, result.rejectCount);
-    }
-
-    @Test
-    public void testInvalidResultSet() {
-
     }
 
     @Test
