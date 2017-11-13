@@ -193,7 +193,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
             while (rs.next()) {
                 IndexedRecord resultSetIndexedRecord = resultSetFactory.convertToAvro(rs);
-
                 if (AvroUtils.isIncludeAllFields(outputSchema)) {
                     // Since we're sending dynamic record further, only on this step we know exact remote schema value.
                     successfulWrites.add(resultSetIndexedRecord);
