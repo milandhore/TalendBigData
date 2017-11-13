@@ -127,6 +127,8 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
         IndexedRecord input = (IndexedRecord) object;
 
+        successfulWrites.clear();
+        rejectedWrites.clear();
         try {
             if (rowProperties.usePreparedStatement()) {
                 PreparedStatement pstmt = (PreparedStatement) statement;
@@ -294,9 +296,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
     public Result close() throws IOException {
 
         try {
-
-            successfulWrites.clear();
-            rejectedWrites.clear();
 
             if (commitCount > 0 && connection != null && statement != null) {
                 connection.commit();
