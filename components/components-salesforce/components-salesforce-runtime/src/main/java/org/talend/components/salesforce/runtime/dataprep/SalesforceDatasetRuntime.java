@@ -67,8 +67,6 @@ public class SalesforceDatasetRuntime implements DatasetRuntime<SalesforceDatase
         }
     }
 
-
-
     @Override
     public void getSample(int limit, Consumer<IndexedRecord> consumer) {
         SalesforceDataprepSource sds = new SalesforceDataprepSource();
