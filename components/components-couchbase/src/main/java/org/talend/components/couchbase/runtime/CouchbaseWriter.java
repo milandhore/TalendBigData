@@ -79,8 +79,13 @@ public class CouchbaseWriter implements Writer<Result> {
         if (id == null) {
             throw new IOException("ID field is null: " + idField.name());
         }
-
-        connection.upsert(id.toString(), datum.toString());
+        try {
+            connection.upsert(id.toString(), datum.toString());
+            result.successCount++;
+        } catch (Exception e) {
+            result.rejectCount++;
+            throw new IOException("Failed to upsert value - " + datum.toString(), e);
+        }
     }
 
     @Override
