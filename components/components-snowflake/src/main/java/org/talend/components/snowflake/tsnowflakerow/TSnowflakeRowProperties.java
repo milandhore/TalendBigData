@@ -53,7 +53,7 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
 
     public SchemaProperties schemaReject = new SchemaProperties("schemaReject");
 
-    public final PresentationItem guessQuery = new PresentationItem("guessQuery");
+    public transient PresentationItem guessQuery = new PresentationItem("guessQuery");
 
     public Property<String> query = PropertyFactory.newString("query", "\"select id, name from employee\"");
 
