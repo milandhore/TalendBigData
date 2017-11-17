@@ -14,6 +14,7 @@ package org.talend.components.marklogic.tmarklogicinput;
 
 import org.apache.avro.Schema;
 import org.talend.components.api.component.Connector;
+import org.talend.components.api.component.ISchemaListener;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
@@ -37,7 +38,13 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
 
     public MarkLogicConnectionProperties connection = new MarkLogicConnectionProperties("connection");
 
-    public SchemaProperties inputSchema = new SchemaProperties("inputSchema");
+    public SchemaProperties inputSchema = new SchemaProperties("inputSchema"){
+        public void afterSchema() {
+            if (inputSchemaListener != null) {
+                inputSchemaListener.afterSchema();
+            }
+        }
+    };
 
     public SchemaProperties outputSchema = new SchemaProperties("outputSchema");
 
@@ -52,7 +59,6 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     public Property<Boolean> criteriaSearch = PropertyFactory.newBoolean("criteriaSearch");
     public Property<String> criteria = PropertyFactory.newString("criteria");
     public Property<String> docIdColumn =  PropertyFactory.newString("docIdColumn");
-    //FIXME should be long as in old component?
 
     public Property<Integer> maxRetrieve = PropertyFactory.newInteger("maxRetrieve");
     public Property<Integer> pageSize = PropertyFactory.newInteger("pageSize");
@@ -60,6 +66,9 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     public Property<String> queryLiteralType = PropertyFactory.newString("queryLiteralType");
     public Property<String> queryOptionName = PropertyFactory.newString("queryOptionName");
     public Property<String> queryOptionLiterals = PropertyFactory.newString("queryOptionLiterals");
+
+    private ISchemaListener inputSchemaListener;
+
     @Override
     public void setupProperties() {
         super.setupProperties();
@@ -77,8 +86,19 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
 
         queryLiteralType.setPossibleValues("XML", "JSON");
         queryLiteralType.setValue("XML");
-        setupDefaultSchema(inputSchema);
+
         setupDefaultSchema(outputSchema);
+
+        setInputSchemaListener(new ISchemaListener() { //TODO replace with lambda
+
+            @Override
+            public void afterSchema() {
+                updateDocIdColumnPossibleValues();
+                if (!"docId".equals(outputSchema.schema.getValue().getFields().get(0).name())) {
+                    setupDefaultSchema(outputSchema);
+                }
+            }
+        });
     }
 
     @Override
@@ -92,10 +112,6 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
             if (!isPlainOutputConnectionMode()) {
                 updateDocIdColumnPossibleValues();
             }
-
-
-            form.getWidget(inputSchema).setHidden(isPlainOutputConnectionMode());
-            form.getWidget(outputSchema).setVisible(isPlainOutputConnectionMode());
 
             form.getWidget(criteria).setVisible(isPlainOutputConnectionMode());
             form.getWidget(docIdColumn).setHidden(isPlainOutputConnectionMode());
@@ -121,6 +137,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(connection.getForm(Form.REFERENCE));
         mainForm.addRow(inputSchema.getForm(Form.REFERENCE));
+        mainForm.getWidget(inputSchema).setHidden();
         mainForm.addRow(outputSchema.getForm(Form.REFERENCE));
         mainForm.addRow(criteriaSearch);
         mainForm.addRow(criteria);
@@ -142,7 +159,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         setupDefaultSchema(schemaToSet, docContentField);
     }
 
-    void setupDefaultSchema(SchemaProperties schemaToSet, Schema.Field docContentField) {
+    private void setupDefaultSchema(SchemaProperties schemaToSet, Schema.Field docContentField) {
         Schema stringSchema = AvroUtils._string();
 
         // create Schema for MarkLogic
@@ -167,16 +184,6 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         refreshLayout(getForm(Form.ADVANCED));
     }
 
-    public void afterInputSchema() {
-        updateDocIdColumnPossibleValues();
-        if (inputSchema.schema.getValue().getFields().size() < 2) {
-            setupDefaultSchema(outputSchema);
-        }
-        else {
-            setupDefaultSchema(outputSchema, inputSchema.schema.getValue().getFields().get(1));
-        }
-    }
-
     @Override
     protected Set<PropertyPathConnector> getAllSchemaPropertiesConnectors(boolean isOutputConnection) {
         if (isOutputConnection) {
@@ -185,6 +192,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
             return Collections.singleton(INCOMING_CONNECTOR);
         }
     }
+
     @Override
     public MarkLogicConnectionProperties getConnectionProperties() {
         return connection;
@@ -200,5 +208,9 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
             inputFields.add(inputField.name());
         }
         docIdColumn.setPossibleValues(inputFields);
+    }
+
+    public void setInputSchemaListener(ISchemaListener schemaListener) {
+        this.inputSchemaListener = schemaListener;
     }
 }

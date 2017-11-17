@@ -84,4 +84,9 @@ public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefiniti
         return EnumSet.of(ConnectorTopology.OUTGOING, ConnectorTopology.INCOMING_AND_OUTGOING,
                 ConnectorTopology.NONE); //NONE is workaround for jet_stub
     }
+
+    @Override
+    public boolean isSchemaAutoPropagate() {
+        return true;
+    }
 }

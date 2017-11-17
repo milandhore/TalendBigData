@@ -36,7 +36,9 @@ import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class) @PrepareForTest(DatabaseClientFactory.class) public class MarkLogicSourceOrSinkTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(DatabaseClientFactory.class)
+public class MarkLogicSourceOrSinkTest {
 
     MarkLogicSourceOrSink sourceOrSink;
 
@@ -137,7 +139,6 @@ import static org.mockito.Mockito.when;
 
         Schema stringSchema = prepareSchema(AvroUtils._string(), null);
         testInputProperties.inputSchema.schema.setValue(stringSchema);
-        testInputProperties.afterInputSchema();
 
         sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
     }
@@ -149,7 +150,6 @@ import static org.mockito.Mockito.when;
 
         Schema bytesSchema = prepareSchema(AvroUtils._bytes(), null);
         testInputProperties.inputSchema.schema.setValue(bytesSchema);
-        testInputProperties.afterInputSchema();
 
         sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
     }

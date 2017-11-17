@@ -17,7 +17,7 @@ public class MarkLogicInputSink extends MarkLogicSourceOrSink implements Sink {
     @Override
     public ValidationResult validate(RuntimeContainer container) {
         if (ioProperties instanceof MarkLogicInputProperties) {
-            checkDocContentTypeSupported(((MarkLogicInputProperties) ioProperties).inputSchema);
+            checkDocContentTypeSupported(((MarkLogicInputProperties) ioProperties).outputSchema);
         } else {
             return new ValidationResult(ValidationResult.Result.ERROR, MESSAGES.getMessage("error.wrongProperties"));
         }

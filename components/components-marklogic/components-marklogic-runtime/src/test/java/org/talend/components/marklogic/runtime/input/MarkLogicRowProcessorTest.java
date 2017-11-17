@@ -1,14 +1,12 @@
 package org.talend.components.marklogic.runtime.input;
 
 import com.marklogic.client.DatabaseClient;
-import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.Test;
 import org.talend.components.api.component.runtime.Result;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.marklogic.exceptions.MarkLogicException;
-import org.talend.components.marklogic.runtime.MarkLogicSink;
 import org.talend.components.marklogic.runtime.input.strategies.DocContentReader;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
@@ -77,7 +75,6 @@ public class MarkLogicRowProcessorTest {
         MarkLogicInputProperties inputProperties = new MarkLogicInputProperties("inputProps");
         inputProperties.init();
         inputProperties.inputSchema.schema.setValue(AvroUtils.createEmptySchema());
-        inputProperties.afterInputSchema();
         inputProperties.docIdColumn.setValue("someValue");
         MarkLogicInputSink inputSink = new MarkLogicInputSink();
 
