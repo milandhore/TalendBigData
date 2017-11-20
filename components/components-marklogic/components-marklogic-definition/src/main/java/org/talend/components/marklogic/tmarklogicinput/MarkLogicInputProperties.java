@@ -138,6 +138,8 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         mainForm.addRow(connection.getForm(Form.REFERENCE));
         mainForm.addRow(inputSchema.getForm(Form.REFERENCE));
         mainForm.getWidget(inputSchema).setHidden();
+        Form inputSchemaForm = ((Form) mainForm.getWidget(inputSchema).getContent());
+        ((Property)inputSchemaForm.getWidget(inputSchema.schema).getContent()).removeFlag(Property.Flags.HIDDEN);
         mainForm.addRow(outputSchema.getForm(Form.REFERENCE));
         mainForm.addRow(criteriaSearch);
         mainForm.addRow(criteria);
