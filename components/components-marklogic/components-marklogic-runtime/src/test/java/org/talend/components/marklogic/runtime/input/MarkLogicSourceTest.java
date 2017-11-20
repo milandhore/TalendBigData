@@ -4,15 +4,12 @@ import com.marklogic.client.DatabaseClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.api.component.runtime.BoundedSource;
-import org.talend.components.api.component.runtime.Result;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputProperties;
 import org.talend.daikon.properties.ValidationResult;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -12,22 +12,27 @@
 // ============================================================================
 package org.talend.components.marklogic;
 
-import javax.inject.Inject;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.components.api.component.ComponentDefinition;
+import org.talend.components.api.service.common.DefinitionRegistry;
 import org.talend.components.api.test.AbstractComponentTest2;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputDefinition;
-import org.talend.daikon.definition.Definition;
 import org.talend.daikon.definition.service.DefinitionRegistryService;
+
+import javax.inject.Inject;
 
 public class MarkLogicInputTestBase extends AbstractComponentTest2 {
 
-    @Inject private DefinitionRegistryService definitionRegistry;
+    @Inject
+    private DefinitionRegistry definitionRegistry;
 
     @Override
     public DefinitionRegistryService getDefinitionRegistry() {
+        if (definitionRegistry == null) {
+            definitionRegistry = new DefinitionRegistry();
+            definitionRegistry.registerComponentFamilyDefinition(new MarkLogicFamilyDefinition());
+        }
         return definitionRegistry;
     }
 
@@ -36,6 +41,5 @@ public class MarkLogicInputTestBase extends AbstractComponentTest2 {
     public void testComponentHasBeenRegistered() {
         assertComponentIsRegistered(ComponentDefinition.class, MarkLogicInputDefinition.COMPONENT_NAME,
                 MarkLogicInputDefinition.class);
-        assertComponentIsRegistered(Definition.class, "FileInput", MarkLogicInputDefinition.class);
     }
 }

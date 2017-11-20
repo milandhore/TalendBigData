@@ -20,6 +20,7 @@ import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.AbstractMarkLogicComponentDefinition;
+import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.properties.property.Property;
@@ -32,7 +33,7 @@ import org.talend.daikon.runtime.RuntimeInfo;
  */
 public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefinition {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWInput"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "tMarkLogicInput"; //$NON-NLS-1$
 
     public MarkLogicInputDefinition() {
         super(COMPONENT_NAME, ExecutionEngine.DI, ExecutionEngine.BEAM);

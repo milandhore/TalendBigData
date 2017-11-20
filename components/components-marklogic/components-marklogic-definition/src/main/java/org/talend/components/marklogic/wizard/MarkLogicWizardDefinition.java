@@ -21,7 +21,7 @@ import org.talend.daikon.definition.DefinitionImageType;
 
 public class MarkLogicWizardDefinition extends AbstractComponentWizardDefintion {
 
-    public static final String COMPONENT_WIZARD_NAME = "marklogicNEW"; //$NON-NLS-1$
+    public static final String COMPONENT_WIZARD_NAME = "marklogic"; //$NON-NLS-1$
 
     @Override
     public ComponentWizard createWizard(String location) {
