@@ -61,8 +61,6 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
 
     // advanced
 
-    public Property<Boolean> propagateQueryResultSet = PropertyFactory.newBoolean("propagateQueryResultSet").setRequired();
-
     public Property<Boolean> usePreparedStatement = PropertyFactory.newBoolean("usePreparedStatement").setRequired();
 
     public SnowflakePreparedStatementTableProperties preparedStatementTable = new SnowflakePreparedStatementTableProperties(
@@ -84,7 +82,6 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
         main.addRow(dieOnError);
 
         Form advancedForm = getForm(Form.ADVANCED);
-        advancedForm.addRow(propagateQueryResultSet);
         advancedForm.addRow(usePreparedStatement);
         advancedForm.addRow(Widget.widget(preparedStatementTable).setWidgetType(Widget.TABLE_WIDGET_TYPE));
         advancedForm.addRow(commitCount);
@@ -220,9 +217,4 @@ public class TSnowflakeRowProperties extends SnowflakeConnectionTableProperties 
     public boolean usePreparedStatement() {
         return usePreparedStatement.getValue();
     }
-
-    public boolean propagateQueryResultSet() {
-        return propagateQueryResultSet.getValue();
-    }
-
 }

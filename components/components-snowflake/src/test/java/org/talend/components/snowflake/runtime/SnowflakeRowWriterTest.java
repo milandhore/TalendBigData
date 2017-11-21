@@ -103,7 +103,6 @@ public class SnowflakeRowWriterTest {
 
         Result result = null;
         rowProperties.usePreparedStatement.setValue(true);
-        rowProperties.propagateQueryResultSet.setValue(true);
         Schema schema = SchemaBuilder.builder().record("record").fields().requiredInt("id").requiredString("name")
                 .requiredInt("age").endRecord();
         rowProperties.table.main.schema.setValue(schema);
