@@ -82,8 +82,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
     private ResultSet rs;
 
-    private final String query;
-
     private transient JDBCResultSetIndexedRecordConverter resultSetFactory;
 
     // Shows if Result Set is compatible with component Schema
@@ -102,7 +100,6 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         this.writeOperation = writeOperation;
         this.sink = writeOperation.getSink();
         this.rowProperties = sink.getRowProperties();
-        this.query = sink.getQuery();
         this.dieOnError = rowProperties.dieOnError.getValue();
     }
 
@@ -114,10 +111,9 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         connection = sink.createConnection(container);
         mainSchema = sink.getRuntimeSchema(container);
         schemaReject = rowProperties.schemaReject.schema.getValue();
-
         try {
             if (rowProperties.usePreparedStatement()) {
-                statement = connection.prepareStatement(query);
+                statement = connection.prepareStatement(sink.getQuery());
             } else {
                 statement = connection.createStatement();
             }
@@ -142,7 +138,7 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
                 rs = pstmt.executeQuery();
                 pstmt.clearParameters();
             } else {
-                rs = statement.executeQuery(query);
+                rs = statement.executeQuery(sink.getQuery());
             }
 
             // We should return the result of query execution, instead of returning incoming value if checked propagate query's
