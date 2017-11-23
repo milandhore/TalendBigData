@@ -237,11 +237,4 @@ public class TSalesforceOutputPropertiesTest extends SalesforceTestBase {
                 new PropertyPathConnector(Connector.REJECT_NAME, "schemaReject")));
     }
 
-    @Test
-    public void testSerialize() throws Throwable {
-        properties.init();
-
-        ComponentTestUtils.checkSerialize(properties, errorCollector);
-    }
-
 }
