@@ -319,11 +319,11 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
                 apiVersion.setValue("\"34.0\"");
                 migrated = true;
             }
-
-            if (oauth2FlowType.getValue() == null) {
-                oauth2FlowType.setValue(OAuth2FlowType.Implicit_Flow);
-                migrated = true;
-            }
+        }
+        
+        if(version < 2) { //the flow type was added since version 2
+            oauth2FlowType.setValue(OAuth2FlowType.Implicit_Flow);
+            migrated = true;
         }
 
         return migrated;
