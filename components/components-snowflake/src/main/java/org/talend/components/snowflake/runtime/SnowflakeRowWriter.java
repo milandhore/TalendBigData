@@ -22,9 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -59,8 +57,8 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
     private static final I18nMessages I18N_MESSAGES = GlobalI18N.getI18nMessageProvider()
             .getI18nMessages(SnowflakeRowWriter.class);
 
-    private static final Set<String> CUD_RESULT_SET_COLUMN_NAMES = new HashSet<>(
-            Arrays.asList(new String[] { "number of rows inserted", "number of rows updated", "number of rows deleted" }));
+    private static final List<String> CUD_RESULT_SET_COLUMN_NAMES =
+            Arrays.asList("number of rows inserted", "number of rows updated", "number of rows deleted");
 
     private List<IndexedRecord> successfulWrites;
 

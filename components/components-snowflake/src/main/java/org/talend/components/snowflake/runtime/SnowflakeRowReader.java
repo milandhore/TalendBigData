@@ -21,9 +21,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -52,8 +51,8 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(SnowflakeRowReader.class);
 
-    private static final Set<String> CUD_RESULT_SET_COLUMN_NAMES = new HashSet<>(
-            Arrays.asList(new String[] { "number of rows inserted", "number of rows updated", "number of rows deleted" }));
+    private static final List<String> CUD_RESULT_SET_COLUMN_NAMES =
+            Arrays.asList("number of rows inserted", "number of rows updated", "number of rows deleted");
 
     private static final I18nMessages I18N_MESSAGES = GlobalI18N.getI18nMessageProvider()
             .getI18nMessages(SnowflakeRowReader.class);
