@@ -172,7 +172,7 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
             return;
         }
 
-        if (rs == null || (!resultSetValidation && !validateResultSet())) {
+        if (!resultSetValidation && !validateResultSet()) {
             result.totalCount++;
             result.successCount++;
             successfulWrites.add(input);

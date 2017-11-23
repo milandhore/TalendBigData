@@ -78,6 +78,7 @@ public class SnowflakeRowWriterTest {
         Schema schema = SchemaBuilder.builder().record("record").fields().requiredInt("id").requiredString("name")
                 .requiredInt("age").endRecord();
         rowProperties.table.main.schema.setValue(schema);
+        rowProperties.usePreparedStatement.setValue(false);
         Mockito.when(sink.getRuntimeSchema(null)).thenReturn(schema);
         IndexedRecord record = new GenericData.Record(schema);
         record.put(0, 1);
@@ -85,6 +86,11 @@ public class SnowflakeRowWriterTest {
         record.put(2, 44);
         Statement statement = Mockito.mock(Statement.class);
         Mockito.when(connection.createStatement()).thenReturn(statement);
+        ResultSet rs = Mockito.mock(ResultSet.class);
+        Mockito.when(statement.executeQuery(query)).thenReturn(rs);
+        ResultSetMetaData rsMetadata  = Mockito.mock(ResultSetMetaData.class);
+        Mockito.when(rs.getMetaData()).thenReturn(rsMetadata);
+        Mockito.when(rsMetadata.getColumnName(1)).thenReturn("number of rows inserted");
 
         try {
             writer.open("id");

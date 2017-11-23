@@ -29,6 +29,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.joda.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.runtime.Reader;
 import org.talend.components.api.component.runtime.Result;
@@ -38,6 +40,8 @@ import org.talend.components.api.exception.DataRejectException;
 import org.talend.components.common.avro.JDBCResultSetIndexedRecordConverter;
 import org.talend.components.snowflake.runtime.utils.SnowflakePreparedStatementUtils;
 import org.talend.components.snowflake.tsnowflakerow.TSnowflakeRowProperties;
+import org.talend.daikon.i18n.GlobalI18N;
+import org.talend.daikon.i18n.I18nMessages;
 
 /**
  * This class implements {@link Reader} interface for SnowflakeRow component.
@@ -46,8 +50,13 @@ import org.talend.components.snowflake.tsnowflakerow.TSnowflakeRowProperties;
  */
 public class SnowflakeRowReader implements Reader<IndexedRecord> {
 
+    private transient static final Logger LOGGER = LoggerFactory.getLogger(SnowflakeRowReader.class);
+
     private static final Set<String> CUD_RESULT_SET_COLUMN_NAMES = new HashSet<>(
             Arrays.asList(new String[] { "number of rows inserted", "number of rows updated", "number of rows deleted" }));
+
+    private static final I18nMessages I18N_MESSAGES = GlobalI18N.getI18nMessageProvider()
+            .getI18nMessages(SnowflakeRowReader.class);
 
     private final RuntimeContainer container;
 
@@ -71,9 +80,9 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
 
     private Schema schemaReject;
 
-    private Map<String, Object> rejectMessage;
+    private Map<String, Object> rejectInfo;
 
-    private boolean isRejectError = false;
+    private boolean isRejectError;
 
     public SnowflakeRowReader(RuntimeContainer container, SnowflakeRowSource source) {
         this.container = container;
@@ -105,6 +114,7 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
             if (dieOnError) {
                 throw new IOException(e);
             }
+            LOGGER.warn(I18N_MESSAGES.getMessage("error.queryExecution"), e);
             handleReject(e);
         }
         return advance();
@@ -113,7 +123,7 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
     @Override
     public boolean advance() throws IOException {
         if (isRejectError) {
-            //if advance returns false, we can't enter getCurrent() for throwing DataRejectException.
+            // if advance returns false, we can't enter getCurrent() for throwing DataRejectException.
             return true;
         }
 
@@ -128,6 +138,7 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
             if (dieOnError) {
                 throw new IOException();
             }
+            LOGGER.warn(I18N_MESSAGES.getMessage("error.resultSetIssue"), e);
         }
         if (hasNext) {
             current = converter.convertToAvro(rs);
@@ -141,7 +152,7 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
     public IndexedRecord getCurrent() {
         if (isRejectError) {
             isRejectError = false;
-            throw new DataRejectException(rejectMessage);
+            throw new DataRejectException(rejectInfo);
         }
         return current;
     }
@@ -151,7 +162,7 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
         return Instant.now();
     }
 
-    private boolean validateResultSet(ResultSet rs) throws IOException{
+    private boolean validateResultSet(ResultSet rs) throws IOException {
         if (rs == null) {
             return false;
         }
@@ -165,9 +176,10 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
             }
             return true;
         } catch (SQLException e) {
-            if(dieOnError) {
+            if (dieOnError) {
                 throw new IOException(e);
             }
+            LOGGER.warn(I18N_MESSAGES.getMessage("error.resultSetIssue"), e);
         }
         return false;
     }
@@ -175,26 +187,17 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
     private void handleReject(SQLException e) {
         IndexedRecord reject = new GenericData.Record(schemaReject);
 
-        for (Schema.Field outField : schemaReject.getFields()) {
-            Object outValue = null;
+        reject.put(schemaReject.getField("errorCode").pos(), e.getSQLState());
+        reject.put(schemaReject.getField("errorMessage").pos(), e.getMessage());
 
-            if ("errorCode".equals(outField.name())) {
-                outValue = e.getSQLState();
-            } else if ("errorMessage".equals(outField.name())) {
-                outValue = e.getMessage();
-            }
+        rejectInfo = new HashMap<String, Object>();
+        rejectInfo.put("error", e.getMessage());
+        // Since Studio or Framework handles rejects in its own way.
+        rejectInfo.put("errorCode", e.getSQLState());
+        rejectInfo.put("errorMessage", e.getMessage());
+        rejectInfo.put("exception", e.toString());
 
-            reject.put(outField.pos(), outValue);
-        }
-
-        rejectMessage = new HashMap<String, Object>();
-        rejectMessage.put("error", e.getMessage());
-        //Since Studio or Framework handles rejects in its own way.
-        rejectMessage.put("errorCode", e.getSQLState());
-        rejectMessage.put("errorMessage", e.getMessage());
-        rejectMessage.put("exception", e.toString());
-
-        rejectMessage.put("talend_record", reject);
+        rejectInfo.put("talend_record", reject);
         isRejectError = true;
     }
 
@@ -223,8 +226,8 @@ public class SnowflakeRowReader implements Reader<IndexedRecord> {
     @Override
     public Map<String, Object> getReturnValues() {
         Map<String, Object> resultMap = result.toMap();
-        if (rejectMessage != null) {
-            resultMap.put(ComponentDefinition.RETURN_ERROR_MESSAGE, rejectMessage.get("exception"));
+        if (rejectInfo != null) {
+            resultMap.put(ComponentDefinition.RETURN_ERROR_MESSAGE, rejectInfo.get("exception"));
         }
         return resultMap;
     }
