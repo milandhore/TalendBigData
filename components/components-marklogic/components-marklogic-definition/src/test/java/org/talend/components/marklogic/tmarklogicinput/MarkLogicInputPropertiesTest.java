@@ -202,8 +202,8 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.criteriaSearch.setValue(false);
         testInputProperties.afterCriteriaSearch();
 
-        boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.maxRetrieve).isVisible();
-        boolean isPageSizeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.pageSize).isVisible();
+        boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.maxRetrieve).isHidden();
+        boolean isPageSizeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.pageSize).isHidden();
         boolean isQueryLiteralTypeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryLiteralType).isHidden();
         boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionName).isHidden();
         boolean isQueryLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionLiterals).isHidden();

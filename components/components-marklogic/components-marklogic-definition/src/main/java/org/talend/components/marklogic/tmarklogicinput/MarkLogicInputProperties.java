@@ -118,16 +118,14 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         }
 
         if (form.getName().equals(Form.ADVANCED)) {
-            if (isPlainOutputConnectionMode()) {
-                form.getWidget(queryLiteralType).setVisible(useQueryOption);
-                form.getWidget(queryOptionName).setVisible(useQueryOption);
-                form.getWidget(queryOptionLiterals).setVisible(useQueryOption);
-            } else {
-                form.getWidget(useQueryOption).setHidden();
-                form.getWidget(queryLiteralType).setHidden();
-                form.getWidget(queryOptionName).setHidden();
-                form.getWidget(queryOptionLiterals).setHidden();
-            }
+            boolean isCriteriaModeUsed = isPlainOutputConnectionMode();
+
+            form.getWidget(pageSize).setVisible(isCriteriaModeUsed);
+            form.getWidget(maxRetrieve).setVisible(isCriteriaModeUsed);
+            form.getWidget(useQueryOption).setVisible(isCriteriaModeUsed);
+            form.getWidget(queryLiteralType).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
+            form.getWidget(queryOptionName).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
+            form.getWidget(queryOptionLiterals).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
         }
     }
 
