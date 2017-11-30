@@ -164,7 +164,6 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
 
         // create Schema for MarkLogic
         Schema.Field docIdField = new Schema.Field("docId", stringSchema, null, (Object) null, Schema.Field.Order.ASCENDING);
-        docIdField.addProp(SchemaConstants.TALEND_COLUMN_IS_KEY, "true");
         docIdField.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
         Schema.Field newDocContentField = new Schema.Field("docContent", docContentField.schema(),null,(Object) null, Schema.Field.Order.IGNORE);
         List<Schema.Field> fields = new ArrayList<>();
