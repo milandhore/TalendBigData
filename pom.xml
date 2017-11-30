@@ -50,4 +50,24 @@
 			</plugin>
         </plugins>
     </build>
+
+  <profiles>
+    <profile>
+      <id>blackduck</id>
+      <build>
+        <plugins>
+          <plugin> <!-- mvn talend-tools:hub-detect -N -Pblackduck -s .build/blackduck.settings.xml -->
+            <groupId>org.talend.tools</groupId>
+            <artifactId>talend-tools-maven-plugin</artifactId>
+            <version>1.0.0</version>
+            <inherited>false</inherited>
+            <configuration>
+              <blackduckUrl>https://blackduck.talend.com</blackduckUrl>
+              <blackduckName>Talend Component (TCOMP)</blackduckName>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
