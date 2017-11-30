@@ -45,8 +45,8 @@ import org.talend.daikon.serialize.migration.SerializeSetVersion;
 public class SalesforceConnectionProperties extends ComponentPropertiesImpl
         implements SalesforceProvideConnectionProperties, SerializeSetVersion {
 
-    protected static final I18nMessages MESSAGES = GlobalI18N.getI18nMessageProvider()
-            .getI18nMessages(SalesforceConnectionProperties.class);
+    protected static final I18nMessages MESSAGES =
+            GlobalI18N.getI18nMessageProvider().getI18nMessages(SalesforceConnectionProperties.class);
 
     public static final String DEFAULT_API_VERSION = "39.0";
 
@@ -112,8 +112,8 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
 
     public ProxyProperties proxy = new ProxyProperties("proxy");
 
-    public ComponentReferenceProperties<SalesforceConnectionProperties> referencedComponent = new ComponentReferenceProperties<>(
-            "referencedComponent", TSalesforceConnectionDefinition.COMPONENT_NAME);
+    public ComponentReferenceProperties<SalesforceConnectionProperties> referencedComponent =
+            new ComponentReferenceProperties<>("referencedComponent", TSalesforceConnectionDefinition.COMPONENT_NAME);
 
     public SalesforceConnectionProperties(String name) {
         super(name);
@@ -123,7 +123,6 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
     public void setupProperties() {
         super.setupProperties();
         loginType.setValue(LoginType.Basic);
-        oauth2FlowType.setValue(OAuth2FlowType.JWT_Flow);
         endpoint.setValue(URL);
         apiVersion.setValue(DEFAULT_API_VERSION);
         timeout.setValue(60000);
@@ -237,7 +236,8 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
                     form.getWidget(userPassword).setHidden(true);
                     break;
                 default:
-                    throw new ComponentException(new Throwable("Enum value should be handled :" + loginType.getValue()));
+                    throw new ComponentException(
+                            new Throwable("Enum value should be handled :" + loginType.getValue()));
                 }
             }
         }
@@ -253,7 +253,8 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
                 form.getWidget(httpTraceMessage.getName()).setHidden(!bulkMode);
                 boolean isBasicLogin = LoginType.Basic.equals(loginType.getValue());
                 form.getWidget(reuseSession.getName()).setVisible(isBasicLogin && !bulkMode);
-                form.getWidget(sessionDirectory.getName()).setVisible(isBasicLogin && !bulkMode && reuseSession.getValue());
+                form.getWidget(sessionDirectory.getName()).setVisible(
+                        isBasicLogin && !bulkMode && reuseSession.getValue());
                 form.getWidget(apiVersion.getName()).setHidden(isBasicLogin);
 
                 Form proxyForm = form.getChildForm(proxy.getName());
@@ -320,10 +321,12 @@ public class SalesforceConnectionProperties extends ComponentPropertiesImpl
                 migrated = true;
             }
         }
-        
-        if(version < 2) { //the flow type was added since version 2
-            oauth2FlowType.setValue(OAuth2FlowType.Implicit_Flow);
-            migrated = true;
+
+        if (version < 2) { // the flow type was added since version 2
+            if (oauth2FlowType.getValue() == null) {
+                oauth2FlowType.setValue(OAuth2FlowType.Implicit_Flow);
+                migrated = true;
+            }
         }
 
         return migrated;
