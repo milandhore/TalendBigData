@@ -52,6 +52,13 @@ public abstract class GoogleDriveComponentDefinition extends AbstractComponentDe
 
     public static final String PUT_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.GoogleDrivePutRuntime";
 
+    // DataStreams & DataPrep
+    public static final String DATASET_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.data.GoogleDriveDatasetRuntime";
+
+    public static final String DATASTORE_RUNTIME_CLASS = "org.talend.components.google.drive.runtime.data.GoogleDriveDatastoreRuntime";
+
+    public static final String DATA_SOURCE_CLASS = "org.talend.components.google.drive.runtime.data.GoogleDriveDataSource";
+
     private static SandboxedInstanceProvider sandboxedInstanceProvider = SandboxedInstanceProvider.INSTANCE;
 
     public GoogleDriveComponentDefinition(String componentName) {
