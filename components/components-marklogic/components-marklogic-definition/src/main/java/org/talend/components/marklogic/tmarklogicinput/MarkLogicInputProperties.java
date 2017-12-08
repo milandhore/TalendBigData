@@ -16,6 +16,7 @@ import org.apache.avro.Schema;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.ISchemaListener;
 import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
 import org.talend.components.marklogic.MarkLogicProvideConnectionProperties;
@@ -87,6 +88,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         queryLiteralType.setPossibleValues("XML", "JSON");
         queryLiteralType.setValue("XML");
 
+        queryOptionLiterals.setTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO, " ");
         setupDefaultSchema(outputSchema);
 
         setInputSchemaListener(new ISchemaListener() { //TODO replace with lambda

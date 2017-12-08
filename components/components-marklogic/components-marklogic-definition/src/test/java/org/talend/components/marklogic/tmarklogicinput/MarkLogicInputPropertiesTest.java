@@ -16,6 +16,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.common.ComponentConstants;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionPropertiesTest;
@@ -95,6 +96,7 @@ public class MarkLogicInputPropertiesTest {
         assertEquals(expectedDefaultQueryLiteralType, testInputProperties.queryLiteralType.getValue());
         assertNull(testInputProperties.queryOptionName.getValue());
         assertNull(testInputProperties.queryOptionLiterals.getValue());
+        assertEquals(" ", testInputProperties.queryOptionLiterals.getTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO));
     }
 
     @Test
