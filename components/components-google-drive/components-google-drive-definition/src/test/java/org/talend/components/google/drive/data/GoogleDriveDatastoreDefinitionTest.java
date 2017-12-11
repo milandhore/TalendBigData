@@ -20,7 +20,7 @@ public class GoogleDriveDatastoreDefinitionTest {
 
     @Test
     public void testGetInputCompDefinitionName() throws Exception {
-        assertEquals("DataGoogleDriveInput", def.getInputCompDefinitionName());
+        assertEquals("GoogleDriveDataInput", def.getInputCompDefinitionName());
     }
 
     @Test

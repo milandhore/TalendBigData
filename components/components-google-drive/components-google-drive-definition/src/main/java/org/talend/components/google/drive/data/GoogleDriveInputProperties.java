@@ -13,10 +13,11 @@ import org.talend.daikon.properties.presentation.Form;
 public class GoogleDriveInputProperties extends FixedConnectorsComponentProperties
         implements IOProperties<GoogleDriveDatasetProperties> {
 
-    public ReferenceProperties<GoogleDriveDatasetProperties> dataset = new ReferenceProperties<>("data",
+    public ReferenceProperties<GoogleDriveDatasetProperties> dataset = new ReferenceProperties<>("dataset",
             GoogleDriveDatasetDefinition.NAME);
 
-    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "data.main");
+    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME,
+            "dataset" + ".main");
 
     public GoogleDriveInputProperties(String name) {
         super(name);

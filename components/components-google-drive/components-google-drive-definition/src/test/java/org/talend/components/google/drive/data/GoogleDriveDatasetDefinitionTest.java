@@ -14,7 +14,7 @@ public class GoogleDriveDatasetDefinitionTest {
 
     @Before
     public void setUp() throws Exception {
-        def = new GoogleDriveDatasetDefinition("test");
+        def = new GoogleDriveDatasetDefinition();
     }
 
     @Test

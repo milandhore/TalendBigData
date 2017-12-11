@@ -43,7 +43,7 @@ public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
     public void testGoogleDriveFamilyDefinition() {
         assertNotNull(getDefinitionRegistry());
         assertEquals(GOOGLE_DRIVE, new GoogleDriveFamilyDefinition().getName());
-        assertEquals(9, definitionRegistry.getDefinitions().size());
+        assertEquals(12, definitionRegistry.getDefinitions().size());
     }
 
     @Test
@@ -58,6 +58,9 @@ public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
         assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("tGoogleDriveList"))));
         assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDrive"))));
         assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDrive.edit"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDriveDatastore"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDriveDataset"))));
+        assertThat(def.getDefinitions(), (Matcher) hasItem(hasProperty("name", is("GoogleDriveDataInput"))));
     }
 
     /**

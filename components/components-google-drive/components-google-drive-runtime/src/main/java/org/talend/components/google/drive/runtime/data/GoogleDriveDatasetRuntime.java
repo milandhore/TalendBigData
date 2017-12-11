@@ -34,7 +34,6 @@ public class GoogleDriveDatasetRuntime implements DatasetRuntime<GoogleDriveData
         GoogleDriveInputProperties properties = new GoogleDriveInputProperties("sample");
         properties.setDatasetProperties(dataset);
         GoogleDriveInputReader reader = (GoogleDriveInputReader) createDataSource(properties).createReader(container);
-        System.err.println(reader);
         reader.setLimit(limit);
         ReaderDataProvider<IndexedRecord> provider = new ReaderDataProvider<>(reader, limit, consumer);
         provider.retrieveData();

@@ -18,7 +18,7 @@ import org.talend.daikon.runtime.RuntimeInfo;
 
 public class GoogleDriveInputDefinition extends AbstractComponentDefinition {
 
-    public static final String NAME = "DataGoogleDriveInput";
+    public static final String NAME = "GoogleDriveDataInput";
 
     public GoogleDriveInputDefinition() {
         super(NAME, ExecutionEngine.DI);

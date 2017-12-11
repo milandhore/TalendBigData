@@ -10,7 +10,7 @@ public class GoogleDriveDatasetDefinition extends I18nDefinition implements Data
 
     public static final String NAME = "GoogleDriveDataset";
 
-    public GoogleDriveDatasetDefinition(String name) {
+    public GoogleDriveDatasetDefinition() {
         super(NAME);
     }
 

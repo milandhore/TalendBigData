@@ -18,6 +18,9 @@ import org.talend.components.api.Constants;
 import org.talend.components.google.drive.connection.GoogleDriveConnectionDefinition;
 import org.talend.components.google.drive.copy.GoogleDriveCopyDefinition;
 import org.talend.components.google.drive.create.GoogleDriveCreateDefinition;
+import org.talend.components.google.drive.data.GoogleDriveDatasetDefinition;
+import org.talend.components.google.drive.data.GoogleDriveDatastoreDefinition;
+import org.talend.components.google.drive.data.GoogleDriveInputDefinition;
 import org.talend.components.google.drive.delete.GoogleDriveDeleteDefinition;
 import org.talend.components.google.drive.get.GoogleDriveGetDefinition;
 import org.talend.components.google.drive.list.GoogleDriveListDefinition;
@@ -39,7 +42,9 @@ public class GoogleDriveFamilyDefinition extends AbstractComponentFamilyDefiniti
                 new GoogleDriveListDefinition(), new GoogleDriveGetDefinition(), new GoogleDrivePutDefinition(),
                 new GoogleDriveCopyDefinition(),
                 // wizards
-                new GoogleDriveConnectionWizardDefinition(), new GoogleDriveConnectionEditWizardDefinition());
+                new GoogleDriveConnectionWizardDefinition(), new GoogleDriveConnectionEditWizardDefinition(),
+                // datastore, dataset, component
+                new GoogleDriveDatastoreDefinition(), new GoogleDriveDatasetDefinition(), new GoogleDriveInputDefinition());
     }
 
     @Override
