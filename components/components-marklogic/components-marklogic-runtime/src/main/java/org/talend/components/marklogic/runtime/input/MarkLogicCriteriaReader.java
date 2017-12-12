@@ -12,15 +12,10 @@
 // ============================================================================
 package org.talend.components.marklogic.runtime.input;
 
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.admin.QueryOptionsManager;
-import com.marklogic.client.document.DocumentManager;
-import com.marklogic.client.io.Format;
-import com.marklogic.client.io.SearchHandle;
-import com.marklogic.client.io.StringHandle;
-import com.marklogic.client.query.MatchDocumentSummary;
-import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.StringQueryDefinition;
+import java.io.IOException;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
@@ -35,9 +30,15 @@ import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.runtime.input.strategies.DocContentReader;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.admin.QueryOptionsManager;
+import com.marklogic.client.document.DocumentManager;
+import com.marklogic.client.io.Format;
+import com.marklogic.client.io.SearchHandle;
+import com.marklogic.client.io.StringHandle;
+import com.marklogic.client.query.MatchDocumentSummary;
+import com.marklogic.client.query.QueryManager;
+import com.marklogic.client.query.StringQueryDefinition;
 
 public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord> {
 
@@ -94,11 +95,11 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
         }
         docManager = connectionClient.newDocumentManager();
 
-        boolean isDocContentFieldPresent = (inputProperties.outputSchema.schema.getValue().getFields().size() >= 2);
+        boolean isDocContentFieldPresent = (inputProperties.datasetProperties.main.schema.getValue().getFields().size() >= 2);
         if (isDocContentFieldPresent) {
-            docContentField = inputProperties.outputSchema.schema.getValue().getFields().get(1);
+            docContentField = inputProperties.datasetProperties.main.schema.getValue().getFields().get(1);
         }
-        docContentReader = new DocContentReader(docManager, inputProperties.outputSchema.schema.getValue(), docContentField);
+        docContentReader = new DocContentReader(docManager, inputProperties.datasetProperties.main.schema.getValue(), docContentField);
 
         criteria = inputProperties.criteria.getValue();
         if (inputProperties.useQueryOption.getValue() && StringUtils.isNotEmpty(inputProperties.queryOptionName.getStringValue())) {
@@ -163,7 +164,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
     public IndexedRecord getCurrent() throws NoSuchElementException {
         ++documentCounter;
         MatchDocumentSummary currentSummary = currentPage[pageCounter];
-        current = new GenericData.Record(inputProperties.outputSchema.schema.getValue());
+        current = new GenericData.Record(inputProperties.datasetProperties.main.schema.getValue());
         try {
             String docId = currentSummary.getUri();
             current = docContentReader.readDocument(docId);

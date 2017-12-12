@@ -1,6 +1,19 @@
 package org.talend.components.marklogic.runtime.input;
 
-import com.marklogic.client.DatabaseClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.junit.Test;
@@ -12,19 +25,7 @@ import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionD
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 import org.talend.daikon.avro.AvroUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import com.marklogic.client.DatabaseClient;
 
 public class MarkLogicRowProcessorTest {
 
@@ -81,7 +82,7 @@ public class MarkLogicRowProcessorTest {
         MarkLogicInputWriteOperation writeOperation = new MarkLogicInputWriteOperation(inputSink, inputProperties);
         MarkLogicRowProcessor rowProcessor = writeOperation.createWriter(null);
 
-        GenericData.Record someRecord = new GenericData.Record(inputProperties.outputSchema.schema.getValue());
+        GenericData.Record someRecord = new GenericData.Record(inputProperties.datasetProperties.main.schema.getValue());
         rowProcessor.write(someRecord);
     }
 
@@ -89,7 +90,7 @@ public class MarkLogicRowProcessorTest {
     public void testWriteCorrectRecord() throws IOException {
         MarkLogicInputProperties inputProperties = new MarkLogicInputProperties("inputProps");
         inputProperties.init();
-        inputProperties.docIdColumn.setValue(inputProperties.outputSchema.schema.getValue().getFields().get(0).name());
+        inputProperties.docIdColumn.setValue(inputProperties.datasetProperties.main.schema.getValue().getFields().get(0).name());
 
         MarkLogicInputSink inputSink = new MarkLogicInputSink();
         MarkLogicInputWriteOperation inputWriteOperation = new MarkLogicInputWriteOperation(inputSink, inputProperties);
@@ -99,7 +100,7 @@ public class MarkLogicRowProcessorTest {
 
         rowProcessor.docContentReader = mockedDocContentReader;
 
-        GenericData.Record correctRecord = new GenericData.Record(inputProperties.outputSchema.schema.getValue());
+        GenericData.Record correctRecord = new GenericData.Record(inputProperties.datasetProperties.main.schema.getValue());
         correctRecord.put(0, "docId");
         rowProcessor.write(correctRecord);
 

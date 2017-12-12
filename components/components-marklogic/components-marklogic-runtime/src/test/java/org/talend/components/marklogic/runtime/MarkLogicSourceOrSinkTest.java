@@ -1,7 +1,20 @@
 package org.talend.components.marklogic.runtime;
 
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.DatabaseClientFactory;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.avro.Schema;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,20 +34,8 @@ import org.talend.daikon.NamedThing;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.properties.ValidationResult;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.DatabaseClientFactory;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DatabaseClientFactory.class)
@@ -120,7 +121,7 @@ public class MarkLogicSourceOrSinkTest {
     @Test(expected = MarkLogicException.class)
     public void testValidateCannotConnect() {
         DatabaseClient mockedClient = mock(DatabaseClient.class);
-        when(mockedClient.openTransaction()).thenThrow((Class<IOException>) IOException.class);
+        when(mockedClient.openTransaction()).thenThrow(IOException.class);
         PowerMockito.mockStatic(DatabaseClientFactory.class);
         when(DatabaseClientFactory
                 .newClient(anyString(), anyInt(), anyString(), (DatabaseClientFactory.SecurityContext) anyObject()))
@@ -140,7 +141,7 @@ public class MarkLogicSourceOrSinkTest {
         Schema stringSchema = prepareSchema(AvroUtils._string(), null);
         testInputProperties.inputSchema.schema.setValue(stringSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test
@@ -151,7 +152,7 @@ public class MarkLogicSourceOrSinkTest {
         Schema bytesSchema = prepareSchema(AvroUtils._bytes(), null);
         testInputProperties.inputSchema.schema.setValue(bytesSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test
@@ -160,9 +161,9 @@ public class MarkLogicSourceOrSinkTest {
         testInputProperties.init();
 
         Schema bytesSchema = prepareSchema(AvroUtils._short(), "id_Object");
-        testInputProperties.outputSchema.schema.setValue(bytesSchema);
+        testInputProperties.datasetProperties.main.schema.setValue(bytesSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test
@@ -171,9 +172,9 @@ public class MarkLogicSourceOrSinkTest {
         testInputProperties.init();
 
         Schema bytesSchema = prepareSchema(AvroUtils._short(), "id_Document");
-        testInputProperties.outputSchema.schema.setValue(bytesSchema);
+        testInputProperties.datasetProperties.main.schema.setValue(bytesSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test(expected = MarkLogicException.class)
@@ -182,9 +183,9 @@ public class MarkLogicSourceOrSinkTest {
         testInputProperties.init();
 
         Schema bytesSchema = prepareSchema(AvroUtils._short(), "id_Integer");
-        testInputProperties.outputSchema.schema.setValue(bytesSchema);
+        testInputProperties.datasetProperties.main.schema.setValue(bytesSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test(expected = MarkLogicException.class)
@@ -193,9 +194,9 @@ public class MarkLogicSourceOrSinkTest {
         testInputProperties.init();
 
         Schema bytesSchema = prepareSchema(AvroUtils._int(), null);
-        testInputProperties.outputSchema.schema.setValue(bytesSchema);
+        testInputProperties.datasetProperties.main.schema.setValue(bytesSchema);
 
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     @Test(expected = MarkLogicException.class)
@@ -204,8 +205,8 @@ public class MarkLogicSourceOrSinkTest {
         testInputProperties.init();
 
         Schema wrongSchema = AvroUtils.createEmptySchema();
-        testInputProperties.outputSchema.schema.setValue(wrongSchema);
-        sourceOrSink.checkDocContentTypeSupported(testInputProperties.outputSchema);
+        testInputProperties.datasetProperties.main.schema.setValue(wrongSchema);
+        sourceOrSink.checkDocContentTypeSupported(testInputProperties.datasetProperties.main);
     }
 
     private Schema prepareSchema(Schema docContentType, String diTalendTypeProperty) {

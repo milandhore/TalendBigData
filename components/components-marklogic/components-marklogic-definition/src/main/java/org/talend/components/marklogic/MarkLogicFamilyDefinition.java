@@ -15,16 +15,18 @@ package org.talend.components.marklogic;
 import org.talend.components.api.AbstractComponentFamilyDefinition;
 import org.talend.components.api.ComponentInstaller;
 import org.talend.components.api.Constants;
+import org.talend.components.marklogic.dataset.MarkLogicDatasetDefinition;
+import org.talend.components.marklogic.datastore.MarkLogicDatastoreDefinition;
 import org.talend.components.marklogic.tmarklogicbulkload.MarkLogicBulkLoadDefinition;
 import org.talend.components.marklogic.tmarklogicclose.MarkLogicCloseDefinition;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputDefinition;
-
-import aQute.bnd.annotation.component.Component;
-
-import com.google.auto.service.AutoService;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputDefinition;
 import org.talend.components.marklogic.wizard.MarkLogicWizardDefinition;
+
+import com.google.auto.service.AutoService;
+
+import aQute.bnd.annotation.component.Component;
 
 /**
  * Install all of the definitions provided for the FileInput family of components.
@@ -37,8 +39,11 @@ public class MarkLogicFamilyDefinition
     public static final String NAME = "MarkLogic";
 
     public MarkLogicFamilyDefinition() {
-        super(NAME, new MarkLogicInputDefinition(), new MarkLogicOutputDefinition(), new MarkLogicConnectionDefinition(),
-                new MarkLogicCloseDefinition(), new MarkLogicBulkLoadDefinition(), new MarkLogicWizardDefinition());
+        super(NAME,
+                new MarkLogicInputDefinition(), new MarkLogicOutputDefinition(), new MarkLogicConnectionDefinition(),
+                new MarkLogicCloseDefinition(), new MarkLogicBulkLoadDefinition(), new MarkLogicWizardDefinition(),
+                // Datastore & Dataset definitions.
+                new MarkLogicDatasetDefinition(), new MarkLogicDatastoreDefinition());
 
     }
 

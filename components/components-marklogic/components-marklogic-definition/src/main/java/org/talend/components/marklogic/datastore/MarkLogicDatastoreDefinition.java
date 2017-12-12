@@ -29,7 +29,7 @@ import org.talend.daikon.runtime.RuntimeInfo;
  */
 public class MarkLogicDatastoreDefinition extends I18nDefinition implements DatastoreDefinition<MarkLogicConnectionProperties> {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWConnection"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "MarkLogicDatastore"; //$NON-NLS-1$
 
     public MarkLogicDatastoreDefinition() {
         super(COMPONENT_NAME);

@@ -12,10 +12,17 @@
 // ============================================================================
 package org.talend.components.marklogic;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.talend.components.api.ComponentInstaller;
+import org.talend.components.marklogic.dataset.MarkLogicDatasetDefinition;
+import org.talend.components.marklogic.datastore.MarkLogicDatastoreDefinition;
 import org.talend.components.marklogic.tmarklogicbulkload.MarkLogicBulkLoadDefinition;
 import org.talend.components.marklogic.tmarklogicclose.MarkLogicCloseDefinition;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
@@ -23,11 +30,6 @@ import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputDefinition;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputDefinition;
 import org.talend.components.marklogic.wizard.MarkLogicWizardDefinition;
 import org.talend.daikon.definition.Definition;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class MarkLogicFamilyDefinitionTest {
 
@@ -47,6 +49,8 @@ public class MarkLogicFamilyDefinitionTest {
         expectedDefinitions.add(MarkLogicCloseDefinition.class);
         expectedDefinitions.add(MarkLogicBulkLoadDefinition.class);
         expectedDefinitions.add(MarkLogicWizardDefinition.class);
+        expectedDefinitions.add(MarkLogicDatasetDefinition.class);
+        expectedDefinitions.add(MarkLogicDatastoreDefinition.class);
 
         List<Class> actualDefinitionsNames = new ArrayList<>();
 

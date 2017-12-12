@@ -1,29 +1,8 @@
 package org.talend.components.marklogic.runtime;
 
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.document.DocumentDescriptor;
-import com.marklogic.client.document.DocumentManager;
-import com.marklogic.client.document.DocumentUriTemplate;
-import com.marklogic.client.io.FileHandle;
-import com.marklogic.client.io.marker.AbstractWriteHandle;
-import com.marklogic.client.io.marker.DocumentPatchHandle;
-import com.marklogic.client.io.marker.GenericWriteHandle;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.IndexedRecord;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.talend.components.api.component.runtime.Result;
-import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputProperties;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -32,6 +11,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.IndexedRecord;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.talend.components.api.component.runtime.Result;
+import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputProperties;
+
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.document.DocumentDescriptor;
+import com.marklogic.client.document.DocumentManager;
+import com.marklogic.client.document.DocumentUriTemplate;
+import com.marklogic.client.io.FileHandle;
+import com.marklogic.client.io.marker.AbstractWriteHandle;
+import com.marklogic.client.io.marker.DocumentPatchHandle;
+import com.marklogic.client.io.marker.GenericWriteHandle;
 
 public class MarkLogicWriterTest {
 
@@ -222,7 +222,7 @@ public class MarkLogicWriterTest {
         DocumentManager markLogicDocMngrMock = mock(DocumentManager.class);
 
         writer = sink.createWriteOperation().createWriter(mockedContainer);
-        GenericData.Record indexedRecord = new GenericData.Record(properties.schema.schema.getValue());
+        GenericData.Record indexedRecord = new GenericData.Record(properties.datasetProperties.main.schema.getValue());
         indexedRecord.put(0, "docId");
         indexedRecord.put(1, docContent);
 
@@ -290,7 +290,7 @@ public class MarkLogicWriterTest {
         when(descriptorMock.getUri()).thenReturn("somePrefix/docId");
 
         MarkLogicWriter writer = sink.createWriteOperation().createWriter(mockedContainer);
-        GenericData.Record indexedRecord = new GenericData.Record(properties.schema.schema.getValue());
+        GenericData.Record indexedRecord = new GenericData.Record(properties.datasetProperties.main.schema.getValue());
         indexedRecord.put(0, "docId");
         File docContent =  new File("someFile");
         indexedRecord.put(1, docContent);

@@ -1,6 +1,10 @@
 package org.talend.components.marklogic.runtime.input;
 
-import com.marklogic.client.DatabaseClient;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
@@ -13,10 +17,7 @@ import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.runtime.input.strategies.DocContentReader;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.marklogic.client.DatabaseClient;
 
 /**
  * This class is runtime reader for MarkLogic, which get document content for provided docId at each iteration.
@@ -59,8 +60,8 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
         this.uId = uId;
         client = inputWriteOperation.getSink().connect(container);
 
-        Schema.Field docContentField = inputProperties.outputSchema.schema.getValue().getFields().get(1);
-        docContentReader = new DocContentReader(client.newDocumentManager(), inputProperties.outputSchema.schema.getValue(), docContentField);
+        Schema.Field docContentField = inputProperties.datasetProperties.main.schema.getValue().getFields().get(1);
+        docContentReader = new DocContentReader(client.newDocumentManager(), inputProperties.datasetProperties.main.schema.getValue(), docContentField);
     }
 
     @Override

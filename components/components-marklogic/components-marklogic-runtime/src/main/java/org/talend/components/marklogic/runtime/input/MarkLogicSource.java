@@ -12,15 +12,14 @@
 // ============================================================================
 package org.talend.components.marklogic.runtime.input;
 
-import org.talend.components.api.component.runtime.BoundedReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.talend.components.api.component.runtime.BoundedSource;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.marklogic.runtime.MarkLogicSourceOrSink;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 import org.talend.daikon.properties.ValidationResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MarkLogicSource extends MarkLogicSourceOrSink implements BoundedSource {
 
@@ -51,7 +50,7 @@ public class MarkLogicSource extends MarkLogicSourceOrSink implements BoundedSou
     @Override
     public ValidationResult validate(RuntimeContainer container) {
         if (ioProperties instanceof MarkLogicInputProperties) {
-            checkDocContentTypeSupported(((MarkLogicInputProperties) ioProperties).outputSchema);
+            checkDocContentTypeSupported(((MarkLogicInputProperties) ioProperties).datasetProperties.main);
         } else {
            return new ValidationResult(ValidationResult.Result.ERROR, MESSAGES.getMessage("error.wrongProperties"));
         }

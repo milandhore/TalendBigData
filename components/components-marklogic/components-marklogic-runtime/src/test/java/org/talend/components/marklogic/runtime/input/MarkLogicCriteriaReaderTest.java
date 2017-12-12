@@ -46,7 +46,7 @@ public class MarkLogicCriteriaReaderTest {
         MarkLogicInputProperties properties = new MarkLogicInputProperties("inputProperties");
         properties.init();
         Schema.Field docIdField = new Schema.Field("docId", AvroUtils._string(), null, (Object) null, Schema.Field.Order.IGNORE);
-        properties.outputSchema.schema.setValue(Schema.createRecord("docIdOnlySchema", null, null, false,
+        properties.datasetProperties.main.schema.setValue(Schema.createRecord("docIdOnlySchema", null, null, false,
                 Collections.singletonList(docIdField)));
         MarkLogicCriteriaReader criteriaReader = new MarkLogicCriteriaReader(mockedSource, null, properties);
 

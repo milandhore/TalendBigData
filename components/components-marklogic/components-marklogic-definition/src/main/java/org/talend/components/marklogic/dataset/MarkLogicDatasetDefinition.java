@@ -20,7 +20,7 @@ import org.talend.daikon.runtime.RuntimeInfo;
 
 public class MarkLogicDatasetDefinition extends I18nDefinition implements DatasetDefinition<MarkLogicDatasetProperties> {
 
-    public static final String NAME = "MarklogicDataset";
+    public static final String NAME = "MarkLogicDataset";
 
     public MarkLogicDatasetDefinition() {
         super(NAME);
