@@ -45,8 +45,10 @@ public class MarkLogicDatasetRuntime implements DatasetRuntime<MarkLogicDatasetP
 
     @Override
     public void getSample(int limit, Consumer<IndexedRecord> consumer) {
+        MarkLogicDataInputProperties dataInputProperties = new MarkLogicDataInputProperties("data");
+        dataInputProperties.setDatasetProperties(dataset);
         MarkLogicDataSource dataSource = new MarkLogicDataSource();
-        dataSource.initialize(container, dataset);
+        dataSource.initialize(container, dataInputProperties);
         dataSource.validate(container);
         Reader<IndexedRecord> reader = dataSource.createReader(container);
         ReaderDataProvider<IndexedRecord> dataProvider = new ReaderDataProvider<>(reader, limit, consumer);

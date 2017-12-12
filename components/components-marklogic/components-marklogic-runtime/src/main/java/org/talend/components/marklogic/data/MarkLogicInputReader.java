@@ -21,7 +21,7 @@ public class MarkLogicInputReader extends MarkLogicCriteriaReader {
 
         return new Setting(
                 properties.getDatasetProperties().main.schema.getValue(),
-                properties.criteria.getValue(), 0, properties.pageSize.getValue(),
+                properties.criteria.getValue(), -1, properties.pageSize.getValue(),
                 properties.useQueryOption.getValue(), properties.queryLiteralType.getValue(),
                 properties.queryOptionName.getValue(), properties.queryOptionLiterals.getValue(),
                 properties.getDatasetProperties().getDatastoreProperties().isReferencedConnectionUsed());
