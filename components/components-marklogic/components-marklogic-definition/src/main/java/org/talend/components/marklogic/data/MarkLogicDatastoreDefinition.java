@@ -10,12 +10,11 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.components.marklogic.datastore;
+package org.talend.components.marklogic.data;
 
 import org.talend.components.common.dataset.DatasetProperties;
 import org.talend.components.common.datastore.DatastoreDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
-import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputDefinition;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputDefinition;
@@ -44,7 +43,7 @@ public class MarkLogicDatastoreDefinition extends I18nDefinition implements Data
 
     @Override
     public RuntimeInfo getRuntimeInfo(MarkLogicConnectionProperties properties) {
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.datastore.MarkLogicDatastoreRuntime");
+        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.data.MarkLogicDatastoreRuntime");
     }
 
     @Override

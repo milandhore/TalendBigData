@@ -27,7 +27,7 @@ import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
 import org.talend.components.marklogic.MarkLogicProvideConnectionProperties;
-import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
+import org.talend.components.marklogic.data.MarkLogicDatasetProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;
@@ -73,7 +73,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     @Override
     public void setupProperties() {
         super.setupProperties();
-        connection.setupProperties();
+        connection.init();
         datasetProperties.init();
         datasetProperties.setDatastoreProperties(connection);
         criteriaSearch.setRequired();
@@ -137,7 +137,7 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     public void setupLayout() {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
-        mainForm.addRow(connection.getForm(Form.MAIN));
+        mainForm.addRow(connection.getForm(Form.REFERENCE));
         mainForm.addRow(datasetProperties.getForm(Form.REFERENCE));
         mainForm.addRow(inputSchema.getForm(Form.REFERENCE));
         mainForm.getWidget(inputSchema).setHidden();

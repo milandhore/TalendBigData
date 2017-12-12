@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.components.marklogic.dataset;
+package org.talend.components.marklogic.data;
 
 import org.talend.components.common.dataset.DatasetDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
@@ -53,7 +53,7 @@ public class MarkLogicDatasetDefinition extends I18nDefinition implements Datase
 
     @Override
     public RuntimeInfo getRuntimeInfo(MarkLogicDatasetProperties properties) {
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.dataset.MarkLogicDatasetRuntime");
+        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.data.MarkLogicDatasetRuntime");
     }
 
 }

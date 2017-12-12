@@ -15,14 +15,11 @@ package org.talend.components.marklogic.tmarklogicinput;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.talend.components.api.component.AbstractComponentDefinition;
 import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.AbstractMarkLogicComponentDefinition;
-import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
-import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
@@ -57,7 +54,7 @@ public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefiniti
      * As for Number of records property see Reader implementation in runtime part
      */
     @Override
-    public Property[] getReturnProperties() {
+    public Property<?>[] getReturnProperties() {
         return new Property[] { RETURN_TOTAL_RECORD_COUNT_PROP, RETURN_ERROR_MESSAGE_PROP };
     }
 

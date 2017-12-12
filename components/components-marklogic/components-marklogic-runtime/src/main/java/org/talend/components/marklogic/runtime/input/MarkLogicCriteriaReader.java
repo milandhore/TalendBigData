@@ -25,6 +25,8 @@ import org.talend.components.api.component.runtime.AbstractBoundedReader;
 import org.talend.components.api.component.runtime.BoundedSource;
 import org.talend.components.api.component.runtime.Result;
 import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.common.FixedConnectorsComponentProperties;
+import org.talend.components.marklogic.connection.MarkLogicConnection;
 import org.talend.components.marklogic.exceptions.MarkLogicErrorCode;
 import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.runtime.input.strategies.DocContentReader;
@@ -44,7 +46,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     private RuntimeContainer container;
 
-    private MarkLogicInputProperties inputProperties;
+    private Setting settings;
 
     private DatabaseClient connectionClient;
 
@@ -57,8 +59,6 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
     private DocumentManager docManager;
 
     private SearchHandle searchHandle;
-
-    private String criteria;
 
     private long matchedDocuments;
 
@@ -78,38 +78,46 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     private StringQueryDefinition stringQueryDefinition;
 
-
-    public MarkLogicCriteriaReader(BoundedSource source, RuntimeContainer container, MarkLogicInputProperties inputProperties) {
+    public MarkLogicCriteriaReader(BoundedSource source, RuntimeContainer container, FixedConnectorsComponentProperties inputProperties) {
         super(source);
         this.container = container;
-        this.inputProperties = inputProperties;
+        this.settings = prepareSettings(inputProperties);
+    }
+
+    protected Setting prepareSettings(FixedConnectorsComponentProperties inputProperties) {
+        MarkLogicInputProperties properties = (MarkLogicInputProperties) inputProperties;
+        return new Setting(
+                properties.datasetProperties.main.schema.getValue(),
+                properties.criteria.getValue(),
+                properties.maxRetrieve.getValue(), properties.pageSize.getValue(),
+                properties.useQueryOption.getValue(), properties.queryLiteralType.getValue(),
+                properties.queryOptionName.getValue(), properties.queryOptionLiterals.getValue(),
+                properties.connection.isReferencedConnectionUsed());
     }
 
     @Override
     public boolean start() throws IOException {
-        MarkLogicSource currentSource = getCurrentSource();
+        MarkLogicConnection connection = (MarkLogicConnection) getCurrentSource();
         result = new Result();
-        connectionClient = currentSource.connect(container);
+        connectionClient = connection.connect(container);
         if (connectionClient == null) {
             return false;
         }
         docManager = connectionClient.newDocumentManager();
 
-        boolean isDocContentFieldPresent = (inputProperties.datasetProperties.main.schema.getValue().getFields().size() >= 2);
+        boolean isDocContentFieldPresent = (settings.outputSchema.getFields().size() >= 2);
         if (isDocContentFieldPresent) {
-            docContentField = inputProperties.datasetProperties.main.schema.getValue().getFields().get(1);
+            docContentField = settings.outputSchema.getFields().get(1);
         }
-        docContentReader = new DocContentReader(docManager, inputProperties.datasetProperties.main.schema.getValue(), docContentField);
-
-        criteria = inputProperties.criteria.getValue();
-        if (inputProperties.useQueryOption.getValue() && StringUtils.isNotEmpty(inputProperties.queryOptionName.getStringValue())) {
+        docContentReader = new DocContentReader(docManager, settings.outputSchema, docContentField);
+        if (settings.useQueryOption && StringUtils.isNotEmpty(settings.queryOptionName)) {
             prepareQueryOption();
         }
         queryManager = connectionClient.newQueryManager();
-        stringQueryDefinition = (inputProperties.useQueryOption.getValue()) ?
-                queryManager.newStringDefinition(inputProperties.queryOptionName.getValue()) : queryManager.newStringDefinition();
+        stringQueryDefinition = (settings.useQueryOption) ?
+                queryManager.newStringDefinition(settings.queryOptionName) : queryManager.newStringDefinition();
 
-        stringQueryDefinition.setCriteria(criteria);
+        stringQueryDefinition.setCriteria(settings.criteria);
 
         searchHandle = new SearchHandle();
         queryManager.search(stringQueryDefinition, searchHandle);
@@ -117,7 +125,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
         matchedDocuments = searchHandle.getTotalResults();
 
-        pageSize = (inputProperties.pageSize.getValue() <= 0) ? DEFAULT_PAGE_SIZE : inputProperties.pageSize.getValue();
+        pageSize = (settings.pageSize <= 0) ? DEFAULT_PAGE_SIZE : settings.pageSize;
         queryManager.setPageLength(pageSize);
         documentCounter = 1;
 
@@ -128,9 +136,9 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     private void prepareQueryOption() {
         QueryOptionsManager qryOptMgr = connectionClient.newServerConfigManager().newQueryOptionsManager();
-        if (StringUtils.isNotEmpty(inputProperties.queryOptionLiterals.getValue())) {
+        if (StringUtils.isNotEmpty(settings.queryOptionLiterals)) {
             StringHandle strHandle = new StringHandle();
-            switch (inputProperties.queryLiteralType.getValue()) {
+            switch (settings.queryLiteralType) {
                 case "JSON": {
                     strHandle.withFormat(Format.JSON);
                     break;
@@ -141,8 +149,8 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
                 }
             }
 
-            strHandle.set(inputProperties.queryOptionLiterals.getValue());
-            qryOptMgr.writeOptions(inputProperties.queryOptionName.getValue(), strHandle);
+            strHandle.set(settings.queryOptionLiterals);
+            qryOptMgr.writeOptions(settings.queryOptionName, strHandle);
         }
     }
 
@@ -164,7 +172,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
     public IndexedRecord getCurrent() throws NoSuchElementException {
         ++documentCounter;
         MatchDocumentSummary currentSummary = currentPage[pageCounter];
-        current = new GenericData.Record(inputProperties.datasetProperties.main.schema.getValue());
+        current = new GenericData.Record(settings.outputSchema);
         try {
             String docId = currentSummary.getUri();
             current = docContentReader.readDocument(docId);
@@ -177,8 +185,6 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
         }
     }
 
-
-
     @Override
     public Instant getCurrentTimestamp() throws NoSuchElementException {
         return Instant.now();
@@ -186,18 +192,48 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     @Override
     public void close() throws IOException {
-        if (!inputProperties.connection.isReferencedConnectionUsed()) {
+        if (!settings.isReferencedConnectionUsed) {
             connectionClient.release();
         }
     }
 
     @Override
-    public MarkLogicSource getCurrentSource() {
-        return (MarkLogicSource) super.getCurrentSource();
-    }
-
-    @Override
     public Map<String, Object> getReturnValues() {
         return result.toMap();
+    }
+
+    protected class Setting {
+
+        private final Schema outputSchema;
+
+        private final String criteria;
+
+        private final int maxRetrieve;
+
+        private final int pageSize;
+
+        private final boolean useQueryOption;
+
+        private final String queryLiteralType;
+
+        private final String queryOptionLiterals;
+
+        private final String queryOptionName;
+
+        private final boolean isReferencedConnectionUsed;
+
+        public Setting(Schema outputSchema, String criteria, int maxRetrieve, int pageSize,
+                boolean useQueryOption, String queryLiteralType, String queryOptionLiterals, String queryOptionName, boolean isReferencedConnectionUsed) {
+            this.outputSchema = outputSchema;
+            this.criteria = criteria;
+            this.maxRetrieve = maxRetrieve;
+            this.pageSize = pageSize;
+            this.useQueryOption = useQueryOption;
+            this.queryLiteralType = queryLiteralType;
+            this.queryOptionLiterals = queryOptionLiterals;
+            this.queryOptionName = queryOptionName;
+
+            this.isReferencedConnectionUsed = isReferencedConnectionUsed;
+        }
     }
 }

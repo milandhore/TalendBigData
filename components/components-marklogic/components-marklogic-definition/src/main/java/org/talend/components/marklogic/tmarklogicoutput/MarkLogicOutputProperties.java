@@ -29,7 +29,7 @@ import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
 import org.talend.components.marklogic.MarkLogicProvideConnectionProperties;
-import org.talend.components.marklogic.dataset.MarkLogicDatasetProperties;
+import org.talend.components.marklogic.data.MarkLogicDatasetProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.avro.AvroUtils;
 import org.talend.daikon.avro.SchemaConstants;

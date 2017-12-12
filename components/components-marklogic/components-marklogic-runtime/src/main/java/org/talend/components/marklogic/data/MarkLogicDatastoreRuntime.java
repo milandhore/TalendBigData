@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.components.marklogic.datastore;
+package org.talend.components.marklogic.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,10 @@ import org.talend.components.marklogic.runtime.TMarkLogicConnectionStandalone;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.properties.ValidationResult;
 
+/**
+ *
+ *
+ */
 public class MarkLogicDatastoreRuntime implements DatastoreRuntime<MarkLogicConnectionProperties> {
 
     private static final long serialVersionUID = -7454667988635055372L;

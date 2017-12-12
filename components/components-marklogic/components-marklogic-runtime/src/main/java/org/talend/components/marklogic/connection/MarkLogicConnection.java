@@ -17,13 +17,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.api.exception.ComponentException;
 import org.talend.components.marklogic.exceptions.MarkLogicErrorCode;
 import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
-import org.talend.daikon.exception.ExceptionContext.ExceptionContextBuilder;
-import org.talend.daikon.exception.error.DefaultErrorCode;
-import org.talend.daikon.exception.error.ErrorCode;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 
@@ -89,15 +85,9 @@ public abstract class MarkLogicConnection {
             // Since creating client is not enough for verifying established connection, need to make fake call.
             client.openTransaction().commit();
         } catch (Exception e) {
-            MarkLogicErrorCode errorCode;
-            String message;
-            if (e instanceof FailedRequestException) {
-                message = MESSAGES.getMessage("error.invalid.credentials");
-                errorCode = new MarkLogicErrorCode(message);
-            } else {
-                message = MESSAGES.getMessage("error.server.notReachable");
-                errorCode = new MarkLogicErrorCode(message);
-            }
+            MarkLogicErrorCode errorCode = new MarkLogicErrorCode(
+                    e instanceof FailedRequestException ? MESSAGES.getMessage("error.invalid.credentials")
+                            : MESSAGES.getMessage("error.server.notReachable"));
             throw new MarkLogicException(errorCode, e);
         }
     }
