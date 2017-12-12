@@ -12,20 +12,21 @@
 // ============================================================================
 package org.talend.components.marklogic.tmarklogicconnection;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.talend.components.api.component.AbstractComponentDefinition;
 import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public class MarkLogicConnectionDefinition extends AbstractComponentDefinition {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWConnection"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "tMarkLogicConnection"; //$NON-NLS-1$
 
     public MarkLogicConnectionDefinition() {
         super(COMPONENT_NAME, ExecutionEngine.DI, ExecutionEngine.BEAM);

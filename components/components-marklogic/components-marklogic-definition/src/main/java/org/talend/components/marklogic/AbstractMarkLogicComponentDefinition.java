@@ -19,10 +19,6 @@ import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionP
 
 public abstract class AbstractMarkLogicComponentDefinition extends AbstractComponentDefinition {
 
-    public AbstractMarkLogicComponentDefinition(String componentName, boolean allEngines) {
-        super(componentName, allEngines);
-    }
-
     public AbstractMarkLogicComponentDefinition(String componentName, ExecutionEngine engine1, ExecutionEngine... engineOthers) {
         super(componentName, engine1, engineOthers);
     }

@@ -25,6 +25,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.marklogic.connection.MarkLogicConnection;
+import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 
 import com.marklogic.client.DatabaseClient;
@@ -109,7 +110,7 @@ public class TMarkLogicConnectionStandaloneTest {
 
     @Test
     public void testConnectionFailureToConnectInvalidCredentials() {
-        exceptions.expect(ComponentException.class);
+        exceptions.expect(MarkLogicException.class);
         exceptions.expectMessage(Matchers.containsString("Invalid credentials."));
 
         connectionProperties.authentication.setValue("DIGEST");
@@ -121,7 +122,7 @@ public class TMarkLogicConnectionStandaloneTest {
 
     @Test
     public void testConnectionFailureToConnectServerIsDown() {
-        exceptions.expect(ComponentException.class);
+        exceptions.expect(MarkLogicException.class);
         exceptions.expectMessage(
                 Matchers.containsString("Cannot connect to MarkLogic database. Check your database connectivity."));
 

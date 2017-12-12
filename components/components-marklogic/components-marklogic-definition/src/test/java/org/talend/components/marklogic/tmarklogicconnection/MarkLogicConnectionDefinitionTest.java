@@ -90,4 +90,11 @@ public class MarkLogicConnectionDefinitionTest {
         assertArrayEquals(expectedReturnProperties, definition.getReturnProperties());
     }
 
+    @Test
+    public void testSupportsProperties() {
+        MarkLogicConnectionProperties connectionProperties = new MarkLogicConnectionProperties("connection");
+        boolean isPropsSupportedByDefault = definition.supportsProperties(connectionProperties);
+
+        assertTrue(isPropsSupportedByDefault);
+    }
 }

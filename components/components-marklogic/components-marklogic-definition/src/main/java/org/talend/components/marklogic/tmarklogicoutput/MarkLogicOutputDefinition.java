@@ -19,13 +19,14 @@ import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.AbstractMarkLogicComponentDefinition;
+import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
 public class MarkLogicOutputDefinition extends AbstractMarkLogicComponentDefinition {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWOutput";
+    public static final String COMPONENT_NAME = "tMarkLogicOutput";
 
     public MarkLogicOutputDefinition() {
         super(COMPONENT_NAME, ExecutionEngine.DI, ExecutionEngine.BEAM);
@@ -60,4 +61,8 @@ public class MarkLogicOutputDefinition extends AbstractMarkLogicComponentDefinit
         return EnumSet.of(ConnectorTopology.INCOMING, ConnectorTopology.INCOMING_AND_OUTGOING);
     }
 
+    @Override
+    public boolean isConditionalInputs() {
+        return true;
+    }
 }

@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
+import org.talend.components.marklogic.exceptions.MarkLogicErrorCode;
+import org.talend.components.marklogic.exceptions.MarkLogicException;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.exception.ExceptionContext.ExceptionContextBuilder;
 import org.talend.daikon.exception.error.DefaultErrorCode;
@@ -55,17 +57,17 @@ public abstract class MarkLogicConnection {
     public DatabaseClient connect(RuntimeContainer container) {
         MarkLogicConnectionProperties properties = getMarkLogicConnectionProperties();
         if (properties.getReferencedComponentId() != null && container != null) {
-            DatabaseClient client = (DatabaseClient) container.getComponentData(container.getCurrentComponentId(), CONNECTION);
+            DatabaseClient client = (DatabaseClient) container.getComponentData(properties.getReferencedComponentId(), CONNECTION);
             if (client != null) {
                 return client;
             }
 
-            throw new ComponentException(new DefaultErrorCode(400, ERROR_KEY),
-                    new ExceptionContextBuilder().put(ERROR_KEY,
-                            MESSAGES.getMessage("error.invalid.referenceConnection", properties.getReferencedComponentId()))
-                            .build());
+            throw new MarkLogicException(
+                    new MarkLogicErrorCode(
+                            MESSAGES.getMessage("error.invalid.referenceConnection", properties.getReferencedComponentId())
+                    )
+            );
         }
-
         SecurityContext context = "BASIC".equals(properties.authentication.getValue())
                 ? new DatabaseClientFactory.BasicAuthContext(properties.username.getValue(), properties.password.getValue())
                 : new DatabaseClientFactory.DigestAuthContext(properties.username.getValue(), properties.password.getValue());
@@ -87,16 +89,16 @@ public abstract class MarkLogicConnection {
             // Since creating client is not enough for verifying established connection, need to make fake call.
             client.openTransaction().commit();
         } catch (Exception e) {
-            ErrorCode errorCode;
+            MarkLogicErrorCode errorCode;
             String message;
             if (e instanceof FailedRequestException) {
-                errorCode = new DefaultErrorCode(403, ERROR_KEY);
                 message = MESSAGES.getMessage("error.invalid.credentials");
+                errorCode = new MarkLogicErrorCode(message);
             } else {
-                errorCode = new DefaultErrorCode(400, ERROR_KEY);
                 message = MESSAGES.getMessage("error.server.notReachable");
+                errorCode = new MarkLogicErrorCode(message);
             }
-            throw new ComponentException(errorCode, e, new ExceptionContextBuilder().put(ERROR_KEY, message).build());
+            throw new MarkLogicException(errorCode, e);
         }
     }
 

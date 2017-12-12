@@ -18,13 +18,14 @@ import org.talend.components.api.component.AbstractComponentDefinition;
 import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
 public class MarkLogicCloseDefinition extends AbstractComponentDefinition {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWClose";
+    public static final String COMPONENT_NAME = "tMarkLogicClose";
 
     public MarkLogicCloseDefinition() {
         super(COMPONENT_NAME, ExecutionEngine.DI, ExecutionEngine.BEAM);

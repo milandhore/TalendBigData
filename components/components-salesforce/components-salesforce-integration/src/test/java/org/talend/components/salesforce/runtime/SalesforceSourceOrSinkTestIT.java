@@ -136,7 +136,7 @@ public class SalesforceSourceOrSinkTestIT extends SalesforceTestBase {
         if (isBulk) {
             Assert.assertNotNull(actualHolder.bulkConnection);
         } else {
-            //Check if bulk connection was not chosen but created.
+            // Check if bulk connection was not chosen but created.
             Assert.assertNull(actualHolder.bulkConnection);
         }
     }

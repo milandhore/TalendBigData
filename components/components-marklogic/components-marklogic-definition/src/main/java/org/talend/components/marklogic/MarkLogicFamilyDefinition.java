@@ -34,7 +34,7 @@ import org.talend.components.marklogic.wizard.MarkLogicWizardDefinition;
 public class MarkLogicFamilyDefinition
         extends AbstractComponentFamilyDefinition implements ComponentInstaller {
 
-    public static final String NAME = "MarkLogicNEW";
+    public static final String NAME = "MarkLogic";
 
     public MarkLogicFamilyDefinition() {
         super(NAME, new MarkLogicInputDefinition(), new MarkLogicOutputDefinition(), new MarkLogicConnectionDefinition(),

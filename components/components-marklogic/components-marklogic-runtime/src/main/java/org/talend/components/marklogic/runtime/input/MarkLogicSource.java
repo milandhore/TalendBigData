@@ -10,33 +10,26 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.components.marklogic.runtime;
+package org.talend.components.marklogic.runtime.input;
 
 import org.talend.components.api.component.runtime.BoundedReader;
 import org.talend.components.api.component.runtime.BoundedSource;
-import org.talend.components.api.component.runtime.SourceOrSink;
 import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.marklogic.runtime.MarkLogicSourceOrSink;
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 import org.talend.daikon.properties.ValidationResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MarkLogicSource extends MarkLogicSourceOrSink implements BoundedSource {
 
-    private MarkLogicInputProperties inputProperties;
-
     @Override
     public List<? extends BoundedSource> splitIntoBundles(long desiredBundleSizeBytes, RuntimeContainer adaptor)
             throws Exception {
-        return null;
-    }
-
-    @Override
-    public ValidationResult initialize(RuntimeContainer container, ComponentProperties properties) {
-
-        this.inputProperties = (MarkLogicInputProperties) properties;
-        return ValidationResult.OK;
+        List<BoundedSource> list = new ArrayList<>();
+        list.add(this);
+        return list;
     }
 
     @Override
@@ -49,8 +42,19 @@ public class MarkLogicSource extends MarkLogicSourceOrSink implements BoundedSou
         return false;
     }
 
+
     @Override
-    public BoundedReader createReader(RuntimeContainer adaptor) {
-        return new MarkLogicReader(this);
+    public MarkLogicCriteriaReader createReader(RuntimeContainer adaptor) {
+        return new MarkLogicCriteriaReader(this, adaptor, (MarkLogicInputProperties) ioProperties);
+    }
+
+    @Override
+    public ValidationResult validate(RuntimeContainer container) {
+        if (ioProperties instanceof MarkLogicInputProperties) {
+            checkDocContentTypeSupported(((MarkLogicInputProperties) ioProperties).outputSchema);
+        } else {
+           return new ValidationResult(ValidationResult.Result.ERROR, MESSAGES.getMessage("error.wrongProperties"));
+        }
+        return super.validate(container);
     }
 }

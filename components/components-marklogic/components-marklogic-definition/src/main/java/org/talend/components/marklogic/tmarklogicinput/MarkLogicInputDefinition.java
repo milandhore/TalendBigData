@@ -20,6 +20,7 @@ import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.AbstractMarkLogicComponentDefinition;
+import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.properties.property.Property;
@@ -32,7 +33,7 @@ import org.talend.daikon.runtime.RuntimeInfo;
  */
 public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefinition {
 
-    public static final String COMPONENT_NAME = "tMarkLogicNEWInput"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "tMarkLogicInput"; //$NON-NLS-1$
 
     public MarkLogicInputDefinition() {
         super(COMPONENT_NAME, ExecutionEngine.DI, ExecutionEngine.BEAM);
@@ -70,11 +71,23 @@ public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefiniti
             ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
         assertConnectorTopologyCompatibility(connectorTopology);
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.runtime.MarkLogicSource");
+
+        String runtimeInputPackageName = "org.talend.components.marklogic.runtime.input";
+        String runtimeClassName = connectorTopology == ConnectorTopology.OUTGOING ?
+                "MarkLogicSource" : "MarkLogicInputSink";
+
+        return RuntimeInfoProvider.getCommonRuntimeInfo(runtimeInputPackageName + "." + runtimeClassName);
+
     }
 
     @Override
     public Set<ConnectorTopology> getSupportedConnectorTopologies() {
-        return EnumSet.of(ConnectorTopology.OUTGOING);
+        return EnumSet.of(ConnectorTopology.OUTGOING, ConnectorTopology.INCOMING_AND_OUTGOING,
+                ConnectorTopology.NONE); //NONE is workaround for jet_stub
+    }
+
+    @Override
+    public boolean isSchemaAutoPropagate() {
+        return true;
     }
 }

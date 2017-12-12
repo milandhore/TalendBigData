@@ -13,7 +13,6 @@
 package org.talend.components.marklogic.tmarklogicinput;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -21,12 +20,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.talend.daikon.avro.SchemaConstants.TALEND_IS_LOCKED;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.common.ComponentConstants;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionPropertiesTest;
@@ -51,6 +52,7 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.connection.init();
         testInputProperties.datasetProperties.init();
         testInputProperties.datasetProperties.main.init();
+        testInputProperties.inputSchema.init();
 
         testInputProperties.setupLayout();
         Form main = testInputProperties.getForm(Form.MAIN);
@@ -97,28 +99,34 @@ public class MarkLogicInputPropertiesTest {
         assertEquals(expectedDefaultQueryLiteralType, testInputProperties.queryLiteralType.getValue());
         assertNull(testInputProperties.queryOptionName.getValue());
         assertNull(testInputProperties.queryOptionLiterals.getValue());
+        assertEquals(" ", testInputProperties.queryOptionLiterals.getTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO));
     }
 
     @Test
     public void testSchemaDocIdFieldIsLocked() {
-        testInputProperties.setupSchema();
+        testInputProperties.datasetProperties.init();
+        testInputProperties.setupDefaultSchema(testInputProperties.datasetProperties.main);
         assertNull(testInputProperties.datasetProperties.main.schema.getValue().getProp(TALEND_IS_LOCKED));
         assertEquals("true", testInputProperties.datasetProperties.main.schema.getValue().getField("docId").getProp(TALEND_IS_LOCKED));
         assertNull(testInputProperties.datasetProperties.main.schema.getValue().getField("docContent").getProp(TALEND_IS_LOCKED));
     }
 
     @Test
-    public void testGetAllSchemaPropertiesConnectors() {
+    public void testGetAllSchemaPropertiesConnectorsForIOConnection() {
         Set<PropertyPathConnector> actualConnectors = testInputProperties.getAllSchemaPropertiesConnectors(true);
 
         assertThat(actualConnectors, Matchers.contains(testInputProperties.MAIN_CONNECTOR));
+        assertEquals(1,actualConnectors.size());
+        assertEquals("datasetProperties.main", new ArrayList<>(actualConnectors).get(0).getPropertyPath());
     }
 
     @Test
-    public void testGetAllSchemaPropertiesConnectorsForWrongConnection() {
+    public void testGetAllSchemaPropertiesConnectorsForOnlyOutputConnection() {
         Set<PropertyPathConnector> actualConnectors = testInputProperties.getAllSchemaPropertiesConnectors(false);
 
-        assertThat(actualConnectors, empty());
+        assertThat(actualConnectors, Matchers.contains(testInputProperties.INCOMING_CONNECTOR));
+        assertEquals(1, actualConnectors.size());
+        assertEquals("inputSchema", new ArrayList<>(actualConnectors).get(0).getPropertyPath());
     }
 
 
@@ -131,11 +139,13 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.setupProperties();
         testInputProperties.connection.init();
         testInputProperties.datasetProperties.init();
+        testInputProperties.inputSchema.init();
         testInputProperties.setupLayout();
 
         testInputProperties.refreshLayout(testInputProperties.getForm(Form.MAIN));
         testInputProperties.refreshLayout(testInputProperties.getForm(Form.ADVANCED));
 
+        boolean schemaHidden = ((Form) testInputProperties.getForm(Form.MAIN).getWidget("datasetProperties").getContent()).getWidget("main").isHidden();
         boolean isConnectionPropertiesHidden = testInputProperties.getForm(Form.MAIN).getWidget("connection").isHidden();
         boolean isQueryCriteriaHidden = testInputProperties.getForm(Form.MAIN).getWidget("criteria").isHidden();
         boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("maxRetrieve").isHidden();
@@ -145,6 +155,7 @@ public class MarkLogicInputPropertiesTest {
         boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionName").isHidden();
         boolean isQueryOptionLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionLiterals").isHidden();
 
+        assertFalse(schemaHidden);
         assertFalse(isConnectionPropertiesHidden);
         assertFalse(isQueryCriteriaHidden);
         assertFalse(isMaxRetrieveHidden);
@@ -163,6 +174,7 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.setupProperties();
         testInputProperties.connection.init();
         testInputProperties.datasetProperties.init();
+        testInputProperties.inputSchema.init();
         testInputProperties.setupLayout();
 
         someConnection.init();
@@ -188,6 +200,7 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.setupProperties();
         testInputProperties.connection.init();
         testInputProperties.datasetProperties.init();
+        testInputProperties.inputSchema.init();
         testInputProperties.setupLayout();
 
         testInputProperties.useQueryOption.setValue(true);
@@ -200,5 +213,34 @@ public class MarkLogicInputPropertiesTest {
         assertTrue(isQueryLiteralTypeVisible);
         assertTrue(isQueryOptionNameVisible);
         assertTrue(isQueryLiteralsVisible);
+    }
+
+    @Test
+    public void testAdvancedPropertiesVisibleForCriteriaMode() {
+        testInputProperties.init();
+        testInputProperties.criteriaSearch.setValue(false);
+        testInputProperties.afterCriteriaSearch();
+
+        boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.maxRetrieve).isHidden();
+        boolean isPageSizeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.pageSize).isHidden();
+        boolean isQueryLiteralTypeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryLiteralType).isHidden();
+        boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionName).isHidden();
+        boolean isQueryLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionLiterals).isHidden();
+
+        assertTrue(isMaxRetrieveHidden);
+        assertTrue(isPageSizeHidden);
+        assertTrue(isQueryLiteralTypeHidden);
+        assertTrue(isQueryOptionNameHidden);
+        assertTrue(isQueryLiteralsHidden);
+    }
+
+    @Test
+    public void testGetConnectionProperties() {
+        MarkLogicConnectionProperties connectionProperties = new MarkLogicConnectionProperties("connectionProperties");
+        connectionProperties.init();
+        testInputProperties.init();
+        testInputProperties.connection.referencedComponent.setReference(connectionProperties);
+
+        assertEquals(connectionProperties, testInputProperties.getConnectionProperties());
     }
 }
