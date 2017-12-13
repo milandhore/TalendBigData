@@ -108,6 +108,9 @@
                     <argLine>-Xms512m -Xmx1024m ${jacoco.agent.it.argLine}</argLine>
                     <systemPropertyVariables>
                         <pax.exam.karaf.version>4.0.2</pax.exam.karaf.version>
+                        <org.talend.components.google.drive.service_account_file>
+                            ${org.talend.components.google.drive.service_account_file}
+                        </org.talend.components.google.drive.service_account_file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
