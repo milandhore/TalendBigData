@@ -2,14 +2,19 @@ package org.talend.components.marklogic.data;
 
 import static org.talend.daikon.properties.presentation.Widget.widget;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.avro.Schema;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.io.IOProperties;
+import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
@@ -45,13 +50,22 @@ public class MarkLogicDataInputProperties extends FixedConnectorsComponentProper
         super.setupProperties();
 
         useQueryOption.setValue(false);
-
         pageSize.setValue(10);
-
         queryLiteralType.setPossibleValues("XML", "JSON");
         queryLiteralType.setValue("XML");
-
         queryOptionLiterals.setTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO, " ");
+        setupSchema();
+    }
+
+    private void setupSchema () {
+        Schema.Field docIdField = new Schema.Field("docId", AvroUtils._string(), null, (Object) null, Schema.Field.Order.ASCENDING);
+        docIdField.addProp(SchemaConstants.TALEND_IS_LOCKED, "true");
+        Schema.Field newDocContentField = new Schema.Field("docContent", AvroUtils._string(), null,(Object) null, Schema.Field.Order.IGNORE);
+        List<Schema.Field> fields = new ArrayList<>();
+        fields.add(docIdField);
+        fields.add(newDocContentField);
+        Schema initialSchema = Schema.createRecord("markLogic", null, null, false, fields);
+        getDatasetProperties().main.schema.setValue(initialSchema);
     }
 
     @Override
