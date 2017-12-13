@@ -1,6 +1,14 @@
 package org.talend.components.marklogic.runtime.input;
 
-import com.marklogic.client.DatabaseClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.components.api.component.runtime.BoundedSource;
@@ -9,14 +17,7 @@ import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputProperties;
 import org.talend.daikon.properties.ValidationResult;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.marklogic.client.DatabaseClient;
 
 public class MarkLogicSourceTest {
 
@@ -47,6 +48,9 @@ public class MarkLogicSourceTest {
 
     @Test
     public void testCreateReader() {
+        MarkLogicInputProperties inputProperties = new MarkLogicInputProperties("inputProps");
+        inputProperties.init();
+        source.initialize(null, inputProperties);
         MarkLogicCriteriaReader reader = source.createReader(null);
 
         assertNotNull(reader);
