@@ -1,13 +1,18 @@
 package org.talend.components.marklogic.data;
 
+import static org.talend.daikon.properties.presentation.Widget.widget;
+
 import java.util.Collections;
 import java.util.Set;
 
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.io.IOProperties;
 import org.talend.daikon.properties.ReferenceProperties;
+import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 
@@ -33,6 +38,43 @@ public class MarkLogicDataInputProperties extends FixedConnectorsComponentProper
 
     public MarkLogicDataInputProperties(String name) {
         super(name);
+    }
+
+    @Override
+    public void setupProperties() {
+        super.setupProperties();
+
+        useQueryOption.setValue(false);
+
+        pageSize.setValue(10);
+
+        queryLiteralType.setPossibleValues("XML", "JSON");
+        queryLiteralType.setValue("XML");
+
+        queryOptionLiterals.setTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO, " ");
+    }
+
+    @Override
+    public void setupLayout() {
+        super.setupLayout();
+        Form mainForm = new Form(this, Form.MAIN);
+        // May not be present in dataset properties. May be tested only using datacatalog.
+        mainForm.addRow(getDatasetProperties().getDatastoreProperties().getForm(Form.REFERENCE));
+        mainForm.addRow(getDatasetProperties().getForm(Form.REFERENCE));
+        mainForm.addRow(criteria);
+        mainForm.addRow(pageSize);
+        mainForm.addRow(useQueryOption);
+        mainForm.addRow(widget(queryLiteralType).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
+        mainForm.addColumn(queryOptionName);
+        mainForm.addRow(widget(queryOptionLiterals).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+    }
+
+    @Override
+    public void refreshLayout(Form form) {
+        super.refreshLayout(form);
+        form.getWidget(queryLiteralType).setVisible(useQueryOption.getValue());
+        form.getWidget(queryOptionName).setVisible(useQueryOption.getValue());
+        form.getWidget(queryOptionLiterals).setVisible(useQueryOption.getValue());
     }
 
     @Override
