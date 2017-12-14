@@ -32,13 +32,8 @@ public class MarkLogicDatasetProperties extends ComponentPropertiesImpl implemen
     }
 
     @Override
-    public void setupProperties() {
-        super.setupProperties();
-    }
-
-    @Override
     public void setupLayout() {
-
+        super.setupLayout();
         Form referenceForm = Form.create(this, Form.REFERENCE);
         referenceForm.addRow(main.getForm(Form.REFERENCE));
     }

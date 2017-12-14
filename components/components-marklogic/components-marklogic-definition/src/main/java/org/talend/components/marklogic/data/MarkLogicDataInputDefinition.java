@@ -15,12 +15,14 @@ import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
 /**
- *
+ * Simplified Input properties for dataprep/datacatalog
  *
  */
 public class MarkLogicDataInputDefinition extends AbstractComponentDefinition {
 
     public static final String NAME = "MarkLogicDataInput";
+
+    public static final String DATA_SOURCE = "org.talend.components.marklogic.data.MarkLogicDataSource";
 
     public MarkLogicDataInputDefinition() {
         super(NAME, ExecutionEngine.DI);
