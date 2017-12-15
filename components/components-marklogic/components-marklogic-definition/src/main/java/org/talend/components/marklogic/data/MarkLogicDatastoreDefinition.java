@@ -28,7 +28,9 @@ import org.talend.daikon.runtime.RuntimeInfo;
  */
 public class MarkLogicDatastoreDefinition extends I18nDefinition implements DatastoreDefinition<MarkLogicConnectionProperties> {
 
-    public static final String COMPONENT_NAME = "MarkLogicDatastore"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "MarkLogicDatastore";
+
+    public static final String DATASTORE_RUNTIME = "org.talend.components.marklogic.data.MarkLogicDatastoreRuntime";
 
     public MarkLogicDatastoreDefinition() {
         super(COMPONENT_NAME);
@@ -43,7 +45,7 @@ public class MarkLogicDatastoreDefinition extends I18nDefinition implements Data
 
     @Override
     public RuntimeInfo getRuntimeInfo(MarkLogicConnectionProperties properties) {
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.data.MarkLogicDatastoreRuntime");
+        return RuntimeInfoProvider.getCommonRuntimeInfo(DATASTORE_RUNTIME);
     }
 
     @Override

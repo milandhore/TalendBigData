@@ -42,7 +42,7 @@ public class MarkLogicDataInputDefinition extends AbstractComponentDefinition {
     public RuntimeInfo getRuntimeInfo(ExecutionEngine engine, ComponentProperties properties,
             ConnectorTopology connectorTopology) {
         assertEngineCompatibility(engine);
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.data.MarkLogicDataSource");
+        return RuntimeInfoProvider.getCommonRuntimeInfo(DATA_SOURCE);
     }
 
     @Override

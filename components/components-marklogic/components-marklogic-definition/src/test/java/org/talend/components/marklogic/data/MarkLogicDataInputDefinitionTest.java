@@ -1,5 +1,7 @@
 package org.talend.components.marklogic.data;
 
+import java.util.Set;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,6 +35,13 @@ public class MarkLogicDataInputDefinitionTest {
     public void testGetRuntimeInfo() {
         RuntimeInfo runtime = definition.getRuntimeInfo(ExecutionEngine.DI, null, ConnectorTopology.OUTGOING);
         Assert.assertEquals(MarkLogicDataInputDefinition.DATA_SOURCE, runtime.getRuntimeClassName());
+    }
+
+    @Test
+    public void testGetSupportedConnectorTopologies() {
+        Set<ConnectorTopology> connectors = definition.getSupportedConnectorTopologies();
+        Assert.assertEquals(1, connectors.size());
+        Assert.assertThat(connectors, Matchers.contains(ConnectorTopology.OUTGOING));
     }
 
     @Test

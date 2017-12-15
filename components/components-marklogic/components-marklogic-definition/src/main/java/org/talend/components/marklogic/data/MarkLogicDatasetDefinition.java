@@ -22,6 +22,8 @@ public class MarkLogicDatasetDefinition extends I18nDefinition implements Datase
 
     public static final String NAME = "MarkLogicDataset";
 
+    public static final String DATASET_RUNTIME = "org.talend.components.marklogic.data.MarkLogicDatasetRuntime";
+
     public MarkLogicDatasetDefinition() {
         super(NAME);
     }
@@ -53,7 +55,7 @@ public class MarkLogicDatasetDefinition extends I18nDefinition implements Datase
 
     @Override
     public RuntimeInfo getRuntimeInfo(MarkLogicDatasetProperties properties) {
-        return RuntimeInfoProvider.getCommonRuntimeInfo("org.talend.components.marklogic.data.MarkLogicDatasetRuntime");
+        return RuntimeInfoProvider.getCommonRuntimeInfo(DATASET_RUNTIME);
     }
 
 }
