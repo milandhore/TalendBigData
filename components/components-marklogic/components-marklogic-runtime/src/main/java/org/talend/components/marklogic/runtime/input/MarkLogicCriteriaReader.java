@@ -121,8 +121,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
         stringQueryDefinition.setCriteria(settings.criteria);
 
-        searchHandle = new SearchHandle();
-        queryManager.search(stringQueryDefinition, searchHandle);
+        searchHandle = queryManager.search(stringQueryDefinition, new SearchHandle());
 
 
         matchedDocuments = searchHandle.getTotalResults();

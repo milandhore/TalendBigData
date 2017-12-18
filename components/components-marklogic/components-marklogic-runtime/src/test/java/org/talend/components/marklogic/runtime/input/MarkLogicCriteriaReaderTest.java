@@ -1,22 +1,25 @@
 package org.talend.components.marklogic.runtime.input;
 
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.StringQueryDefinition;
-import org.apache.avro.Schema;
-import org.junit.Test;
-import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
-import org.talend.daikon.avro.AvroUtils;
-
-import java.io.IOException;
-import java.util.Collections;
-
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Collections;
+
+import org.apache.avro.Schema;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.talend.components.api.container.RuntimeContainer;
+import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
+import org.talend.daikon.avro.AvroUtils;
+
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.io.SearchHandle;
+import com.marklogic.client.query.QueryManager;
+import com.marklogic.client.query.StringQueryDefinition;
 
 public class MarkLogicCriteriaReaderTest {
 
@@ -40,6 +43,9 @@ public class MarkLogicCriteriaReaderTest {
         DatabaseClient mockedClient = mock(DatabaseClient.class);
         when(mockedClient.newDocumentManager()).thenReturn(null);
         when(mockedClient.newQueryManager()).thenReturn(mockedQueryManager);
+        SearchHandle searchHandle = Mockito.mock(SearchHandle.class);
+        Mockito.when(mockedQueryManager.search(Mockito.eq(mockedStringQueryDefinition), Mockito.any(SearchHandle.class)))
+                .thenReturn(searchHandle);
         MarkLogicSource mockedSource = mock(MarkLogicSource.class);
         when(mockedSource.connect(any(RuntimeContainer.class))).thenReturn(mockedClient);
 

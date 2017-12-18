@@ -11,7 +11,7 @@ import org.talend.components.marklogic.runtime.input.MarkLogicCriteriaReader;
  */
 public class MarkLogicInputReader extends MarkLogicCriteriaReader {
 
-    protected MarkLogicInputReader(BoundedSource source, RuntimeContainer container, MarkLogicDataInputProperties properties) {
+    public MarkLogicInputReader(BoundedSource source, RuntimeContainer container, MarkLogicDataInputProperties properties) {
         super(source, container, properties);
     }
 

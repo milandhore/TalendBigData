@@ -31,10 +31,16 @@ public class MarkLogicDatasetRuntime implements DatasetRuntime<MarkLogicDatasetP
 
     private RuntimeContainer container;
 
+    private MarkLogicDataInputProperties dataInputProperties;
+
     @Override
     public ValidationResult initialize(RuntimeContainer container, MarkLogicDatasetProperties properties) {
         this.dataset = properties;
         this.container = container;
+        dataInputProperties = new MarkLogicDataInputProperties("data");
+        dataInputProperties.setDatasetProperties(dataset);
+        // Is this called from outside?
+        dataInputProperties.init();
         return ValidationResult.OK;
     }
 
@@ -45,8 +51,6 @@ public class MarkLogicDatasetRuntime implements DatasetRuntime<MarkLogicDatasetP
 
     @Override
     public void getSample(int limit, Consumer<IndexedRecord> consumer) {
-        MarkLogicDataInputProperties dataInputProperties = new MarkLogicDataInputProperties("data");
-        dataInputProperties.setDatasetProperties(dataset);
         MarkLogicDataSource dataSource = new MarkLogicDataSource();
         dataSource.initialize(container, dataInputProperties);
         dataSource.validate(container);
