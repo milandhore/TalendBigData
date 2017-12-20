@@ -64,9 +64,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     private int maxRetrieve;
 
-    private int pageSize;
-
-    private static final int DEFAULT_PAGE_SIZE = 10;
+    private long pageSize;
 
     private long documentCounter;
 
@@ -126,7 +124,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
         matchedDocuments = searchHandle.getTotalResults();
 
-        pageSize = (settings.pageSize <= 0) ? DEFAULT_PAGE_SIZE : settings.pageSize;
+        pageSize = (settings.pageSize <= 0) ? matchedDocuments : settings.pageSize;
         maxRetrieve = settings.maxRetrieve; //if < 0 - it will be ignored
         queryManager.setPageLength(pageSize);
         documentCounter = 1;
