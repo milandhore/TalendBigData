@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
-import org.apache.commons.lang3.StringUtils;
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.SchemaProperties;
@@ -49,9 +48,6 @@ public class MarkLogicDatasetProperties extends ComponentPropertiesImpl implemen
 
     public MarkLogicDatasetProperties(String name) {
         super(name);
-        if(StringUtils.isEmpty(name)) {
-            setName("dataset");
-        }
     }
 
     @Override

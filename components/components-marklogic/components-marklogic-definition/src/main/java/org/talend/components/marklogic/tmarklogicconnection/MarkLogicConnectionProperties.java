@@ -18,7 +18,6 @@ import static org.talend.daikon.properties.property.PropertyFactory.newString;
 
 import java.util.EnumSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.common.datastore.DatastoreProperties;
@@ -56,9 +55,6 @@ public class MarkLogicConnectionProperties extends ComponentPropertiesImpl imple
 
     public MarkLogicConnectionProperties(String name) {
         super(name);
-        if (StringUtils.isEmpty(name)) {
-            setName("datastore");
-        }
     }
 
     @Override
