@@ -23,7 +23,6 @@ import org.apache.avro.Schema;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.ISchemaListener;
 import org.talend.components.api.component.PropertyPathConnector;
-import org.talend.components.common.ComponentConstants;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.components.common.SchemaProperties;
 import org.talend.components.marklogic.MarkLogicProvideConnectionProperties;
@@ -54,15 +53,9 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     protected transient PropertyPathConnector INCOMING_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "inputSchema");
 
     public Property<Boolean> criteriaSearch = PropertyFactory.newBoolean("criteriaSearch");
-    public Property<String> criteria = PropertyFactory.newString("criteria");
     public Property<String> docIdColumn =  PropertyFactory.newString("docIdColumn");
 
     public Property<Integer> maxRetrieve = PropertyFactory.newInteger("maxRetrieve");
-    public Property<Integer> pageSize = PropertyFactory.newInteger("pageSize");
-    public Property<Boolean> useQueryOption = PropertyFactory.newBoolean("useQueryOption");
-    public Property<String> queryLiteralType = PropertyFactory.newString("queryLiteralType");
-    public Property<String> queryOptionName = PropertyFactory.newString("queryOptionName");
-    public Property<String> queryOptionLiterals = PropertyFactory.newString("queryOptionLiterals");
 
     private ISchemaListener inputSchemaListener;
 
@@ -73,25 +66,12 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
     @Override
     public void setupProperties() {
         super.setupProperties();
-        connection.init();
-        datasetProperties.init();
         datasetProperties.setDatastoreProperties(connection);
         criteriaSearch.setRequired();
         criteriaSearch.setValue(true);
-        criteria.setRequired();
+        datasetProperties.criteria.setRequired();
         docIdColumn.setRequired();
-
-
-        useQueryOption.setValue(false);
-
         maxRetrieve.setValue(-1);
-        pageSize.setValue(10);
-
-        queryLiteralType.setPossibleValues("XML", "JSON");
-        queryLiteralType.setValue("XML");
-
-        queryOptionLiterals.setTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO, " ");
-        setupDefaultSchema(datasetProperties.main);
 
         setInputSchemaListener(new ISchemaListener() { //TODO replace with lambda
 
@@ -117,19 +97,18 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
                 updateDocIdColumnPossibleValues();
             }
 
-            form.getWidget(criteria).setVisible(isPlainOutputConnectionMode());
+            form.getWidget(datasetProperties.criteria).setVisible(isPlainOutputConnectionMode());
             form.getWidget(docIdColumn).setHidden(isPlainOutputConnectionMode());
         }
 
         if (form.getName().equals(Form.ADVANCED)) {
             boolean isCriteriaModeUsed = isPlainOutputConnectionMode();
 
-            form.getWidget(pageSize).setVisible(isCriteriaModeUsed);
             form.getWidget(maxRetrieve).setVisible(isCriteriaModeUsed);
-            form.getWidget(useQueryOption).setVisible(isCriteriaModeUsed);
-            form.getWidget(queryLiteralType).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
-            form.getWidget(queryOptionName).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
-            form.getWidget(queryOptionLiterals).setVisible(isCriteriaModeUsed && useQueryOption.getValue());
+            datasetProperties.getForm(Form.MAIN).setVisible(isCriteriaModeUsed);
+            if (isCriteriaModeUsed) {
+                datasetProperties.refreshLayout(datasetProperties.getForm(Form.MAIN));
+            }
         }
     }
 
@@ -144,16 +123,12 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         Form inputSchemaForm = ((Form) mainForm.getWidget(inputSchema).getContent());
         ((Property)inputSchemaForm.getWidget(inputSchema.schema).getContent()).removeFlag(Property.Flags.HIDDEN);
         mainForm.addRow(criteriaSearch);
-        mainForm.addRow(criteria);
+        mainForm.addRow(datasetProperties.criteria);
         mainForm.addColumn(widget(docIdColumn).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
 
         Form advancedForm = new Form(this, Form.ADVANCED);
         advancedForm.addRow(maxRetrieve);
-        advancedForm.addRow(pageSize);
-        advancedForm.addRow(useQueryOption);
-        advancedForm.addRow(widget(queryLiteralType).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
-        advancedForm.addColumn(queryOptionName);
-        advancedForm.addRow(widget(queryOptionLiterals).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+        advancedForm.addRow(datasetProperties.getForm(Form.MAIN));
     }
 
     void setupDefaultSchema(SchemaProperties schemaToSet) {
@@ -178,9 +153,6 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         schemaToSet.schema.setValue(initialSchema);
     }
 
-    public void afterUseQueryOption() {
-        refreshLayout(getForm(Form.ADVANCED));
-    }
 
     public void afterCriteriaSearch() {
         refreshLayout(getForm(Form.MAIN));

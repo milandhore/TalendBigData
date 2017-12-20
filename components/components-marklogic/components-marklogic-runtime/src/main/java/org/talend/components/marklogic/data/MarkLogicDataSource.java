@@ -20,7 +20,7 @@ import org.talend.daikon.properties.ValidationResult.Result;
 
 public class MarkLogicDataSource extends MarkLogicConnection implements BoundedSource {
 
-    private MarkLogicDataInputProperties properties;
+    private MarkLogicDatasetProperties properties;
 
     @Override
     public List<NamedThing> getSchemaNames(RuntimeContainer container) throws IOException {
@@ -46,8 +46,8 @@ public class MarkLogicDataSource extends MarkLogicConnection implements BoundedS
 
     @Override
     public ValidationResult initialize(RuntimeContainer container, ComponentProperties properties) {
-        if (properties instanceof MarkLogicDataInputProperties) {
-            this.properties = (MarkLogicDataInputProperties) properties;
+        if (properties instanceof MarkLogicDatasetProperties) {
+            this.properties = (MarkLogicDatasetProperties) properties;
             return ValidationResult.OK;
         }
         return new ValidationResult(Result.ERROR);
@@ -78,7 +78,7 @@ public class MarkLogicDataSource extends MarkLogicConnection implements BoundedS
 
     @Override
     protected MarkLogicConnectionProperties getMarkLogicConnectionProperties() {
-        return properties.getDatasetProperties().getDatastoreProperties();
+        return properties.getDatastoreProperties();
     }
 
 }

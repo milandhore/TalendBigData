@@ -100,8 +100,6 @@ public class MarkLogicOutputProperties extends FixedConnectorsComponentPropertie
     @Override
     public void setupProperties() {
         super.setupProperties();
-        datasetProperties.init();
-        connection.setupProperties();
         datasetProperties.setDatastoreProperties(connection);
 
         setupSchemas();

@@ -54,25 +54,26 @@ public class MarkLogicInputPropertiesTest {
         testInputProperties.datasetProperties.main.init();
         testInputProperties.inputSchema.init();
 
-        testInputProperties.setupLayout();
+        testInputProperties.init();
         Form main = testInputProperties.getForm(Form.MAIN);
         assertNotNull(main.getWidget(testInputProperties.connection));
-        assertNotNull(main.getWidget(testInputProperties.criteria));
+        assertNotNull(main.getWidget(testInputProperties.datasetProperties.criteria));
         //should not be on main form
         assertNull(main.getWidget(testInputProperties.maxRetrieve));
-        assertNull(main.getWidget(testInputProperties.pageSize));
-        assertNull(main.getWidget(testInputProperties.useQueryOption));
-        assertNull(main.getWidget(testInputProperties.queryLiteralType));
-        assertNull(main.getWidget(testInputProperties.queryOptionName));
-        assertNull(main.getWidget(testInputProperties.queryOptionLiterals));
+        assertNull(main.getWidget(testInputProperties.datasetProperties.pageSize));
+        assertNull(main.getWidget(testInputProperties.datasetProperties.useQueryOption));
+        assertNull(main.getWidget(testInputProperties.datasetProperties.queryLiteralType));
+        assertNull(main.getWidget(testInputProperties.datasetProperties.queryOptionName));
+        assertNull(main.getWidget(testInputProperties.datasetProperties.queryOptionLiterals));
 
         Form advanced = testInputProperties.getForm(Form.ADVANCED);
         assertNotNull(advanced.getWidget(testInputProperties.maxRetrieve));
-        assertNotNull(advanced.getWidget(testInputProperties.pageSize));
-        assertNotNull(advanced.getWidget(testInputProperties.useQueryOption));
-        assertNotNull(advanced.getWidget(testInputProperties.queryLiteralType));
-        assertNotNull(advanced.getWidget(testInputProperties.queryOptionName));
-        assertNotNull(advanced.getWidget(testInputProperties.queryOptionLiterals));
+        Form mainDataset = advanced.getChildForm("datasetProperties");
+        assertNotNull(mainDataset.getWidget(testInputProperties.datasetProperties.pageSize));
+        assertNotNull(mainDataset.getWidget(testInputProperties.datasetProperties.useQueryOption));
+        assertNotNull(mainDataset.getWidget(testInputProperties.datasetProperties.queryLiteralType));
+        assertNotNull(mainDataset.getWidget(testInputProperties.datasetProperties.queryOptionName));
+        assertNotNull(mainDataset.getWidget(testInputProperties.datasetProperties.queryOptionLiterals));
     }
 
     /**
@@ -85,21 +86,20 @@ public class MarkLogicInputPropertiesTest {
         Boolean expectedDefaultUseQueryOption = false;
         String expectedDefaultQueryLiteralType = "XML";
 
-        testInputProperties.setupProperties();
-
+        testInputProperties.init();
         assertEquals(MarkLogicConnectionPropertiesTest.EXPECTED_DEFAULT_HOST, testInputProperties.connection.host.getValue());
         assertEquals(MarkLogicConnectionPropertiesTest.EXPECTED_DEFAULT_PORT, testInputProperties.connection.port.getValue());
         assertEquals(MarkLogicConnectionPropertiesTest.EXPECTED_DEFAULT_DATABASE, testInputProperties.connection.database.getValue());
         assertNull(testInputProperties.connection.username.getValue());
         assertNull(testInputProperties.connection.password.getValue());
-        assertNull(testInputProperties.criteria.getValue());
+        assertNull(testInputProperties.datasetProperties.criteria.getValue());
         assertEquals(expectedDefaultMaxRetrieveNumber, testInputProperties.maxRetrieve.getValue());
-        assertEquals(expectedDefaultPageSize, testInputProperties.pageSize.getValue());
-        assertEquals(expectedDefaultUseQueryOption, testInputProperties.useQueryOption.getValue());
-        assertEquals(expectedDefaultQueryLiteralType, testInputProperties.queryLiteralType.getValue());
-        assertNull(testInputProperties.queryOptionName.getValue());
-        assertNull(testInputProperties.queryOptionLiterals.getValue());
-        assertEquals(" ", testInputProperties.queryOptionLiterals.getTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO));
+        assertEquals(expectedDefaultPageSize, testInputProperties.datasetProperties.pageSize.getValue());
+        assertEquals(expectedDefaultUseQueryOption, testInputProperties.datasetProperties.useQueryOption.getValue());
+        assertEquals(expectedDefaultQueryLiteralType, testInputProperties.datasetProperties.queryLiteralType.getValue());
+        assertNull(testInputProperties.datasetProperties.queryOptionName.getValue());
+        assertNull(testInputProperties.datasetProperties.queryOptionLiterals.getValue());
+        assertEquals(" ", testInputProperties.datasetProperties.queryOptionLiterals.getTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO));
     }
 
     @Test
@@ -149,11 +149,12 @@ public class MarkLogicInputPropertiesTest {
         boolean isConnectionPropertiesHidden = testInputProperties.getForm(Form.MAIN).getWidget("connection").isHidden();
         boolean isQueryCriteriaHidden = testInputProperties.getForm(Form.MAIN).getWidget("criteria").isHidden();
         boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("maxRetrieve").isHidden();
-        boolean isPageSizeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("pageSize").isHidden();
-        boolean isUseQueryOptionHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("useQueryOption").isHidden();
-        boolean isQueryLiteralTypeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryLiteralType").isHidden();
-        boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionName").isHidden();
-        boolean isQueryOptionLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget("queryOptionLiterals").isHidden();
+        Form mainDataset = testInputProperties.getForm(Form.ADVANCED).getChildForm("datasetProperties");
+        boolean isPageSizeHidden = mainDataset.getWidget("pageSize").isHidden();
+        boolean isUseQueryOptionHidden = mainDataset.getWidget("useQueryOption").isHidden();
+        boolean isQueryLiteralTypeHidden = mainDataset.getWidget("queryLiteralType").isHidden();
+        boolean isQueryOptionNameHidden = mainDataset.getWidget("queryOptionName").isHidden();
+        boolean isQueryOptionLiteralsHidden = mainDataset.getWidget("queryOptionLiterals").isHidden();
 
         assertFalse(schemaHidden);
         assertFalse(isConnectionPropertiesHidden);
@@ -196,36 +197,18 @@ public class MarkLogicInputPropertiesTest {
     }
 
     @Test
-    public void testAfterUseQueryOption() {
-        testInputProperties.setupProperties();
-        testInputProperties.connection.init();
-        testInputProperties.datasetProperties.init();
-        testInputProperties.inputSchema.init();
-        testInputProperties.setupLayout();
-
-        testInputProperties.useQueryOption.setValue(true);
-        testInputProperties.afterUseQueryOption();
-
-        boolean isQueryLiteralTypeVisible = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryLiteralType).isVisible();
-        boolean isQueryOptionNameVisible = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionName).isVisible();
-        boolean isQueryLiteralsVisible = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionLiterals).isVisible();
-
-        assertTrue(isQueryLiteralTypeVisible);
-        assertTrue(isQueryOptionNameVisible);
-        assertTrue(isQueryLiteralsVisible);
-    }
-
-    @Test
     public void testAdvancedPropertiesVisibleForCriteriaMode() {
         testInputProperties.init();
         testInputProperties.criteriaSearch.setValue(false);
         testInputProperties.afterCriteriaSearch();
 
         boolean isMaxRetrieveHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.maxRetrieve).isHidden();
-        boolean isPageSizeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.pageSize).isHidden();
-        boolean isQueryLiteralTypeHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryLiteralType).isHidden();
-        boolean isQueryOptionNameHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionName).isHidden();
-        boolean isQueryLiteralsHidden = testInputProperties.getForm(Form.ADVANCED).getWidget(testInputProperties.queryOptionLiterals).isHidden();
+
+        Form mainDataset = testInputProperties.getForm(Form.ADVANCED).getChildForm("datasetProperties");
+        boolean isPageSizeHidden = mainDataset.getWidget(testInputProperties.datasetProperties.pageSize).isHidden();
+        boolean isQueryLiteralTypeHidden = mainDataset.getWidget(testInputProperties.datasetProperties.queryLiteralType).isHidden();
+        boolean isQueryOptionNameHidden = mainDataset.getWidget(testInputProperties.datasetProperties.queryOptionName).isHidden();
+        boolean isQueryLiteralsHidden = mainDataset.getWidget(testInputProperties.datasetProperties.queryOptionLiterals).isHidden();
 
         assertTrue(isMaxRetrieveHidden);
         assertTrue(isPageSizeHidden);

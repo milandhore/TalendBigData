@@ -25,7 +25,7 @@ import org.talend.components.api.component.runtime.AbstractBoundedReader;
 import org.talend.components.api.component.runtime.BoundedSource;
 import org.talend.components.api.component.runtime.Result;
 import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.common.FixedConnectorsComponentProperties;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.connection.MarkLogicConnection;
 import org.talend.components.marklogic.exceptions.MarkLogicErrorCode;
 import org.talend.components.marklogic.exceptions.MarkLogicException;
@@ -80,21 +80,21 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
 
     private StringQueryDefinition stringQueryDefinition;
 
-    public MarkLogicCriteriaReader(BoundedSource source, RuntimeContainer container, FixedConnectorsComponentProperties inputProperties) {
+    public MarkLogicCriteriaReader(BoundedSource source, RuntimeContainer container, ComponentProperties inputProperties) {
         super(source);
         this.container = container;
         this.settings = prepareSettings(inputProperties);
     }
 
-    protected Setting prepareSettings(FixedConnectorsComponentProperties inputProperties) {
+    protected Setting prepareSettings(ComponentProperties inputProperties) {
         MarkLogicInputProperties properties = (MarkLogicInputProperties) inputProperties;
         return new Setting(
                 properties.datasetProperties.main.schema.getValue(),
-                properties.criteria.getValue(),
-                properties.maxRetrieve.getValue(), properties.pageSize.getValue(),
-                properties.useQueryOption.getValue(), properties.queryLiteralType.getValue(),
-                properties.queryOptionName.getValue(), properties.queryOptionLiterals.getValue(),
-                properties.connection.isReferencedConnectionUsed());
+                properties.datasetProperties.criteria.getValue(),
+                properties.maxRetrieve.getValue(), properties.datasetProperties.pageSize.getValue(),
+                properties.datasetProperties.useQueryOption.getValue(), properties.datasetProperties.queryLiteralType.getValue(),
+                properties.datasetProperties.queryOptionName.getValue(), properties.datasetProperties.queryOptionLiterals.getValue(),
+                properties.datasetProperties.getDatastoreProperties().isReferencedConnectionUsed());
     }
 
     @Override

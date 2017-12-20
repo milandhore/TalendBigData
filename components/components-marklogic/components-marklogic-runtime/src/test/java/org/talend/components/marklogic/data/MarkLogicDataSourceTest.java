@@ -30,10 +30,7 @@ public class MarkLogicDataSourceTest {
         MarkLogicDatasetProperties dataset = new MarkLogicDatasetProperties("dataset");
         dataset.setDatastoreProperties(datastore);
         dataset.init();
-        MarkLogicDataInputProperties properties = new MarkLogicDataInputProperties("dataInput");
-        properties.setDatasetProperties(dataset);
-        properties.init();
-        datasource.initialize(null, properties);
+        datasource.initialize(null, dataset);
     }
 
     @Test

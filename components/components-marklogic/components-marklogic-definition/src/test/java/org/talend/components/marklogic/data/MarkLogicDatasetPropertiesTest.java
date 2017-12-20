@@ -1,5 +1,7 @@
 package org.talend.components.marklogic.data;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,5 +37,22 @@ public class MarkLogicDatasetPropertiesTest {
     @Test
     public void testGetDatastoreProperties() {
         Assert.assertEquals(datastore, properties.getDatastoreProperties());
+    }
+
+
+    @Test
+    public void testAfterUseQueryOption() {
+        properties.init();
+
+        properties.useQueryOption.setValue(true);
+        properties.afterUseQueryOption();
+
+        boolean isQueryLiteralTypeVisible = properties.getForm(Form.MAIN).getWidget(properties.queryLiteralType).isVisible();
+        boolean isQueryOptionNameVisible = properties.getForm(Form.MAIN).getWidget(properties.queryOptionName).isVisible();
+        boolean isQueryLiteralsVisible = properties.getForm(Form.MAIN).getWidget(properties.queryOptionLiterals).isVisible();
+
+        assertTrue(isQueryLiteralTypeVisible);
+        assertTrue(isQueryOptionNameVisible);
+        assertTrue(isQueryLiteralsVisible);
     }
 }
