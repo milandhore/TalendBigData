@@ -18,12 +18,11 @@ import org.talend.components.marklogic.tmarklogicoutput.MarkLogicOutputPropertie
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -238,7 +237,7 @@ public class MarkLogicWriterTest {
                 MarkLogicOutputProperties.DocType.BINARY);
 
         verifyZeroInteractions(markLogicDocMngrMock);
-        assertFalse(((ArrayList< IndexedRecord>)writer.getRejectedWrites()).isEmpty());
+        assertFalse(((Collection<IndexedRecord>) writer.getRejectedWrites()).isEmpty());
     }
 
     @Test
@@ -286,13 +285,14 @@ public class MarkLogicWriterTest {
         DocumentUriTemplate uriTemplateMock = mock(DocumentUriTemplate.class);
         DocumentDescriptor descriptorMock = mock(DocumentDescriptor.class);
         when(markLogicDocMngrMock.newDocumentUriTemplate(anyString())).thenReturn(uriTemplateMock);
-        when(markLogicDocMngrMock.create(any(DocumentUriTemplate.class), any(AbstractWriteHandle.class))).thenReturn(descriptorMock);
+        when(markLogicDocMngrMock.create(any(DocumentUriTemplate.class), any(AbstractWriteHandle.class)))
+                .thenReturn(descriptorMock);
         when(descriptorMock.getUri()).thenReturn("somePrefix/docId");
 
         MarkLogicWriter writer = sink.createWriteOperation().createWriter(mockedContainer);
         GenericData.Record indexedRecord = new GenericData.Record(properties.schema.schema.getValue());
         indexedRecord.put(0, "docId");
-        File docContent =  new File("someFile");
+        File docContent = new File("someFile");
         indexedRecord.put(1, docContent);
 
         writer.open("123");
@@ -300,7 +300,7 @@ public class MarkLogicWriterTest {
         writer.write(indexedRecord);
         verify(markLogicDocMngrMock).write(eq("somePrefix/docId"), any(FileHandle.class));
 
-        assertFalse(((ArrayList< IndexedRecord>)writer.getSuccessfulWrites()).isEmpty());
+        assertFalse(((Collection<IndexedRecord>) writer.getSuccessfulWrites()).isEmpty());
     }
 
     @Test

@@ -44,6 +44,7 @@ import org.talend.daikon.i18n.I18nMessages;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MarkLogicWriter implements WriterWithFeedback<Result, IndexedRecord, IndexedRecord> {
@@ -111,6 +112,8 @@ public class MarkLogicWriter implements WriterWithFeedback<Result, IndexedRecord
         if (indexedRecordDatum == null || !(indexedRecordDatum instanceof IndexedRecord)) {
             return;
         }
+        successWrites.clear();
+        rejectWrites.clear();
         IndexedRecord indexedRecord = (IndexedRecord) indexedRecordDatum;
 
         String docId = (String) indexedRecord.get(0);
@@ -220,12 +223,12 @@ public class MarkLogicWriter implements WriterWithFeedback<Result, IndexedRecord
 
     @Override
     public Iterable<IndexedRecord> getSuccessfulWrites() {
-        return successWrites;
+        return Collections.unmodifiableCollection(successWrites);
     }
 
     @Override
     public Iterable<IndexedRecord> getRejectedWrites() {
-        return rejectWrites;
+        return Collections.unmodifiableCollection(rejectWrites);
     }
 
     public MarkLogicWriter(MarkLogicWriteOperation writeOperation, RuntimeContainer container,
