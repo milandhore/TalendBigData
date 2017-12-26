@@ -44,12 +44,12 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-bigquery</artifactId>
-            <version>0.9.0-beta</version>
+            <version>0.18.0-beta</version>
         </dependency>
         <dependency>
             <groupId>com.google.auth</groupId>
             <artifactId>google-auth-library-oauth2-http</artifactId>
-            <version>0.6.0</version>
+            <version>0.6.1</version>
         </dependency>
         <!-- Tests -->
         <dependency>

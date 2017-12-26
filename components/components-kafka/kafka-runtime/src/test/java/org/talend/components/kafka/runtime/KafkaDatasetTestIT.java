@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.IndexedRecord;
@@ -44,7 +43,7 @@ import org.talend.daikon.java8.Consumer;
 public class KafkaDatasetTestIT {
 
     @Before
-    public void init() throws TimeoutException {
+    public void init() throws InterruptedException {
         // there may exists other topics than these build in(configured in pom.xml) topics, but ignore them
 
         // ----------------- Send sample data to TOPIC_IN start --------------------
