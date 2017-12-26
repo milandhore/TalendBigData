@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
@@ -238,7 +238,7 @@ public class MarkLogicWriterTest {
                 MarkLogicOutputProperties.DocType.BINARY);
 
         verifyZeroInteractions(markLogicDocMngrMock);
-        assertFalse(((ArrayList< IndexedRecord>)writer.getRejectedWrites()).isEmpty());
+        assertFalse(((Collection<IndexedRecord>) writer.getRejectedWrites()).isEmpty());
     }
 
     @Test
@@ -286,13 +286,14 @@ public class MarkLogicWriterTest {
         DocumentUriTemplate uriTemplateMock = mock(DocumentUriTemplate.class);
         DocumentDescriptor descriptorMock = mock(DocumentDescriptor.class);
         when(markLogicDocMngrMock.newDocumentUriTemplate(anyString())).thenReturn(uriTemplateMock);
-        when(markLogicDocMngrMock.create(any(DocumentUriTemplate.class), any(AbstractWriteHandle.class))).thenReturn(descriptorMock);
+        when(markLogicDocMngrMock.create(any(DocumentUriTemplate.class), any(AbstractWriteHandle.class)))
+                .thenReturn(descriptorMock);
         when(descriptorMock.getUri()).thenReturn("somePrefix/docId");
 
         MarkLogicWriter writer = sink.createWriteOperation().createWriter(mockedContainer);
         GenericData.Record indexedRecord = new GenericData.Record(properties.datasetProperties.main.schema.getValue());
         indexedRecord.put(0, "docId");
-        File docContent =  new File("someFile");
+        File docContent = new File("someFile");
         indexedRecord.put(1, docContent);
 
         writer.open("123");
@@ -300,7 +301,7 @@ public class MarkLogicWriterTest {
         writer.write(indexedRecord);
         verify(markLogicDocMngrMock).write(eq("somePrefix/docId"), any(FileHandle.class));
 
-        assertFalse(((ArrayList< IndexedRecord>)writer.getSuccessfulWrites()).isEmpty());
+        assertFalse(((Collection<IndexedRecord>) writer.getSuccessfulWrites()).isEmpty());
     }
 
     @Test
