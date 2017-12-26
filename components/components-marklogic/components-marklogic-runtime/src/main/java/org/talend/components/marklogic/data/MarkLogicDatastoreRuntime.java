@@ -12,8 +12,7 @@
 // ============================================================================
 package org.talend.components.marklogic.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
@@ -40,15 +39,15 @@ public class MarkLogicDatastoreRuntime implements DatastoreRuntime<MarkLogicConn
 
     @Override
     public Iterable<ValidationResult> doHealthChecks(RuntimeContainer container) {
-        List<ValidationResult> checks = new ArrayList<>(1);
         TMarkLogicConnectionStandalone standalone = new TMarkLogicConnectionStandalone();
+        ValidationResult validationResult;
         try {
             standalone.initialize(container, properties);
             standalone.connect(container);
-            checks.add(ValidationResult.OK);
+            validationResult = ValidationResult.OK;
         } catch (ComponentException ce) {
-            checks.add(new ValidationResult(ce));
+            validationResult = new ValidationResult(ce);
         }
-        return checks;
+        return Collections.singleton(validationResult);
     }
 }

@@ -40,7 +40,6 @@ public class MarkLogicInputPropertiesTest {
     @Before
     public void setUp() {
         testInputProperties = new MarkLogicInputProperties("testInputProperties");
-
     }
 
     /**

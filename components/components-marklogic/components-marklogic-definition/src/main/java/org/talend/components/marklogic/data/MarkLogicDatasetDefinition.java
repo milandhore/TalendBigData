@@ -35,7 +35,7 @@ public class MarkLogicDatasetDefinition extends I18nDefinition implements Datase
 
     @Override
     public String getImagePath() {
-        return NAME + "_icon32.png";
+        return getImagePath(DefinitionImageType.PALETTE_ICON_32X32);
     }
 
     @Override

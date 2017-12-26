@@ -65,7 +65,7 @@ public class MarkLogicDatastoreDefinition extends I18nDefinition implements Data
 
     @Override
     public String getImagePath() {
-        return COMPONENT_NAME + "_icon32.png";
+        return getImagePath(DefinitionImageType.PALETTE_ICON_32X32);
     }
 
     @Override
