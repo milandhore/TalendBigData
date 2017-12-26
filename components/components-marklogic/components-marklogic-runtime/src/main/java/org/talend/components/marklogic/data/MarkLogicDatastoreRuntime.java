@@ -48,6 +48,6 @@ public class MarkLogicDatastoreRuntime implements DatastoreRuntime<MarkLogicConn
         } catch (ComponentException ce) {
             validationResult = new ValidationResult(ce);
         }
-        return Collections.singleton(validationResult);
+        return Collections.singletonList(validationResult);
     }
 }
