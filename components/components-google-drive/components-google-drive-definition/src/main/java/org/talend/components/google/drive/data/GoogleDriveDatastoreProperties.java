@@ -2,10 +2,6 @@ package org.talend.components.google.drive.data;
 
 import static org.talend.daikon.properties.property.PropertyFactory.newProperty;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +35,6 @@ public class GoogleDriveDatastoreProperties extends PropertiesImpl implements Da
         if (StringUtils.isEmpty(saPath)) {
             LOG.warn((messages.getMessage("error.env.not.set")));
             saPath = this.getClass().getClassLoader().getResource("service_account.json").getFile();
-        }
-        try {
-            FileInputStream is = new FileInputStream(saPath);
-            try {
-                is.close();
-            } catch (IOException e) {
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(messages.getMessage("error.file.not.found"));
         }
         serviceAccountJSONFile.setValue(saPath);
     }

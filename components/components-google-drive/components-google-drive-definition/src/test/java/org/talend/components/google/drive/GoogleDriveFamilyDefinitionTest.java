@@ -15,9 +15,12 @@ package org.talend.components.google.drive;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
+
+import java.util.ServiceLoader;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -72,4 +75,9 @@ public class GoogleDriveFamilyDefinitionTest extends GoogleDriveTestBase {
         Mockito.verify(ctx, times(1)).registerComponentFamilyDefinition(any(ComponentFamilyDefinition.class));
     }
 
+    @Test
+    public void testServiceLoader() throws Exception {
+        ServiceLoader<ComponentInstaller> spiLoader = ServiceLoader.load(ComponentInstaller.class);
+        assertThat(spiLoader, hasItem(isA(GoogleDriveFamilyDefinition.class)));
+    }
 }
