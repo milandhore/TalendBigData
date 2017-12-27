@@ -7,6 +7,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.talend.components.google.drive.runtime.GoogleDriveRuntime.getStudioName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         when(drive.files().list().setQ(anyString()).execute()).thenReturn(deleteFileList);
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+        assertEquals(FOLDER_DELETE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveDeleteDefinition.RETURN_FILE_ID)));
     }
 
     @Test
@@ -76,7 +78,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.file.setValue("/A/B/C");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+        assertEquals(FOLDER_DELETE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveDeleteDefinition.RETURN_FILE_ID)));
         //
         when(drive.files().list().setQ(eq(qC)).execute()).thenReturn(createFolderFileList("C", false));
         when(drive.files().list().setQ(eq(qD)).execute()).thenReturn(emptyFileList);
@@ -84,7 +87,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.file.setValue("/A/B/C/delete-id");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+        assertEquals(FOLDER_DELETE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveDeleteDefinition.RETURN_FILE_ID)));
     }
 
     @Test
@@ -94,7 +98,8 @@ public class GoogleDriveDeleteRuntimeTest extends GoogleDriveTestBaseRuntime {
         //
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FOLDER_DELETE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveDeleteDefinition.RETURN_FILE_ID));
+        assertEquals(FOLDER_DELETE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveDeleteDefinition.RETURN_FILE_ID)));
     }
 
     @Test

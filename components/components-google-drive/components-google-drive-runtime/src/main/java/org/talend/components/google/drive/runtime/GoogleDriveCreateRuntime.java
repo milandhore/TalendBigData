@@ -68,7 +68,8 @@ public class GoogleDriveCreateRuntime extends GoogleDriveRuntime implements Comp
 
     public void setReturnValues(RuntimeContainer container) {
         String componentId = container.getCurrentComponentId();
-        container.setComponentData(componentId, GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID, parentFolderId);
-        container.setComponentData(componentId, GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID, newFolderId);
+        container.setComponentData(componentId, getStudioName(GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID),
+                parentFolderId);
+        container.setComponentData(componentId, getStudioName(GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID), newFolderId);
     }
 }

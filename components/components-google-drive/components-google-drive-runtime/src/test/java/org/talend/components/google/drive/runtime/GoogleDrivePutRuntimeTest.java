@@ -6,6 +6,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.talend.components.google.drive.runtime.GoogleDriveRuntime.getStudioName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -121,10 +122,11 @@ public class GoogleDrivePutRuntimeTest extends GoogleDriveTestBaseRuntime {
     public void testRunAtDriver() throws Exception {
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_CONTENT));
-        assertEquals(PUT_FILE_ID, container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_FILE_ID));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_CONTENT)));
+        assertEquals(PUT_FILE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_FILE_ID)));
         assertEquals(PUT_FILE_PARENT_ID,
-                container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID));
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID)));
     }
 
     @Test
@@ -158,10 +160,11 @@ public class GoogleDrivePutRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.overwrite.setValue(true);
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_CONTENT));
-        assertEquals(PUT_FILE_ID, container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_FILE_ID));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_CONTENT)));
+        assertEquals(PUT_FILE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_FILE_ID)));
         assertEquals(PUT_FILE_PARENT_ID,
-                container.getComponentData(TEST_CONTAINER, GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID));
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID)));
     }
 
     @Test

@@ -7,6 +7,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.talend.components.google.drive.runtime.GoogleDriveRuntime.getStudioName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,8 +103,10 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
     public void testRunAtDriverCopyFilePath() throws Exception {
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(SOURCE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_SOURCE_ID));
-        assertEquals(DESTINATION_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_DESTINATION_ID));
+        assertEquals(SOURCE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_SOURCE_ID)));
+        assertEquals(DESTINATION_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_DESTINATION_ID)));
     }
 
     @Test
@@ -111,8 +114,10 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.destinationFolder.setValue("A");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(SOURCE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_SOURCE_ID));
-        assertEquals(DESTINATION_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_DESTINATION_ID));
+        assertEquals(SOURCE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_SOURCE_ID)));
+        assertEquals(DESTINATION_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_DESTINATION_ID)));
     }
 
     @Test
@@ -152,8 +157,10 @@ public class GoogleDriveCopyRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.newName.setValue("");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(SOURCE_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_SOURCE_ID));
-        assertEquals(DESTINATION_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveCopyDefinition.RETURN_DESTINATION_ID));
+        assertEquals(SOURCE_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_SOURCE_ID)));
+        assertEquals(DESTINATION_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCopyDefinition.RETURN_DESTINATION_ID)));
     }
 
 }

@@ -70,7 +70,8 @@ public class GoogleDrivePutRuntime extends GoogleDriveRuntime implements Compone
 
     private void setReturnValues(RuntimeContainer container) {
         String componentId = container.getCurrentComponentId();
-        container.setComponentData(componentId, GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID, sentFile.getParents().get(0));
-        container.setComponentData(componentId, GoogleDrivePutDefinition.RETURN_FILE_ID, sentFile.getId());
+        container.setComponentData(componentId, getStudioName(GoogleDrivePutDefinition.RETURN_PARENT_FOLDER_ID),
+                sentFile.getParents().get(0));
+        container.setComponentData(componentId, getStudioName(GoogleDrivePutDefinition.RETURN_FILE_ID), sentFile.getId());
     }
 }

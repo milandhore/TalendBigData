@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.Locale;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -189,4 +190,18 @@ public class GoogleDriveRuntime extends GoogleDriveValidator
         vr.setMessage(messages.getMessage("message.connectionSuccessful"));
         return vr;
     }
+
+    public static String getStudioName(final String inputString) {
+        if (inputString == null || inputString.isEmpty()) {
+            return inputString;
+        }
+
+        StringBuilder outputString = new StringBuilder();
+        for (int i = 0; i < inputString.length(); i++) {
+            Character c = inputString.charAt(i);
+            outputString.append(Character.isUpperCase(c) && i > 0 ? "_" + c : c); //$NON-NLS-1$
+        }
+        return outputString.toString().toUpperCase(Locale.ENGLISH);
+    }
+
 }

@@ -6,6 +6,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.talend.components.google.drive.runtime.GoogleDriveRuntime.getStudioName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,9 +81,9 @@ public class GoogleDriveCreateRuntimeTest extends GoogleDriveTestBaseRuntime {
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
         assertEquals(FOLDER_ROOT,
-                container.getComponentData(TEST_CONTAINER, GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID));
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID)));
         assertEquals(FOLDER_CREATE_ID,
-                container.getComponentData(TEST_CONTAINER, GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID));
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID)));
     }
 
     @Test
@@ -90,9 +91,10 @@ public class GoogleDriveCreateRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.parentFolder.setValue("/A/B/C/");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals("C", container.getComponentData(TEST_CONTAINER, GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID));
+        assertEquals("C",
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCreateDefinition.RETURN_PARENT_FOLDER_ID)));
         assertEquals(FOLDER_CREATE_ID,
-                container.getComponentData(TEST_CONTAINER, GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID));
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveCreateDefinition.RETURN_NEW_FOLDER_ID)));
     }
 
     @Test

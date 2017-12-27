@@ -6,6 +6,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.talend.components.google.drive.runtime.GoogleDriveRuntime.getStudioName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,8 +67,9 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         assertNotNull(vr);
         assertEquals(Result.OK, vr.getStatus());
         testRuntime.runAtDriver(container);
-        assertEquals(FILE_GET_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_FILE_ID));
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
+        assertEquals(FILE_GET_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_FILE_ID)));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_CONTENT)));
     }
 
     @Test
@@ -87,8 +89,8 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         properties.file.setValue("/A/B/C");
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals("C", container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_FILE_ID));
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
+        assertEquals("C", container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_FILE_ID)));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_CONTENT)));
     }
 
     @Test
@@ -100,8 +102,9 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         //
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FILE_GET_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_FILE_ID));
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
+        assertEquals(FILE_GET_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_FILE_ID)));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_CONTENT)));
     }
 
     @Test
@@ -112,8 +115,9 @@ public class GoogleDriveGetRuntimeTest extends GoogleDriveTestBaseRuntime {
         //
         testRuntime.initialize(container, properties);
         testRuntime.runAtDriver(container);
-        assertEquals(FILE_GET_ID, container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_FILE_ID));
-        assertNull(container.getComponentData(TEST_CONTAINER, GoogleDriveGetDefinition.RETURN_CONTENT));
+        assertEquals(FILE_GET_ID,
+                container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_FILE_ID)));
+        assertNull(container.getComponentData(TEST_CONTAINER, getStudioName(GoogleDriveGetDefinition.RETURN_CONTENT)));
     }
 
     @Test

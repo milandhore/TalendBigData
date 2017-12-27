@@ -66,6 +66,6 @@ public class GoogleDriveDeleteRuntime extends GoogleDriveRuntime implements Comp
 
     public void setReturnValues(RuntimeContainer container) {
         String componentId = container.getCurrentComponentId();
-        container.setComponentData(componentId, GoogleDriveDeleteDefinition.RETURN_FILE_ID, fileId);
+        container.setComponentData(componentId, getStudioName(GoogleDriveDeleteDefinition.RETURN_FILE_ID), fileId);
     }
 }

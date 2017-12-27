@@ -95,8 +95,8 @@ public class GoogleDriveCopyRuntime extends GoogleDriveRuntime implements Compon
 
     public void setReturnValues(RuntimeContainer container) {
         String componentId = container.getCurrentComponentId();
-        container.setComponentData(componentId, GoogleDriveCopyDefinition.RETURN_SOURCE_ID, sourceId);
-        container.setComponentData(componentId, GoogleDriveCopyDefinition.RETURN_DESTINATION_ID, destinationId);
+        container.setComponentData(componentId, getStudioName(GoogleDriveCopyDefinition.RETURN_SOURCE_ID), sourceId);
+        container.setComponentData(componentId, getStudioName(GoogleDriveCopyDefinition.RETURN_DESTINATION_ID), destinationId);
     }
 
 }
