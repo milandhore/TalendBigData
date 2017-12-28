@@ -68,6 +68,7 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
         if (indexedRecordDatum == null) {
             return;
         }
+        documents.clear();
         IndexedRecord indexedRecord = (IndexedRecord) indexedRecordDatum;
         Schema indexedRecordSchema = indexedRecord.getSchema();
 
