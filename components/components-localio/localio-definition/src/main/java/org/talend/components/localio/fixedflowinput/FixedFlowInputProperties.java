@@ -23,6 +23,10 @@ import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyFactory;
 
+/**
+ * @deprecated Use FixedInputProperties
+ */
+@Deprecated
 public class FixedFlowInputProperties extends FixedConnectorsComponentProperties {
 
     public FixedFlowInputProperties(String name) {

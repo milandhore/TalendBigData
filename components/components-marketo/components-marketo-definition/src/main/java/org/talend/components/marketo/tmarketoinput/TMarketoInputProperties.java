@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -800,16 +799,6 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
             migrated = super.postDeserialize(version, setup, persistent);
         } catch (ClassCastException cce) {
             migrated = super.postDeserialize(version, setup, false); // don't initLayout
-            LinkedHashMap value = (LinkedHashMap) inputOperation.getStoredValue();
-            String io = String.valueOf(value.get("name"));
-            // re-affect correct values
-            inputOperation.setPossibleValues(InputOperation.values());
-            inputOperation.setValue(InputOperation.valueOf(io));
-            value = (LinkedHashMap) customObjectAction.getStoredValue();
-            io = String.valueOf(value.get("name"));
-            // re-affect correct values
-            customObjectAction.setPossibleValues(CustomObjectAction.values());
-            customObjectAction.setValue(CustomObjectAction.valueOf(io));
         }
         checkForInvalidStoredProperties();
         if (version < this.getVersionNumber()) {
@@ -909,30 +898,7 @@ public class TMarketoInputProperties extends MarketoComponentWizardBasePropertie
      * ClassCastException : LinkedHashMap cannot be cast to Enum.
      */
     private void checkForInvalidStoredProperties() {
-        Object o;
-        String ov;
-        LinkedHashMap value;
-        if (inputOperation.getStoredValue() instanceof LinkedHashMap) {
-            o = inputOperation.getStoredValue();
-            value = (LinkedHashMap) o;
-            ov = String.valueOf(value.get("name"));
-            try {
-                inputOperation.setValue(InputOperation.valueOf(ov));
-                inputOperation.setStoredValue(InputOperation.valueOf(ov));
-            } catch (Exception e) {
-                LOG.error("Error during inputOperation fix: {}.", e);
-            }
-        }
-        if (customObjectAction.getStoredValue() instanceof LinkedHashMap) {
-            o = customObjectAction.getStoredValue();
-            value = (LinkedHashMap) o;
-            ov = String.valueOf(value.get("name"));
-            try {
-                customObjectAction.setValue(CustomObjectAction.valueOf(ov));
-                customObjectAction.setStoredValue(CustomObjectAction.valueOf(ov));
-            } catch (Exception e) {
-                LOG.error("Error during customObjectAction fix: {}.", e);
-            }
-        }
+        inputOperation = checkForInvalidStoredEnumProperty(inputOperation, InputOperation.class);
+        customObjectAction = checkForInvalidStoredEnumProperty(customObjectAction, CustomObjectAction.class);
     }
 }

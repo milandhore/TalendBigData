@@ -27,6 +27,10 @@ import org.talend.components.localio.LocalIOComponentFamilyDefinition;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
 
+/**
+ * @deprecated Use FixedInputDefinition
+ */
+@Deprecated
 public class FixedFlowInputDefinition extends AbstractComponentDefinition {
 
     public static final String NAME = "FixedFlowInput";
