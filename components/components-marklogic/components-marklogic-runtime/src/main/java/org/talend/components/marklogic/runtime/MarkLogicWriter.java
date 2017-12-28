@@ -51,7 +51,13 @@ import java.util.List;
 public class MarkLogicWriter implements WriterWithFeedback<Result, IndexedRecord, IndexedRecord> {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(MarkLogicWriter.class);
+
     protected static final I18nMessages MESSAGES = GlobalI18N.getI18nMessageProvider().getI18nMessages(MarkLogicWriter.class);
+
+    private static final String LEGACY_NB_LINE_UPSERTED_NAME = "NB_LINE_UPSERTED";
+    private static final String LEGACY_NB_LINE_DELETED_NAME = "NB_LINE_DELETED";
+    private static final String LEGACY_NB_LINE_PATCHED_NAME = "NB_LINE_PATCHED";
+    private static final String LEGACY_NB_LINE_REJECTED_NAME = "NB_LINE_REJECTED";
 
     private MarkLogicOutputProperties properties;
 
@@ -224,7 +230,35 @@ public class MarkLogicWriter implements WriterWithFeedback<Result, IndexedRecord
             connectionClient.release();
             LOGGER.info(MESSAGES.getMessage("info.connectionClosed"));
         }
+
+        writeLegacyNBLineResult();
         return result;
+    }
+
+    private void writeLegacyNBLineResult() {
+        int linesUpserted = 0;
+        int linesPatched = 0;
+        int linesDeleted = 0;
+        int linesRejected = 0;
+
+        switch (properties.action.getValue()) {
+        case UPSERT:
+            linesUpserted = result.successCount;
+            break;
+        case PATCH:
+            linesPatched = result.successCount;
+            break;
+        case DELETE:
+            linesDeleted = result.successCount;
+            break;
+        }
+
+        linesRejected = result.rejectCount;
+
+        this.container.setComponentData(container.getCurrentComponentId() , LEGACY_NB_LINE_UPSERTED_NAME, linesUpserted);
+        this.container.setComponentData(container.getCurrentComponentId() , LEGACY_NB_LINE_PATCHED_NAME, linesPatched);
+        this.container.setComponentData(container.getCurrentComponentId() , LEGACY_NB_LINE_DELETED_NAME, linesDeleted);
+        this.container.setComponentData(container.getCurrentComponentId() , LEGACY_NB_LINE_REJECTED_NAME, linesRejected);
     }
 
     @Override

@@ -309,6 +309,7 @@ public class MarkLogicWriterTest {
 
         Result result = writer.close();
         assertEquals(1, result.totalCount);
+        verify(writer.container).setComponentData(anyString(), eq("NB_LINE_DELETED"), eq(1));
     }
 
     @Test

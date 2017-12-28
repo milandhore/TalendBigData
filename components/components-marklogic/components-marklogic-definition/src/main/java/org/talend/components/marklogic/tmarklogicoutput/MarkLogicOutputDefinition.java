@@ -16,7 +16,6 @@ import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.marklogic.AbstractMarkLogicComponentDefinition;
-import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.runtime.RuntimeInfo;
