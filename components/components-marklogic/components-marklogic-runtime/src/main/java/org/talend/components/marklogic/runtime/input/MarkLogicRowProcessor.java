@@ -37,6 +37,8 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
 
     DocContentReader docContentReader;
 
+    private int totalCounter;
+
     public MarkLogicRowProcessor(MarkLogicInputWriteOperation markLogicInputWriteOperation, RuntimeContainer container, MarkLogicInputProperties properties) {
         this.inputWriteOperation = markLogicInputWriteOperation;
         this.container = container;
@@ -79,6 +81,7 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
         }
         String docId = (String) indexedRecord.get(docIdFieldIndex);
         GenericData.Record matchedDocument = docContentReader.readDocument(docId);
+        totalCounter++;
 
         documents.add(matchedDocument);
     }
@@ -88,7 +91,7 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
         if (!inputProperties.connection.isReferencedConnectionUsed()) {
             client.release();
         }
-        return new Result(uId, documents.size());
+        return new Result(uId, totalCounter);
     }
 
     @Override

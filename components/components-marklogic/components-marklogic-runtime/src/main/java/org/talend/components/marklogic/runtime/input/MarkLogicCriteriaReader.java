@@ -171,6 +171,7 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
             String docId = currentSummary.getUri();
             current = docContentReader.readDocument(docId);
 
+            result.totalCount++;
             result.successCount++;
             pageCounter++;
             return current;
