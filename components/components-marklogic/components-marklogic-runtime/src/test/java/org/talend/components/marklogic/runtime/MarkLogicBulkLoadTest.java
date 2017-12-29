@@ -1,6 +1,6 @@
 package org.talend.components.marklogic.runtime;
 
-import org.hamcrest.Matchers;
+import com.marklogic.contentpump.ContentPump;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,22 +12,21 @@ import org.talend.components.api.exception.ComponentException;
 import org.talend.components.marklogic.tmarklogicbulkload.MarkLogicBulkLoadProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionDefinition;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
-import org.talend.components.marklogic.util.CommandExecutor;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.properties.ValidationResult;
 
-import java.io.InputStream;
+import java.io.IOException;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItemInArray;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(CommandExecutor.class)
+@PrepareForTest(ContentPump.class)
 public class MarkLogicBulkLoadTest {
     private MarkLogicBulkLoad bulkLoadRuntime;
     private MarkLogicConnectionProperties connectionProperties;
@@ -73,41 +72,56 @@ public class MarkLogicBulkLoadTest {
     public void testPrepareMlcpCommandWithAllProperties() {
         initConnectionParameters();
         String expectedPrefix = "/loaded/";
-        String expectedAdditionalParameter = "-content_encoding UTF-8";
+        String expectedAdditionalParameter = "-content_encoding UTF-8 -a \"b c\"";
 
         bulkLoadProperties.docidPrefix.setValue(expectedPrefix);
         bulkLoadProperties.mlcpParams.setValue(expectedAdditionalParameter);
 
         bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        String actualMlcpCommand = bulkLoadRuntime.prepareMlcpCommand();
+        String[] mlcpCommandArray = bulkLoadRuntime.prepareMlcpCommandArray();
 
-        assertThat(actualMlcpCommand, containsString("-host " + bulkLoadProperties.connection.host.getStringValue()));
-        assertThat(actualMlcpCommand, containsString("-port " + bulkLoadProperties.connection.port.getValue()));
-        assertThat(actualMlcpCommand, containsString("-database " + bulkLoadProperties.connection.database.getStringValue()));
-        assertThat(actualMlcpCommand, containsString("-username " + bulkLoadProperties.connection.username.getStringValue()));
-        assertThat(actualMlcpCommand, containsString("-password " + bulkLoadProperties.connection.password.getStringValue()));
-        assertThat(actualMlcpCommand, containsString("-input_file_path " + "/" + bulkLoadProperties.loadFolder.getStringValue()));
-        assertThat(actualMlcpCommand, containsString("-output_uri_replace "
-                + "\"/" + bulkLoadProperties.loadFolder.getStringValue() + ",'"
-                + bulkLoadProperties.docidPrefix.getStringValue().substring(0, bulkLoadProperties.docidPrefix.getStringValue().length() - 1)
-                + "'\""));
-        assertThat(actualMlcpCommand, containsString(bulkLoadProperties.mlcpParams.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-host"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.host.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-port"));
+        assertThat(mlcpCommandArray, hasItemInArray("" + bulkLoadProperties.connection.port.getValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-database"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.database.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-username"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.username.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-password"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.password.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-input_file_path"));
+        assertThat(mlcpCommandArray, hasItemInArray("/" + bulkLoadProperties.loadFolder.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-output_uri_replace"));
+        String expectedReplaceValue = "\"/" + bulkLoadProperties.loadFolder.getStringValue()
+                + ",'" + bulkLoadProperties.docidPrefix.getStringValue().substring(0, bulkLoadProperties.docidPrefix.getValue().length() - 1) + "'\"";
+        assertThat(mlcpCommandArray, hasItemInArray(expectedReplaceValue));
+
+        assertThat(mlcpCommandArray, hasItemInArray("-content_encoding"));
+        assertThat(mlcpCommandArray, hasItemInArray("UTF-8"));
+        assertThat(mlcpCommandArray, hasItemInArray("-a"));
+        assertThat(mlcpCommandArray, hasItemInArray("\"b c\""));
     }
 
     @Test
     public void testPrepareMlcpCommandWithRequiredProperties() {
         initConnectionParameters();
         bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        String mlcpCommand = bulkLoadRuntime.prepareMlcpCommand();
+        String[] mlcpCommandArray = bulkLoadRuntime.prepareMlcpCommandArray();
 
-        assertThat(mlcpCommand, containsString("-host " + bulkLoadProperties.connection.host.getStringValue()));
-        assertThat(mlcpCommand, containsString("-port " + bulkLoadProperties.connection.port.getValue()));
-        assertThat(mlcpCommand, containsString("-database " + bulkLoadProperties.connection.database.getStringValue()));
-        assertThat(mlcpCommand, containsString("-username " + bulkLoadProperties.connection.username.getStringValue()));
-        assertThat(mlcpCommand, containsString("-password " + bulkLoadProperties.connection.password.getStringValue()));
-        assertThat(mlcpCommand, containsString("-input_file_path " + "/" + bulkLoadProperties.loadFolder.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-host"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.host.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-port"));
+        assertThat(mlcpCommandArray, hasItemInArray("" + bulkLoadProperties.connection.port.getValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-database"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.database.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-username"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.username.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-password"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.password.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-input_file_path"));
+        assertThat(mlcpCommandArray, hasItemInArray("/" + bulkLoadProperties.loadFolder.getStringValue()));
     }
-
     @Test
     public void testPrepareMlcpCommandWithReferencedConnection() {
         initConnectionParameters();
@@ -115,14 +129,35 @@ public class MarkLogicBulkLoadTest {
         bulkLoadProperties.connection.referencedComponent.componentInstanceId.setValue(MarkLogicConnectionDefinition.COMPONENT_NAME + "_1");
 
         bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        String mlcpCommand = bulkLoadRuntime.prepareMlcpCommand();
+        String[] mlcpCommandArray = bulkLoadRuntime.prepareMlcpCommandArray();
 
-        assertThat(mlcpCommand, containsString("-host " + bulkLoadProperties.connection.referencedComponent.getReference().host.getStringValue()));
-        assertThat(mlcpCommand, containsString("-port " + bulkLoadProperties.connection.referencedComponent.getReference().port.getValue()));
-        assertThat(mlcpCommand, containsString("-database " + bulkLoadProperties.connection.referencedComponent.getReference().database.getStringValue()));
-        assertThat(mlcpCommand, containsString("-username " +bulkLoadProperties.connection.referencedComponent.getReference().username.getStringValue()));
-        assertThat(mlcpCommand, containsString("-password " + bulkLoadProperties.connection.referencedComponent.getReference().password.getStringValue()));
-        assertThat(mlcpCommand, containsString("-input_file_path " + "/" + bulkLoadProperties.loadFolder.getStringValue()));
+
+        assertThat(mlcpCommandArray, hasItemInArray("-host"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.referencedComponent.getReference().host.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-port"));
+        assertThat(mlcpCommandArray, hasItemInArray("" + bulkLoadProperties.connection.referencedComponent.getReference().port.getValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-database"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.referencedComponent.getReference().database.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-username"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.referencedComponent.getReference().username.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-password"));
+        assertThat(mlcpCommandArray, hasItemInArray(bulkLoadProperties.connection.referencedComponent.getReference().password.getStringValue()));
+        assertThat(mlcpCommandArray, hasItemInArray("-input_file_path"));
+        assertThat(mlcpCommandArray, hasItemInArray("/" + bulkLoadProperties.loadFolder.getStringValue()));
+    }
+    @Test
+    public void testPrepareMLCPCommandWithSpacesInFolder() {
+        initConnectionParameters();
+        bulkLoadProperties.connection.referencedComponent.setReference(connectionProperties);
+        bulkLoadProperties.connection.referencedComponent.componentInstanceId.setValue(MarkLogicConnectionDefinition.COMPONENT_NAME + "_1");
+
+        bulkLoadProperties.loadFolder.setValue("a b");
+
+        bulkLoadRuntime.initialize(null, bulkLoadProperties);
+
+        String[] mlcpArray = bulkLoadRuntime.prepareMlcpCommandArray();
+        assertThat(mlcpArray, hasItemInArray("-input_file_path"));
+        assertThat(mlcpArray, hasItemInArray("a b"));
     }
 
     @Test
@@ -163,45 +198,14 @@ public class MarkLogicBulkLoadTest {
         assertEquals(ValidationResult.Result.ERROR, vr.getStatus());
         assertNotNull(vr.getMessage());
     }
-    @Test
-    public void testMlcpCommandStart() {
-        String windowsCommandStart = bulkLoadRuntime.prepareMlcpCommandStart("Windows VERSION");
-        String anotherCommandStart = bulkLoadRuntime.prepareMlcpCommandStart("product of Linus Torvalds");
-
-        assertThat(windowsCommandStart, Matchers.equalTo("cmd /c mlcp.bat "));
-        assertThat(anotherCommandStart, Matchers.equalTo("mlcp.sh "));
-    }
 
     @Test
     public void testRunAtDriver() throws Exception {
         initConnectionParameters();
         bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        Process process = Mockito.mock(Process.class);
-        InputStream mockedInputStream = Mockito.mock(InputStream.class);
-        Mockito.when(mockedInputStream.available()).thenReturn(0);
-        PowerMockito.mockStatic(CommandExecutor.class);
-        Mockito.when(CommandExecutor.executeCommand(anyString())).thenReturn(process);
-        Mockito.when(process.getInputStream()).thenReturn(mockedInputStream);
-        Mockito.when(process.getErrorStream()).thenReturn(mockedInputStream);
+        PowerMockito.mockStatic(ContentPump.class);
+        Mockito.when(ContentPump.runCommand(any(String[].class))).thenReturn(0);
         bulkLoadRuntime.runAtDriver(null);
-        Mockito.verify(process).waitFor();
-    }
-
-    @Test
-    public void testRunAtDriverWithIOException() throws Exception {
-        initConnectionParameters();
-
-        bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        Process process = Mockito.mock(Process.class);
-        InputStream mockedInputStream = Mockito.mock(InputStream.class);
-        Mockito.when(mockedInputStream.available()).thenReturn(1); //stream is available, but not readable
-        PowerMockito.mockStatic(CommandExecutor.class);
-        Mockito.when(CommandExecutor.executeCommand(anyString())).thenReturn(process);
-        Mockito.when(process.getInputStream()).thenReturn(mockedInputStream);
-        Mockito.when(process.getErrorStream()).thenReturn(mockedInputStream);
-        bulkLoadRuntime.runAtDriver(null);
-
-        Mockito.verify(process).waitFor();
     }
 
     @Test(expected = ComponentException.class)
@@ -209,8 +213,8 @@ public class MarkLogicBulkLoadTest {
         initConnectionParameters();
 
         bulkLoadRuntime.initialize(null, bulkLoadProperties);
-        PowerMockito.mockStatic(CommandExecutor.class);
-        Mockito.when(CommandExecutor.executeCommand(anyString())).thenThrow(new InterruptedException());
+        PowerMockito.mockStatic(ContentPump.class);
+        Mockito.when(ContentPump.runCommand(any(String[].class))).thenThrow(new IOException());
         bulkLoadRuntime.runAtDriver(null);
     }
 

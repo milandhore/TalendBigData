@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.components.marklogic.runtime;
 
+import com.marklogic.contentpump.ContentPump;
+import org.apache.commons.exec.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +22,16 @@ import org.talend.components.api.container.RuntimeContainer;
 import org.talend.components.api.exception.ComponentException;
 import org.talend.components.marklogic.tmarklogicbulkload.MarkLogicBulkLoadProperties;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
-import org.talend.components.marklogic.util.CommandExecutor;
 import org.talend.daikon.i18n.GlobalI18N;
 import org.talend.daikon.i18n.I18nMessages;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResultMutable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MarkLogicBulkLoad implements ComponentDriverInitialization {
 
@@ -42,54 +43,13 @@ public class MarkLogicBulkLoad implements ComponentDriverInitialization {
 
     @Override
     public void runAtDriver(RuntimeContainer container) {
-        String mlcpCommand = prepareMlcpCommand();
+        String[] mlcpCommandArray = prepareMlcpCommandArray();
 
-        LOGGER.debug(MESSAGES.getMessage("messages.debug.command", mlcpCommand));
+        LOGGER.debug(MESSAGES.getMessage("messages.debug.command", mlcpCommandArray));
         LOGGER.info(MESSAGES.getMessage("messages.info.startBulkLoad"));
         try {
-            Process mlcpProcess = CommandExecutor.executeCommand(mlcpCommand);
-
-            try (InputStream normalInput = mlcpProcess.getInputStream();
-                    InputStream errorInput = mlcpProcess.getErrorStream()) {
-
-                Thread normalInputReadProcess = new Thread() {
-                    public void run() {
-                        try(BufferedReader reader = new BufferedReader(new InputStreamReader(normalInput))) {
-                            String line;
-                            while((line = reader.readLine()) != null) {
-                                System.out.println(line);
-                            }
-                        } catch(IOException ioe) {
-                            LOGGER.error(MESSAGES.getMessage("messages.error.ioexception", ioe.getMessage()));
-                            ioe.printStackTrace();
-                        }
-                    }
-                };
-                normalInputReadProcess.start();
-
-                Thread errorInputReadProcess = new Thread() {
-                    public void run() {
-                        try(BufferedReader reader = new BufferedReader(new InputStreamReader(errorInput))) {
-                            String line;
-                            while((line = reader.readLine()) != null) {
-                                System.err.println(line);
-                            }
-                        } catch(IOException ioe) {
-                            LOGGER.error(MESSAGES.getMessage("messages.error.ioexception", ioe.getMessage()));
-                            ioe.printStackTrace();
-                        }
-                    }
-                };
-                errorInputReadProcess.start();
-
-                mlcpProcess.waitFor();
-                normalInputReadProcess.interrupt();
-                errorInputReadProcess.interrupt();
-
-                LOGGER.info(MESSAGES.getMessage("messages.info.finishBulkLoad"));
-            }
-
-        } catch (Exception e) {
+            ContentPump.runCommand(mlcpCommandArray);
+        } catch (IOException e) {
             LOGGER.error(MESSAGES.getMessage("messages.error.exception", e.getMessage()));
             throw new ComponentException(e);
         }
@@ -128,8 +88,8 @@ public class MarkLogicBulkLoad implements ComponentDriverInitialization {
     }
 
 
-    String prepareMlcpCommand() {
-        StringBuilder mlcpCommand = new StringBuilder();
+    String[] prepareMlcpCommandArray() {
+        List<String> mlcpCommand = new ArrayList<>();
 
         MarkLogicConnectionProperties connection = bulkLoadProperties.connection;
         boolean useExistingConnection = connection.isReferencedConnectionUsed();
@@ -155,6 +115,7 @@ public class MarkLogicBulkLoad implements ComponentDriverInitialization {
         if(loadPath.contains(":")){
             loadPath = "/" + loadPath;
         }
+
         loadPath = (loadPath.replaceAll("\\\\","/"));
 
         String prefix = bulkLoadProperties.docidPrefix.getStringValue();
@@ -163,37 +124,37 @@ public class MarkLogicBulkLoad implements ComponentDriverInitialization {
         }
         String additionalMLCPParameters = bulkLoadProperties.mlcpParams.getStringValue();
 
-        mlcpCommand.append(prepareMlcpCommandStart(System.getProperty("os.name")));
-        mlcpCommand.append("import ");
-        mlcpCommand.append("-username ").append(userName).append(" ");
-        mlcpCommand.append("-password ").append(password).append(" ");
-        mlcpCommand.append("-host ").append(host).append(" ");
-        mlcpCommand.append("-port ").append(port).append(" ");
+        mlcpCommand.add("import");
+        mlcpCommand.add("-host");
+        mlcpCommand.add(host);
+
+        mlcpCommand.add("-username");
+        mlcpCommand.add(userName);
+
+        mlcpCommand.add("-password");
+        mlcpCommand.add(password);
+
+        mlcpCommand.add("-port");
+        mlcpCommand.add(port.toString());
+
         if (StringUtils.isNotEmpty(database) && !("\"\"".equals(database))) {
-            mlcpCommand.append("-database ").append(database).append(" ");
+            mlcpCommand.add("-database");
+            mlcpCommand.add(database);
         }
-        mlcpCommand.append("-input_file_path ").append(loadPath)
-                .append(" ");
+
+        mlcpCommand.add("-input_file_path");
+        mlcpCommand.add(loadPath);
+
         if (StringUtils.isNotEmpty(prefix)) {
-            mlcpCommand.append("-output_uri_replace \"")
-                    .append(loadPath)
-                    .append(",'")
-                    .append(prefix)
-                    .append("'\"");
+            mlcpCommand.add("-output_uri_replace");
+            mlcpCommand.add("\"" + loadPath + ",'" + prefix + "'\"");
         }
         if (StringUtils.isNotEmpty(additionalMLCPParameters) && !(("\"\"".equals(additionalMLCPParameters)))) {
-            mlcpCommand.append(" ");
-            mlcpCommand.append(additionalMLCPParameters);
+            CommandLine commandLineAdditionalParams = CommandLine.parse(additionalMLCPParameters);
+            mlcpCommand.add(commandLineAdditionalParams.getExecutable());
+            mlcpCommand.addAll(Arrays.asList(commandLineAdditionalParams.getArguments()));
         }
 
-        return mlcpCommand.toString();
-    }
-
-    String prepareMlcpCommandStart(String osName) {
-        if (osName.toLowerCase().startsWith("windows")) {
-            return "cmd /c mlcp.bat ";
-        } else {
-            return "mlcp.sh ";
-        }
+        return mlcpCommand.toArray(new String[0]);
     }
 }
