@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class LeadChangeRecord extends MarketoAttributes {
+public class LeadChangeRecord {
 
     private Integer id;
 
@@ -17,6 +17,8 @@ public class LeadChangeRecord extends MarketoAttributes {
     private String activityTypeValue;
 
     private List<Map<String, String>> fields;
+
+    private List<Map<String, String>> attributes;
 
     public void setId(Integer id) {
         this.id = id;
@@ -66,11 +68,19 @@ public class LeadChangeRecord extends MarketoAttributes {
         return this.fields;
     }
 
+    public void setAttributes(List<Map<String, String>> attributes) {
+        this.attributes = attributes;
+    }
+
+    public List<Map<String, String>> getAttributes() {
+        return this.attributes;
+    }
+
     @Override
     public String toString() {
         return "LeadChangeRecord [id=" + id + ", leadId=" + leadId + ", activityDate=" + activityDate + ", activityTypeId="
                 + activityTypeId + ", activityTypeValue=" + activityTypeValue + ", fields=" + fields + ", attributes="
-                + getAttributes() + "]";
+                + attributes + "]";
     }
 
 }
