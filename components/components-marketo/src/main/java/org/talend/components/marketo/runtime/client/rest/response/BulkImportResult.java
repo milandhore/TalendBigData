@@ -28,11 +28,6 @@ public class BulkImportResult extends PaginateResult {
 
     @Override
     public List<BulkImport> getResult() {
-        // ensure that result is never null
-        if (result == null) {
-            return new ArrayList<>();
-        }
-
         return result;
     }
 

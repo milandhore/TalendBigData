@@ -24,11 +24,6 @@ public class CustomObjectResult extends PaginateResult {
 
     @Override
     public List<CustomObject> getResult() {
-        // ensure that result is never null
-        if (result == null) {
-            return new ArrayList<>();
-        }
-
         return result;
     }
 

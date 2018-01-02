@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.components.marketo.runtime.client.rest.response;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.talend.components.marketo.runtime.client.rest.type.FieldDescription;
@@ -23,11 +22,6 @@ public class DescribeFieldsResult extends RequestResult {
 
     @Override
     public List<FieldDescription> getResult() {
-        // ensure that result is never null
-        if (result == null) {
-            return new ArrayList<>();
-        }
-
         return result;
     }
 
