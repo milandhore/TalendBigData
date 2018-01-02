@@ -22,6 +22,7 @@ import static org.apache.avro.Schema.Field;
 import static org.apache.avro.generic.GenericData.Record;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.talend.components.marketo.MarketoConstants.DATETIME_PATTERN_PARAM;
 import static org.talend.components.marketo.MarketoConstants.FIELD_ERROR_MSG;
 import static org.talend.components.marketo.MarketoConstants.FIELD_STATUS;
 import static org.talend.components.marketo.tmarketoinput.TMarketoInputProperties.LeadSelector.LastUpdateAtSelector;
@@ -62,7 +63,6 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.IndexedRecord;
 import org.slf4j.Logger;
 import org.talend.components.api.exception.ComponentException;
-import org.talend.components.marketo.MarketoUtils;
 import org.talend.components.marketo.runtime.client.rest.type.SyncStatus;
 import org.talend.components.marketo.runtime.client.type.ListOperationParameters;
 import org.talend.components.marketo.runtime.client.type.MarketoError;
@@ -367,8 +367,8 @@ public class MarketoSOAPClient extends MarketoClient {
     }
 
     /**
-     * In getMultipleLeadsJSON you have to add includeAttributes base fields like Email. Otherwise, they return null from
-     * API. WTF ?!? It's like that...
+     * In getMultipleLeadsJSON you have to add includeAttributes base fields like Email. Otherwise, they return null
+     * from API. WTF ?!? It's like that...
      */
     @Override
     public MarketoRecordResult getMultipleLeads(TMarketoInputProperties parameters, String offset) {
@@ -414,8 +414,9 @@ public class MarketoSOAPClient extends MarketoClient {
             try {
                 DatatypeFactory factory = newInstance();
                 ObjectFactory objectFactory = new ObjectFactory();
-                Date oldest = MarketoUtils.parseDateString(parameters.oldestUpdateDate.getValue());
-                Date latest = MarketoUtils.parseDateString(parameters.latestUpdateDate.getValue());
+                DateFormat df = new SimpleDateFormat(DATETIME_PATTERN_PARAM);
+                Date oldest = df.parse(parameters.oldestUpdateDate.getValue());
+                Date latest = df.parse(parameters.latestUpdateDate.getValue());
                 GregorianCalendar gc = new GregorianCalendar();
                 gc.setTime(latest);
                 JAXBElement<XMLGregorianCalendar> until = objectFactory
@@ -630,8 +631,9 @@ public class MarketoSOAPClient extends MarketoClient {
         ParamsGetLeadChanges request = new ParamsGetLeadChanges();
         LastUpdateAtSelector leadSelector = new LastUpdateAtSelector();
         try {
-            Date oldest = MarketoUtils.parseDateString(sOldest);
-            Date latest = MarketoUtils.parseDateString(sLatest);
+            DateFormat df = new SimpleDateFormat(DATETIME_PATTERN_PARAM);
+            Date oldest = df.parse(sOldest);
+            Date latest = df.parse(sLatest);
             GregorianCalendar gc = new GregorianCalendar();
             gc.setTime(latest);
             DatatypeFactory factory = newInstance();
@@ -886,8 +888,8 @@ public class MarketoSOAPClient extends MarketoClient {
      * associated with the lead record<br/>
      * <code>leadRecord->foreignSysType</code> Optional – Only required when foreignSysPersonId is present The type of
      * foreign system. Possible values: CUSTOM, SFDC, NETSUITE<br/>
-     * <code>leadRecord->leadAttributeList->attribute->attrName</code> Required The name of the lead attribute you want to
-     * update the value of.<br/>
+     * <code>leadRecord->leadAttributeList->attribute->attrName</code> Required The name of the lead attribute you want
+     * to update the value of.<br/>
      * <code>leadRecord->leadAttributeList->attribute->attrValue</code> Required The value you want to set to the lead
      * attribute specificed in attrName. returnLead Required When true will return the complete updated lead record upon
      * update.<br/>

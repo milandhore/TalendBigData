@@ -4,7 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.components.api.component.runtime.BoundedReader;
 import org.talend.components.api.component.runtime.BoundedSource;
 import org.talend.components.api.container.RuntimeContainer;
-import org.talend.components.marketo.MarketoUtils;
+import org.talend.components.marketo.MarketoConstants;
 import org.talend.components.marketo.tmarketobulkexec.TMarketoBulkExecProperties;
 import org.talend.components.marketo.tmarketobulkexec.TMarketoBulkExecProperties.BulkImportTo;
 import org.talend.components.marketo.tmarketoconnection.TMarketoConnectionProperties.APIMode;
@@ -58,7 +60,7 @@ public class MarketoSource extends MarketoSourceOrSink implements BoundedSource 
 
     public boolean isInvalidDate(String datetime) {
         try {
-            MarketoUtils.parseDateString(datetime);
+            Date dt = new SimpleDateFormat(MarketoConstants.DATETIME_PATTERN_PARAM).parse(datetime);
             return false;
         } catch (ParseException e) {
             return true;
