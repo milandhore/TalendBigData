@@ -26,6 +26,7 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
+import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.runtime.AbstractBoundedReader;
 import org.talend.components.api.component.runtime.BoundedSource;
 import org.talend.components.api.component.runtime.Result;
@@ -36,6 +37,7 @@ import org.talend.components.marklogic.runtime.input.strategies.DocContentReader
 import org.talend.components.marklogic.tmarklogicinput.MarkLogicInputProperties;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -87,7 +89,17 @@ public class MarkLogicCriteriaReader extends AbstractBoundedReader<IndexedRecord
     @Override
     public boolean start() throws IOException {
         MarkLogicSource currentSource = getCurrentSource();
-        result = new Result();
+        result = new Result() {
+
+            @Override
+            public Map<String, Object> toMap() {
+                Map<String, Object> map = new HashMap<>();
+                map.put(ComponentDefinition.RETURN_TOTAL_RECORD_COUNT,  (long) totalCount);
+                map.put(ComponentDefinition.RETURN_SUCCESS_RECORD_COUNT, (long) successCount);
+                map.put(ComponentDefinition.RETURN_REJECT_RECORD_COUNT, (long) rejectCount);
+                return map;
+            }
+        };
         connectionClient = currentSource.connect(container);
         if (connectionClient == null) {
             return false;

@@ -24,6 +24,7 @@ import org.talend.components.marklogic.MarkLogicFamilyDefinition;
 import org.talend.components.marklogic.RuntimeInfoProvider;
 import org.talend.components.marklogic.tmarklogicconnection.MarkLogicConnectionProperties;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.properties.property.PropertyFactory;
 import org.talend.daikon.runtime.RuntimeInfo;
 
 /**
@@ -58,7 +59,10 @@ public class MarkLogicInputDefinition extends AbstractMarkLogicComponentDefiniti
      */
     @Override
     public Property[] getReturnProperties() {
-        return new Property[] { RETURN_TOTAL_RECORD_COUNT_PROP, RETURN_ERROR_MESSAGE_PROP };
+        Property<Long> totalNBLong = PropertyFactory.newProperty(Long.class, RETURN_TOTAL_RECORD_COUNT);
+        Property[] returnProperties = new Property[] {totalNBLong, RETURN_ERROR_MESSAGE_PROP};
+        setupI18N(returnProperties);
+        return returnProperties;
     }
 
     @Override

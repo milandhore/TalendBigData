@@ -89,14 +89,16 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         queryLiteralType.setValue("XML");
 
         queryOptionLiterals.setTaggedValue(ComponentConstants.LINE_SEPARATOR_REPLACED_TO, " ");
-        setupDefaultSchema(outputSchema);
+        if (isOutputSchemaInvalid()) {
+            setupDefaultSchema(outputSchema);
+        }
 
         setInputSchemaListener(new ISchemaListener() { //TODO replace with lambda
 
             @Override
             public void afterSchema() {
                 updateDocIdColumnPossibleValues();
-                if (!"docId".equals(outputSchema.schema.getValue().getFields().get(0).name())) {
+                if (isOutputSchemaInvalid()) {
                     setupDefaultSchema(outputSchema);
                 }
             }
@@ -152,6 +154,16 @@ public class MarkLogicInputProperties extends FixedConnectorsComponentProperties
         advancedForm.addRow(widget(queryLiteralType).setWidgetType(Widget.ENUMERATION_WIDGET_TYPE));
         advancedForm.addColumn(queryOptionName);
         advancedForm.addRow(widget(queryOptionLiterals).setWidgetType(Widget.TEXT_AREA_WIDGET_TYPE));
+    }
+
+    /**
+     *
+     * @return true when in output schema first column name is not 'docId'
+     */
+    private boolean isOutputSchemaInvalid() {
+        return outputSchema.schema.getValue() == null || //NPE check
+                outputSchema.schema.getValue().getFields().isEmpty() || //empty schema is invalid
+                !"docId".equals(outputSchema.schema.getValue().getFields().get(0).name()); //not valid 'schema header'. Should be docId
     }
 
     void setupDefaultSchema(SchemaProperties schemaToSet) {
