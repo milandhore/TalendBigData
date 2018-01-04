@@ -1,3 +1,15 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.components.marklogic.runtime.input;
 
 import com.marklogic.client.DatabaseClient;
@@ -37,7 +49,7 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
 
     DocContentReader docContentReader;
 
-    private int totalCounter;
+    long totalCounter;
 
     public MarkLogicRowProcessor(MarkLogicInputWriteOperation markLogicInputWriteOperation, RuntimeContainer container, MarkLogicInputProperties properties) {
         this.inputWriteOperation = markLogicInputWriteOperation;
@@ -91,7 +103,7 @@ public class MarkLogicRowProcessor implements WriterWithFeedback<Result, Indexed
         if (!inputProperties.connection.isReferencedConnectionUsed()) {
             client.release();
         }
-        return new Result(uId, totalCounter);
+        return new ResultWithLongNB(uId, totalCounter);
     }
 
     @Override

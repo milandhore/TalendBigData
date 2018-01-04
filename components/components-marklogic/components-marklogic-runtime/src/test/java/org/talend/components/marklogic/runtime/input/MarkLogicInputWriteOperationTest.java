@@ -46,24 +46,24 @@ public class MarkLogicInputWriteOperationTest {
     public void testFinalize() {
         MarkLogicInputWriteOperation inputWriteOperation = new MarkLogicInputWriteOperation(null, null);
         List<Result> resultList = new ArrayList<>();
-        Result r1 = new Result();
-        Result r2 = new Result();
-        r1.successCount = 2;
-        r2.successCount = 1;
+        ResultWithLongNB r1 = new ResultWithLongNB();
+        ResultWithLongNB r2 = new ResultWithLongNB();
+        r1.successCountLong = 2;
+        r2.successCountLong = 1;
 
-        r1.rejectCount = 4;
-        r2.rejectCount = 1;
+        r1.rejectCountLong = 4;
+        r2.rejectCountLong = 1;
 
-        r1.totalCount = 6;
-        r2.totalCount = 2;
+        r1.totalCountLong = 6;
+        r2.totalCountLong = 2;
 
         resultList.add(r1);
         resultList.add(r2);
-        Map<String, Object> finalResults = inputWriteOperation.finalize(resultList, null);
+        Map<String, Object> finalResultsMap = inputWriteOperation.finalize(resultList, null);
 
-        assertTrue(finalResults.size() == 3);
-        assertEquals(3, finalResults.get("successRecordCount"));
-        assertEquals(5, finalResults.get("rejectRecordCount"));
-        assertEquals(8, finalResults.get("totalRecordCount"));
+        assertEquals(3,finalResultsMap.size());
+        assertEquals(3L, finalResultsMap.get("successRecordCount"));
+        assertEquals(5L, finalResultsMap.get("rejectRecordCount"));
+        assertEquals(8L, finalResultsMap.get("totalRecordCount"));
     }
 }

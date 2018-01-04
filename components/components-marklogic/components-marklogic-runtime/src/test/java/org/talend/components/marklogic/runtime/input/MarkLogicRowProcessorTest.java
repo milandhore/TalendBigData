@@ -147,4 +147,21 @@ public class MarkLogicRowProcessorTest {
 
         verifyNoMoreInteractions(mockedClient);
     }
+
+    @Test
+    public void testCloseResult() throws IOException {
+        MarkLogicInputSink sink = new MarkLogicInputSink();
+        //set reference connection to avoid closing
+        MarkLogicInputProperties inputProperties = new MarkLogicInputProperties("inputProps");
+        inputProperties.init();
+        inputProperties.connection.referencedComponent.componentInstanceId.setValue(MarkLogicConnectionDefinition.COMPONENT_NAME + "_1");
+        MarkLogicInputWriteOperation writeOperation = new MarkLogicInputWriteOperation(sink, inputProperties);
+        MarkLogicRowProcessor rowProcessor = writeOperation.createWriter(null);
+
+        long longNBLine = Long.MAX_VALUE;
+        rowProcessor.totalCounter = longNBLine;
+        Result longResult = rowProcessor.close();
+        assertTrue(longResult instanceof ResultWithLongNB);
+        assertEquals(longNBLine, ((ResultWithLongNB)longResult).totalCountLong);
+    }
 }
