@@ -46,6 +46,7 @@
 					<pushChanges>false</pushChanges>
 					<scmCommentPrefix xml:space="preserve">release: </scmCommentPrefix>
 					<tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
         </plugins>
