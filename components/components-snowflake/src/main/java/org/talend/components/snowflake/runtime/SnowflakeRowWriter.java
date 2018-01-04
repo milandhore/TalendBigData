@@ -74,7 +74,9 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
     private Connection connection;
 
-    private int commitCount;
+    private int commitCounter;
+
+    private final int commitStep;
 
     private Statement statement;
 
@@ -99,6 +101,7 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         this.sink = writeOperation.getSink();
         this.rowProperties = sink.getRowProperties();
         this.dieOnError = rowProperties.dieOnError.getValue();
+        this.commitStep = rowProperties.commitCount.getValue();
     }
 
     @Override
@@ -110,6 +113,9 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         mainSchema = sink.getRuntimeSchema(container);
         schemaReject = rowProperties.schemaReject.schema.getValue();
         try {
+            if(commitStep > 1) {
+                connection.setAutoCommit(false);
+            }
             if (rowProperties.usePreparedStatement()) {
                 statement = connection.prepareStatement(sink.getQuery());
             } else {
@@ -123,12 +129,10 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
 
     @Override
     public void write(Object object) throws IOException {
-        commitCount++;
+        commitCounter++;
 
         IndexedRecord input = (IndexedRecord) object;
 
-        successfulWrites.clear();
-        rejectedWrites.clear();
         try {
             if (rowProperties.usePreparedStatement()) {
                 PreparedStatement pstmt = (PreparedStatement) statement;
@@ -151,10 +155,10 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         }
 
         try {
-            if (rowProperties.connection.getReferencedComponentId() == null
-                    && commitCount == rowProperties.commitCount.getValue()) {
+            //Since we don't have tSnowflakeCommit component and won't have it, we must handle commit here.
+            if (commitStep > 1 && commitCounter >= commitStep) {
                 connection.commit();
-                commitCount = 0;
+                commitCounter = 0;
             }
         } catch (SQLException e) {
             if (dieOnError) {
@@ -268,14 +272,20 @@ public class SnowflakeRowWriter implements WriterWithFeedback<Result, IndexedRec
         return Collections.unmodifiableList(rejectedWrites);
     }
 
+    public void cleanWrites() {
+        successfulWrites.clear();
+        rejectedWrites.clear();
+    }
+
     @Override
     public Result close() throws IOException {
 
         try {
 
-            if (commitCount > 0 && connection != null && statement != null) {
+            if (commitStep > 1 && commitCounter > 0 && connection != null && statement != null) {
                 connection.commit();
-                commitCount = 0;
+                connection.setAutoCommit(true);
+                commitCounter = 0;
             }
 
             if (rs != null) {
